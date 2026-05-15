@@ -1,30 +1,59 @@
-"""harness/sweep.py — M3.1 driver.
+"""harness/sweep.py — M3.1 driver with M3.2a/M3.2b phase split.
 
 Authority: M2.3 final predicate at `literature/_m2.3_calibration_anchor.md` §7
 (ratified 2026-05-15 22:03:50 JST, locked at tag gold/M2 commit ca9c989).
+M3.2 phase split installed 2026-05-16 ~08:22 JST per operator U-MISSION-M3.2
+("M3.2 GREENLIGHT — split into phases M3.2a and M3.2b"). The split is a
+procedural extension of the predicate text (methodology refinement), NOT a
+hypothesis mutation. Mutation budget unchanged.
 
 Enumerates the focused sub-basis sweep from harness/basis.py.enumerate_sub_bases
 (65 sub-bases: 1 primary rigorous + 64 empirical, all containing at least one
 complement element per operator M3.1 directive). Runs harness/verify.py
 three-leg verification on each. Writes per-candidate JSONL output.
 
-Invocation modes:
-  --dry-run         Run 3 small-precision smoke-test candidates only.
-                    Confirms the pipeline works end-to-end.
-                    Wall-clock: ~30 seconds.
-  --primary-only    Run only the primary cascade (n=15 at P=2160/4320/8640
-                    with rigorous-tier maxsteps=100k).
-                    Wall-clock: ~90 minutes; produces the publishable measurement.
-  --full            Run the full 65-sub-basis sweep at the M2.3 ratified
-                    parameters. Wall-clock: ~3 hours estimated per
-                    precision_budget.md §6.4.
-                    NOTE: --full requires a SEPARATE OPERATOR GREENLIGHT (M3.2).
-                    Default mode does NOT run --full; sweep.py rejects --full
-                    unless --m32-greenlighted flag is also set.
-  --m32-greenlighted  Acknowledge that M3.2 execution gate has been passed by
-                      the operator. Required to combine with --full.
+Modes (mutually exclusive):
 
-Output: harness/sweep_output/m3.1_sweep_<timestamp>.jsonl
+  --dry-run                    3-candidate tiny-precision smoke test.
+                               Ungated; intended for pipeline mechanics check.
+                               Wall-clock: < 1 minute. JSONL: dry_run=true.
+                               Output filename: m31_dryrun_<timestamp>.jsonl
+
+  --m31-extended-dry-run       Primary cascade (n=15) at REDUCED precision
+                               (P=540/1080/2160, maxsteps=5000/3000/2000).
+                               Ungated; intended for harness validation only.
+                               Wall-clock: ~10-15 minutes. JSONL: dry_run=true.
+                               Output filename: m31_extended_dryrun_<timestamp>.jsonl
+
+  --m32-primary-measurement    Canonical primary cascade (n=15) at full
+                               primary precisions (P=2160/4320/8640, rigorous
+                               maxsteps 100k/80k/50k). REQUIRES
+                               --m32-primary-greenlighted flag (M3.2a gate).
+                               Wall-clock: ~90 minutes (per §6.4 benchmark).
+                               JSONL: dry_run=false (CANONICAL M6 input).
+                               Output filename: m32a_primary_cascade.jsonl
+                               REFUSES TO OVERWRITE an existing canonical file.
+
+  --full                       Full 65-sub-basis sweep. REQUIRES
+                               --m32-full-greenlighted flag (M3.2b gate)
+                               AND a successful prior M3.2a measurement
+                               (m32a_primary_cascade.jsonl present in
+                               output_dir with non-meta record(s)).
+                               Wall-clock: ~3 hours per §6.4 sweep arithmetic.
+                               Output filename: m32b_empirical_sweep.jsonl
+
+Gate flags:
+
+  --m32-primary-greenlighted   Operator-given acknowledgement of M3.2a gate.
+  --m32-full-greenlighted      Operator-given acknowledgement of M3.2b gate.
+
+Operator's M3.2 phase semantics (verbatim 2026-05-16 ~08:22 JST):
+
+  "The 6-turn cost of the M3.2a→M3.2b operator turn is cheap insurance against
+   discovering a primary-cascade anomaly after the empirical sweep is committed."
+  "Halt for M3.2a operator review. If clean null at H_rigorous=10^70 with
+   cascade stability and gp agreement: M3.2b greenlighted. If anomaly:
+   halt and surface."
 """
 
 from __future__ import annotations
@@ -50,9 +79,16 @@ DRY_RUN_PRECISIONS = (50, 100, 200)
 DRY_RUN_MAXSTEPS = (500, 500, 500)
 DRY_RUN_MAXCOEFF_EXP = 20
 
+EXTENDED_DRY_RUN_PRECISIONS = (540, 1080, 2160)
+EXTENDED_DRY_RUN_MAXSTEPS = (5000, 3000, 2000)
+EXTENDED_DRY_RUN_MAXCOEFF_EXP = 40
+
+CANONICAL_PRIMARY_FILENAME = "m32a_primary_cascade.jsonl"
+CANONICAL_FULL_FILENAME = "m32b_empirical_sweep.jsonl"
+
 
 def _candidates_for_dry_run() -> Iterable[tuple[str, tuple[int, ...]]]:
-    """Tiny representative subset for the dry-run smoke test."""
+    """Tiny representative subset for the 3-candidate smoke test."""
     n_yielded = 0
     for family, indices in enumerate_sub_bases():
         if family == "primary_full":
@@ -70,67 +106,134 @@ def _candidates_for_dry_run() -> Iterable[tuple[str, tuple[int, ...]]]:
             return
 
 
+def _verify_m32a_prereq(output_dir: Path) -> Path:
+    """Confirm M3.2a canonical output exists with at least one non-meta record.
+
+    Raises FileNotFoundError if --full is invoked without prior M3.2a.
+    """
+    m32a_path = output_dir / CANONICAL_PRIMARY_FILENAME
+    if not m32a_path.exists():
+        raise FileNotFoundError(
+            f"--full requires prior M3.2a measurement at {m32a_path}. "
+            f"Run with --m32-primary-measurement first."
+        )
+    record_count = 0
+    with m32a_path.open("r", encoding="utf-8") as f:
+        for line in f:
+            try:
+                rec = json.loads(line)
+                if not rec.get("_meta"):
+                    record_count += 1
+            except json.JSONDecodeError:
+                continue
+    if record_count == 0:
+        raise FileNotFoundError(
+            f"M3.2a canonical file exists at {m32a_path} but contains no "
+            f"per-candidate records. M3.2a appears incomplete."
+        )
+    return m32a_path
+
+
 def run_sweep(mode: str, output_dir: Path) -> Path:
     """Execute the sweep in the chosen mode. Returns path of JSONL output."""
     timestamp = time.strftime("%Y%m%d_%H%M%S")
     output_dir.mkdir(parents=True, exist_ok=True)
-    out_path = output_dir / f"m3.1_sweep_{mode}_{timestamp}.jsonl"
 
-    header = {
-        "_meta": True,
-        "mode": mode,
-        "started_at": timestamp,
-        "primary_precisions": list(PRIMARY_PRECISIONS),
-        "empirical_precisions": list(EMPIRICAL_PRECISIONS),
-        "maxcoeff_exp": MAXCOEFF_EXP,
-        "primary_maxsteps": list(PRIMARY_MAXSTEPS),
-        "empirical_maxsteps": list(EMPIRICAL_MAXSTEPS),
-        "sweep_summary": sweep_summary(),
-        "authority": "M2.3 predicate (gold/M2 commit ca9c989); M3.1 implementation greenlit "
-                     "post-cascade-arithmetic 2026-05-15 22:03:50 JST",
-        "predicate_anchor": "literature/_m2.3_calibration_anchor.md §7",
-    }
-
-    print(f"[sweep] mode={mode}  output={out_path}")
-    print(f"[sweep] header: {json.dumps(header, indent=2)}")
+    if mode == "dry-run":
+        out_path = output_dir / f"m31_dryrun_{timestamp}.jsonl"
+        is_dry_run = True
+    elif mode == "m31-extended-dry-run":
+        out_path = output_dir / f"m31_extended_dryrun_{timestamp}.jsonl"
+        is_dry_run = True
+    elif mode == "m32-primary-measurement":
+        out_path = output_dir / CANONICAL_PRIMARY_FILENAME
+        is_dry_run = False
+        if out_path.exists():
+            raise FileExistsError(
+                f"M3.2a canonical output {out_path} already exists. "
+                f"Refusing to overwrite (single canonical execution per operator). "
+                f"To re-run, move or remove the existing file first."
+            )
+    elif mode == "full":
+        out_path = output_dir / CANONICAL_FULL_FILENAME
+        is_dry_run = False
+        if out_path.exists():
+            raise FileExistsError(
+                f"M3.2b canonical output {out_path} already exists. "
+                f"Refusing to overwrite. To re-run, move or remove the existing file first."
+            )
+    else:
+        raise ValueError(f"unknown mode: {mode}")
 
     if mode == "dry-run":
         candidates = list(_candidates_for_dry_run())
         precisions = DRY_RUN_PRECISIONS
-        maxsteps = DRY_RUN_MAXSTEPS
+        maxsteps_default = DRY_RUN_MAXSTEPS
         maxcoeff_exp = DRY_RUN_MAXCOEFF_EXP
         rigorous_for = lambda fam: False
         run_gp = lambda fam: False
-    elif mode == "primary-only":
+    elif mode == "m31-extended-dry-run":
+        candidates = [(f, i) for (f, i) in enumerate_sub_bases() if f == "primary_full"]
+        precisions = EXTENDED_DRY_RUN_PRECISIONS
+        maxsteps_default = EXTENDED_DRY_RUN_MAXSTEPS
+        maxcoeff_exp = EXTENDED_DRY_RUN_MAXCOEFF_EXP
+        rigorous_for = lambda fam: False
+        run_gp = lambda fam: True
+    elif mode == "m32-primary-measurement":
         candidates = [(f, i) for (f, i) in enumerate_sub_bases() if f == "primary_full"]
         precisions = PRIMARY_PRECISIONS
-        maxsteps = PRIMARY_MAXSTEPS
+        maxsteps_default = PRIMARY_MAXSTEPS
         maxcoeff_exp = MAXCOEFF_EXP
         rigorous_for = lambda fam: True
         run_gp = lambda fam: True
     elif mode == "full":
         candidates = list(enumerate_sub_bases())
         precisions = EMPIRICAL_PRECISIONS
-        maxsteps = EMPIRICAL_MAXSTEPS
+        maxsteps_default = EMPIRICAL_MAXSTEPS
         maxcoeff_exp = MAXCOEFF_EXP
         rigorous_for = lambda fam: fam == "primary_full"
         run_gp = lambda fam: True
     else:
         raise ValueError(f"unknown mode: {mode}")
 
+    header = {
+        "_meta": True,
+        "mode": mode,
+        "dry_run": is_dry_run,
+        "canonical": (mode in ("m32-primary-measurement", "full")),
+        "started_at": timestamp,
+        "primary_precisions": list(PRIMARY_PRECISIONS),
+        "empirical_precisions": list(EMPIRICAL_PRECISIONS),
+        "precisions_this_run": list(precisions),
+        "maxsteps_default": list(maxsteps_default),
+        "maxcoeff_exp": maxcoeff_exp,
+        "primary_maxsteps": list(PRIMARY_MAXSTEPS),
+        "empirical_maxsteps": list(EMPIRICAL_MAXSTEPS),
+        "sweep_summary": sweep_summary(),
+        "authority": "M2.3 predicate (gold/M2 commit ca9c989); "
+                     "M3.2 phase split per operator U-MISSION-M3.2 2026-05-16 ~08:22 JST",
+        "predicate_anchor": "literature/_m2.3_calibration_anchor.md §7",
+    }
+
+    print(f"[sweep] mode={mode}  output={out_path}")
+    print(f"[sweep] dry_run={is_dry_run}  canonical={header['canonical']}")
+    print(f"[sweep] n_candidates={len(candidates)}  precisions={precisions}")
+    print(f"[sweep] maxsteps_default={maxsteps_default}  maxcoeff_exp={maxcoeff_exp}")
+
     with out_path.open("w", encoding="utf-8") as f:
         f.write(json.dumps(header) + "\n")
+        f.flush()
 
         t_start = time.perf_counter()
         for i, (family, indices) in enumerate(candidates):
-            print(f"[sweep] {i + 1}/{len(candidates)}  family={family}  n={len(indices)}")
+            print(f"[sweep] {i + 1}/{len(candidates)}  family={family}  n={len(indices)}", flush=True)
             t0 = time.perf_counter()
-            if mode == "primary-only" or (mode == "full" and family == "primary_full"):
-                ms = PRIMARY_MAXSTEPS
+            if family == "primary_full":
+                ms = PRIMARY_MAXSTEPS if mode in ("m32-primary-measurement", "full") else maxsteps_default
             elif mode == "full":
                 ms = EMPIRICAL_MAXSTEPS
             else:
-                ms = maxsteps
+                ms = maxsteps_default
             result = verify_candidate(
                 family=family,
                 indices=indices,
@@ -141,11 +244,13 @@ def run_sweep(mode: str, output_dir: Path) -> Path:
                 run_gp_leg=run_gp(family),
             )
             result["_candidate_elapsed_s"] = time.perf_counter() - t0
+            result["_dry_run"] = is_dry_run
             f.write(json.dumps(result, default=str) + "\n")
             f.flush()
             print(f"[sweep]     verdict={result['cascade']['verdict']}  "
                   f"class={result['verification_class']}  "
-                  f"elapsed={result['_candidate_elapsed_s']:.2f}s")
+                  f"H_emp={result['H_empirical']:.2e}  H_rig={result['H_rigorous_min']:.2e}  "
+                  f"elapsed={result['_candidate_elapsed_s']:.2f}s", flush=True)
 
         total = time.perf_counter() - t_start
         f.write(json.dumps({"_meta": True, "completed_at": time.strftime("%Y%m%d_%H%M%S"),
@@ -156,28 +261,56 @@ def run_sweep(mode: str, output_dir: Path) -> Path:
 
 
 def main():
-    ap = argparse.ArgumentParser(description="M3.1 sweep driver")
+    ap = argparse.ArgumentParser(description="M3.1/M3.2 sweep driver (phase-split)")
     ap.add_argument("--dry-run", action="store_true",
-                    help="Run 3-candidate smoke test at tiny precision (~30s).")
-    ap.add_argument("--primary-only", action="store_true",
-                    help="Run only the primary n=15 cascade at rigorous tier (~90min).")
+                    help="3-candidate tiny-precision smoke test (ungated, < 1 min).")
+    ap.add_argument("--m31-extended-dry-run", dest="m31_extended_dry_run",
+                    action="store_true",
+                    help="Primary cascade at reduced precision (ungated, ~10-15 min, dry_run=true).")
+    ap.add_argument("--m32-primary-measurement", dest="m32_primary_measurement",
+                    action="store_true",
+                    help="Canonical primary cascade at full precision (M3.2a, ~90 min). "
+                         "Requires --m32-primary-greenlighted.")
     ap.add_argument("--full", action="store_true",
-                    help="Run the full 65-sub-basis sweep. Requires --m32-greenlighted.")
-    ap.add_argument("--m32-greenlighted", action="store_true",
-                    help="Acknowledge M3.2 execution gate has been passed.")
+                    help="Full 65-sub-basis sweep (M3.2b, ~3 hours). "
+                         "Requires --m32-full-greenlighted AND prior M3.2a output.")
+    ap.add_argument("--m32-primary-greenlighted", dest="m32_primary_greenlighted",
+                    action="store_true",
+                    help="Acknowledge M3.2a execution gate has been passed by operator.")
+    ap.add_argument("--m32-full-greenlighted", dest="m32_full_greenlighted",
+                    action="store_true",
+                    help="Acknowledge M3.2b execution gate has been passed by operator.")
     ap.add_argument("--output-dir", type=Path, default=Path("harness/sweep_output"),
                     help="Where to write the JSONL output.")
     args = ap.parse_args()
 
-    if sum([args.dry_run, args.primary_only, args.full]) != 1:
-        ap.error("Exactly one of --dry-run / --primary-only / --full is required.")
-    if args.full and not args.m32_greenlighted:
-        ap.error("--full requires --m32-greenlighted (M3.2 execution gate per operator).")
+    mode_flags = [args.dry_run, args.m31_extended_dry_run,
+                  args.m32_primary_measurement, args.full]
+    if sum(mode_flags) != 1:
+        ap.error("Exactly one of --dry-run / --m31-extended-dry-run / "
+                 "--m32-primary-measurement / --full is required.")
+
+    if args.m32_primary_measurement and not args.m32_primary_greenlighted:
+        ap.error("--m32-primary-measurement requires --m32-primary-greenlighted "
+                 "(M3.2a execution gate per operator).")
+
+    if args.full and not args.m32_full_greenlighted:
+        ap.error("--full requires --m32-full-greenlighted "
+                 "(M3.2b execution gate per operator).")
+
+    if args.full:
+        try:
+            prereq_path = _verify_m32a_prereq(args.output_dir)
+            print(f"[sweep] M3.2a prereq satisfied: {prereq_path}")
+        except FileNotFoundError as e:
+            ap.error(str(e))
 
     if args.dry_run:
         mode = "dry-run"
-    elif args.primary_only:
-        mode = "primary-only"
+    elif args.m31_extended_dry_run:
+        mode = "m31-extended-dry-run"
+    elif args.m32_primary_measurement:
+        mode = "m32-primary-measurement"
     else:
         mode = "full"
 

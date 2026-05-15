@@ -56,6 +56,10 @@ class LegResult:
     elapsed_s: float = 0.0
     H_rigorous: float = 0.0
     error: Optional[str] = None
+    termination_reason: str = ""
+    termination_line: str = ""
+    last_norm_in_cancellation: int = 0
+    verbose_lines: int = 0
 
 
 def empirical_height(P: int, n: int, c: float = 2.06) -> float:
@@ -92,6 +96,10 @@ def run_pslq_with_capture(basis_values: tuple, maxcoeff_exp: int, maxsteps: int,
         final_norm=final_norm,
         elapsed_s=elapsed,
         H_rigorous=H_comb,
+        termination_reason=parsed.get("termination_reason", ""),
+        termination_line=parsed.get("termination_line", "")[:200],
+        last_norm_in_cancellation=parsed.get("last_norm_in_cancellation", 0),
+        verbose_lines=log_text.count("\n"),
     )
 
 
@@ -119,6 +127,10 @@ def cascade_pslq(indices: tuple[int, ...], precisions: tuple[int, int, int],
             {"P": P, "iteration_count": r.iteration_count, "final_norm": r.final_norm,
              "elapsed_s": r.elapsed_s, "H_rigorous": r.H_rigorous,
              "relation": list(r.relation) if r.relation else None,
+             "termination_reason": r.termination_reason,
+             "termination_line": r.termination_line,
+             "last_norm_in_cancellation": r.last_norm_in_cancellation,
+             "verbose_lines_captured": r.verbose_lines,
              "error": r.error}
             for P, r in zip(precisions, per_prec)
         ],
@@ -148,10 +160,27 @@ def _relations_consistent(rels: list) -> bool:
 
 
 def gp_lindep_verify(basis_values: tuple, dps: int, maxcoeff_exp: int,
-                     timeout_s: int = 180) -> dict:
-    """Leg (b): independent gp lindep call. Returns dict with relation or error."""
+                     H_empirical: Optional[float] = None,
+                     timeout_s: int = 1800) -> dict:
+    """Leg (b): independent gp lindep call at equal-or-higher precision than primary.
+
+    Per U-MISSION-M3.2 (2026-05-16): the previous `dps = primary_P // 2`
+    heuristic is REJECTED. Second leg must run at >= primary precision to function
+    as a genuine independence check. Timeout default raised to 30 min to accommodate
+    LLL at full precision on the n=15 mission basis.
+
+    PARI/GP `lindep` performs LLL and ALWAYS returns a "best approximate" integer
+    combination, even when no genuine relation exists within bound. Interpretation
+    requires comparing the returned coefficient magnitudes to H_empirical:
+
+      - max|m_i| <= H_empirical: gp claims a genuine relation within bound
+      - max|m_i|  > H_empirical: gp returned noise (confirms no relation within bound)
+    """
     mp.dps = dps
-    expr_vec = ", ".join(mpmath.nstr(v, dps, strip_zeros=False) for v in basis_values)
+    try:
+        expr_vec = ", ".join(mpmath.nstr(v, dps, strip_zeros=False) for v in basis_values)
+    except TypeError:
+        expr_vec = ", ".join(mpmath.nstr(v, dps) for v in basis_values)
     script = f"\\p {dps}\nlindep([{expr_vec}])\n"
     try:
         p = subprocess.run(
@@ -160,16 +189,25 @@ def gp_lindep_verify(basis_values: tuple, dps: int, maxcoeff_exp: int,
             timeout=timeout_s,
         )
     except subprocess.TimeoutExpired:
-        return {"relation": None, "error": "timeout", "stdout": "", "stderr": ""}
+        return {"relation": None, "error": "timeout", "max_abs_coefficient": None,
+                "within_empirical_bound": None, "stdout": "", "stderr": ""}
     except FileNotFoundError:
         return {"relation": None, "error": f"gp_binary_not_found:{GP_BIN}",
+                "max_abs_coefficient": None, "within_empirical_bound": None,
                 "stdout": "", "stderr": ""}
     if p.returncode != 0:
         return {"relation": None, "error": f"gp_returncode={p.returncode}",
+                "max_abs_coefficient": None, "within_empirical_bound": None,
                 "stdout": p.stdout, "stderr": p.stderr}
     out = p.stdout.strip()
     rel = _parse_gp_lindep_output(out)
+    max_abs = max((abs(m) for m in rel), default=0) if rel else 0
+    within = None
+    if rel and H_empirical is not None and max_abs > 0:
+        within = max_abs <= H_empirical
     return {"relation": rel, "error": None,
+            "max_abs_coefficient": int(max_abs) if max_abs else 0,
+            "within_empirical_bound": within,
             "stdout_tail": out[-200:] if len(out) > 200 else out,
             "stderr_tail": p.stderr[-200:] if p.stderr else ""}
 
@@ -210,6 +248,31 @@ def pslq_residual_check(indices: tuple[int, ...], relation: tuple[int, ...],
     }
 
 
+def _summarize_gp_verdict(cascade_verdict: str, gp_result: dict) -> str:
+    """Combine cascade and gp leg into a single second-leg verdict for surfacing."""
+    if gp_result.get("error") == "skipped":
+        return "skipped"
+    if gp_result.get("error"):
+        return f"gp_error:{gp_result['error']}"
+    rel = gp_result.get("relation")
+    within = gp_result.get("within_empirical_bound")
+    if cascade_verdict == "cascade_stable_null":
+        if rel is None:
+            return "gp_returned_no_relation_confirms_null"
+        if within is False:
+            return "gp_noise_relation_above_H_empirical_confirms_null"
+        if within is True:
+            return "gp_claims_relation_within_bound_CASCADE_DISAGREES"
+        return "gp_relation_returned_bound_check_unknown"
+    if cascade_verdict == "cascade_stable_relation":
+        if rel is None:
+            return "gp_returned_no_relation_CASCADE_DISAGREES"
+        if within is True:
+            return "gp_relation_within_bound_pending_consistency_check"
+        return "gp_relation_above_H_empirical_CASCADE_DISAGREES"
+    return f"cascade_{cascade_verdict}_gp_ambiguous"
+
+
 def verification_class_for(cascade_verdict: str, gp_verdict: dict,
                            residual_check: dict, rigorous_tier: bool) -> str:
     """Assign H9 verification_class per outcome."""
@@ -235,21 +298,26 @@ def verify_candidate(family: str, indices: tuple[int, ...], precisions: tuple[in
     primary_P = precisions[0]
     primary_rel = cascade["per_precision"][0]["relation"]
 
+    H_empirical = empirical_height(primary_P, n, c=2.06)
+
     if run_gp_leg:
         gp_result = gp_lindep_verify(basis_subset(primary_P, indices),
-                                     dps=primary_P // 2,
-                                     maxcoeff_exp=maxcoeff_exp)
+                                     dps=primary_P,
+                                     maxcoeff_exp=maxcoeff_exp,
+                                     H_empirical=H_empirical)
     else:
-        gp_result = {"relation": None, "error": "skipped"}
+        gp_result = {"relation": None, "error": "skipped",
+                     "max_abs_coefficient": None, "within_empirical_bound": None}
 
     if primary_rel is not None:
         residual = pslq_residual_check(indices, tuple(primary_rel), primary_P)
     else:
         residual = {"residual_log10": None, "tol_log10": None, "passes": None}
 
-    vclass = verification_class_for(cascade["verdict"], gp_result, residual, rigorous_tier)
+    gp_verdict = _summarize_gp_verdict(cascade["verdict"], gp_result)
+    gp_result["gp_verdict"] = gp_verdict
 
-    H_empirical = empirical_height(primary_P, n, c=2.06)
+    vclass = verification_class_for(cascade["verdict"], gp_result, residual, rigorous_tier)
 
     return {
         "family": family,

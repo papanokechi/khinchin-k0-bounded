@@ -1,21 +1,49 @@
+"""Inspect the latest dry-run / canonical JSONL for the verify.py output structure."""
 import json
 import sys
 from pathlib import Path
 
-p = sorted(Path("harness/sweep_output").glob("m3.1_sweep_dry-run_*.jsonl"))[-1]
-print(f"reading: {p}")
+if len(sys.argv) > 1:
+    p = Path(sys.argv[1])
+else:
+    candidates = (
+        sorted(Path('harness/sweep_output').glob('m32a_*.jsonl')) +
+        sorted(Path('harness/sweep_output').glob('m31_extended_dryrun_*.jsonl')) +
+        sorted(Path('harness/sweep_output').glob('m31_dryrun_*.jsonl'))
+    )
+    p = candidates[-1] if candidates else None
+
+if p is None or not p.exists():
+    print("no JSONL found")
+    sys.exit(0)
+
+print(f'reading: {p}')
 print()
-for i, line in enumerate(open(p, encoding="utf-8")):
+for line in open(p, encoding='utf-8'):
     rec = json.loads(line)
-    if rec.get("_meta"):
+    if rec.get('_meta'):
+        print(f"_meta: mode={rec.get('mode')}  dry_run={rec.get('dry_run')}  "
+              f"canonical={rec.get('canonical')}  n_candidates={rec.get('n_candidates')}  "
+              f"total_elapsed_s={rec.get('total_elapsed_s')}")
         continue
-    print(f"--- candidate {i} family={rec['family']} n={rec['n']} ---")
-    print(f"  cascade verdict: {rec['cascade']['verdict']}")
-    for pp in rec["cascade"]["per_precision"]:
-        print(f"    P={pp['P']}: K={pp['iteration_count']}, rel={pp['relation']}, elapsed={pp['elapsed_s']:.4f}s")
-    print(f"  H_empirical: {rec['H_empirical']:.2e}")
-    print(f"  H_rigorous_min: {rec['H_rigorous_min']:.2e}")
-    print(f"  pslq_residual_check: {rec['pslq_residual_check']}")
-    print(f"  verification_class: {rec['verification_class']}")
-    print(f"  has_complement: {rec['has_complement']}")
     print()
+    print(f"family={rec['family']}  indices={rec['indices']}  n={rec['n']}")
+    print(f"  labels: {rec['labels']}")
+    print(f"  cascade.verdict: {rec['cascade']['verdict']}")
+    for pp in rec['cascade']['per_precision']:
+        print(f"    P={pp['P']}: K={pp['iteration_count']}  final_norm={pp.get('final_norm')}  "
+              f"term_reason={pp.get('termination_reason')!r}  "
+              f"H_rigorous={pp.get('H_rigorous'):.2e}  elapsed={pp.get('elapsed_s'):.2f}s")
+        if pp.get('relation') is not None:
+            print(f"      RELATION: {pp['relation']}")
+    print(f"  H_empirical:     {rec['H_empirical']:.4e}")
+    print(f"  H_rigorous_min:  {rec['H_rigorous_min']:.4e}")
+    gp = rec['gp_lindep']
+    print(f"  gp_lindep.error:                {gp.get('error')!r}")
+    print(f"  gp_lindep.max_abs_coefficient:  {gp.get('max_abs_coefficient')}")
+    print(f"  gp_lindep.within_empirical_bound: {gp.get('within_empirical_bound')}")
+    print(f"  gp_lindep.gp_verdict:           {gp.get('gp_verdict')!r}")
+    print(f"  pslq_residual_check:            {rec['pslq_residual_check']}")
+    print(f"  verification_class:             {rec['verification_class']}")
+    print(f"  has_complement={rec['has_complement']}  ef1_only={rec['ef1_only']}  "
+          f"rigorous_tier={rec['rigorous_tier']}")
