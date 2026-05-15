@@ -1,0 +1,55 @@
+harness/_bench_cascade_output.txt
+M2.3 -> M3.1 cascade wall-clock benchmark, n=15 mission basis
+Captured: 2026-05-15 ~22:30 JST
+
+==============================================================================
+COLD-CACHE PASS 1 (first call at each precision — includes mpmath cache misses)
+==============================================================================
+  P (dps)  build_s   pslq_s   result
+     2160    12.63    12.53     None
+     4320   110.63    28.21     None
+     8640  1079.67    69.67     None
+
+==============================================================================
+WARM-CACHE PASS 2 (re-run; mpmath constants now cached at each precision)
+==============================================================================
+  P (dps)  build_s   pslq_s   result
+     2160     0.00    12.30     None
+     4320     0.00    28.20     None
+     8640     0.01    69.21     None
+
+Cascade(P, 2P, 4P) empirical PSLQ total = 109.72 s
+
+Iteration-cost extrapolation (per precision; warm-cache):
+  P=2160:    163 iter/s  =>  100k iter ~=    615.0 s =  10.2 min
+  P=4320:     71 iter/s  =>  100k iter ~=   1410.2 s =  23.5 min
+  P=8640:     29 iter/s  =>  100k iter ~=   3460.6 s =  57.7 min
+  Rigorous-tier cascade (maxsteps=100k each) total =  5485.8 s =  91.4 min
+
+==============================================================================
+SWEEP ARITHMETIC (96h budget = 345,600 s)
+==============================================================================
+Conservative design:
+    1 primary cascade (rigorous tier, n=15)    = 5486 s =  91.4 min
+   40 sub-basis cascades (empirical, n<15)     = 4389 s =  73.1 min
+  TOTAL                                        = 9874 s = 164.6 min = 2.74 h
+
+Budget margin = 345600 / 9874 = 35.0x
+VERDICT: COMFORTABLE MARGIN (35.0x >= 3x) -> proceed to M3.1 implementation
+
+==============================================================================
+COLD-CACHE NOTE (operationally important)
+==============================================================================
+First-call basis build at P=8640 dps = 1080 s = 18 min. This is mpmath's
+internal cache miss for zeta(2), zeta(3), log(2), catalan at high precision.
+M3.1 harness MUST precompute and cache these constants once per precision
+level (not per sub-basis). The 40-sub-basis sweep amortizes one cold-cache
+build per precision tier.
+
+Amortized total (cold cache once + 41 PSLQ cascades):
+   cold cache (P=2160, 4320, 8640): 12.6 + 110.6 + 1079.7 = 1203 s
+   41 cascades * (12.3 + 28.2 + 69.2) = 41 * 109.7         = 4498 s    (empirical)
+   1 rigorous-mode primary cascade (replaces 1 of the 41) = +5486 - 110 = +5376 s
+   TOTAL                                                   = 11077 s = 184.6 min = 3.08 h
+
+Adjusted budget margin = 345600 / 11077 = 31.2x  (still COMFORTABLE)

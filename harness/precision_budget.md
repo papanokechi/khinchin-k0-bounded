@@ -244,6 +244,58 @@ Options β and γ are **rejected per operator**; preserved in §6.3 (historical)
 
 CLI default recommendation at §7 was Option β; operator selected α with explicit reasoning (BBC strict-parity → M6 directly comparable). Operator override absorbed; α is the commitment.
 
+### §6.4 Cascade arithmetic — M2.3 ratification follow-up (2026-05-15 ~22:30 JST)
+
+Per operator post-ratification directive (2026-05-15 22:03:50 JST): "Update harness/precision_budget.md §6 with cascade verification wall-clock arithmetic. The negative predicate requires cascade stability at 2P and 4P, which means 3× the single-run wall-clock per candidate null verification."
+
+**Measured cascade benchmark** (`harness/_bench_cascade_wallclock.py`; output: `harness/_bench_cascade_output.txt`).
+
+Per-precision single-run cost at the **n=15 mission basis B_D(C)**, `maxsteps=2000` (empirical tier), warm-cache:
+
+| P (dps) | PSLQ wall-clock | iter/s | Extrapolated maxsteps=100k (rigorous tier) |
+|---:|---:|---:|---:|
+| 2160 | **12.30 s** | 163 | 615 s = 10.2 min |
+| 4320 | **28.20 s** | 71 | 1410 s = 23.5 min |
+| 8640 | **69.21 s** | 29 | 3461 s = 57.7 min |
+
+**Empirical-tier cascade total (P + 2P + 4P) = 109.7 s per candidate.** Operator's pre-benchmark estimate "cascade × 3 ≈ 50-60s per candidate" was at the single-precision×3 level; the actual cascade-of-3-precisions is ~2× higher because per-precision wall-clock scales super-linearly in P (mpmath's mpf arithmetic is O(M(P)·log P) where M is multiplication cost).
+
+**Rigorous-tier cascade total = 5486 s = 91.4 min per primary cascade.** This is the cost of running PSLQ to natural termination at H_rigorous=10⁷⁰ across all three cascade precisions for the primary n=15 measurement.
+
+**Cold-cache caveat (operationally important):** First-call basis build at P=8640 = 1080 s = 18 min (mpmath internal cache misses for `zeta(2)`, `zeta(3)`, `log(2)`, `catalan` at high precision). M3.1 harness MUST precompute and cache the basis once per precision level — the sweep amortizes one cold build per cascade tier. Subsequent calls at the same precision: 0.01 s (cached).
+
+**Sweep size estimate.** Post-Excluded-Families filtering, the M3.1 sweep enumerates sub-bases of B_D(C) that contain at least one **complement** element (`log K_0` or `K_0·c_i` for c_i ∈ C); i.e., sub-bases NOT entirely contained in EF1 (BBC-grandfathered pure-power subset). The natural focused enumeration (defined in `harness/sweep.py` at M3.1 implementation):
+
+| Sub-basis family | Construction | Count |
+|---|---|---:|
+| **Primary** | Full n=15 basis at (P, 2P, 4P) cascade, rigorous tier | 1 |
+| **Pairwise log-probe** | {log K_0, x} for x ∈ B \ {log K_0, 1} | 13 |
+| **Pairwise bilinear-probe** | {K_0·c_i, K_0·c_j} for i < j (i, j ∈ C) | 21 |
+| **Complement-triplet** | {log K_0, K_0·c_i, K_0·c_j} for i < j | 21 |
+| **Full-complement** | {log K_0} ∪ {K_0·c : c ∈ C} (n=8) | 1 |
+| **Pure-complement-plus-one** | full-complement + K_0^k for k ∈ {0,…,D} | 7 |
+| **Total** | (1 rigorous + 63 empirical) | **64** |
+
+Sub-basis enumeration intentionally focused on the complement structure per operator's M3.1 directive ("with the three Excluded Families filtered out at basis construction time, not post-hoc"). 64 is the planning target; final sweep.py may produce ±10 depending on duplicate-pruning and basis-rank checks.
+
+**96h wall-clock arithmetic (Brief §M3.2 budget = 345,600 s):**
+
+```
+  1 primary cascade (rigorous tier, n=15)        = 1 × 5486 s = 5,486 s    (91 min)
+ 63 sub-basis cascades (empirical, n=2..8)        = 63 × ~50 s = 3,150 s   (52 min; smaller n => faster PSLQ)
+  cold-cache basis build (one-time, all 3 precs)  = 1203 s                 (20 min)
+  ----------------------------------------------------------
+  TOTAL ESTIMATE                                   ≈ 9,839 s ≈ 2.7 h
+```
+
+**Budget margin = 345,600 / 9,839 ≈ 35×**. Margin is **COMFORTABLY ABOVE 3×** per operator's gate condition.
+
+(Conservative re-estimate using larger n=15 cost for all sub-basis cascades = 41 × 109.7 + 1 × 5486 + 1203 = 11,194 s ⟹ margin = 31×. Still well above 3×.)
+
+**Decision per operator gate:** "If cascade arithmetic confirms comfortable margin (≥ 3×), proceed directly to M3.1 harness implementation." **PROCEEDING TO M3.1 IMPLEMENTATION.**
+
+**U-MISSION-M NOT triggered.** Budget infeasibility check (margin < 2×) is not met. The 96h cap is roughly 35× over the predicted sweep cost, leaving substantial headroom for: (a) sweep size expansion if structural sub-basis families surface that warrant inclusion; (b) cascade-precision deepening (e.g., 8P safety check) on any candidate positive; (c) repeat-cascade verification at the same precision for noise diagnosis; (d) maxsteps elevation beyond 100k if H_rigorous targets at 10⁷⁰ require it.
+
 ---
 
 ## §7 Halt-class finding surfaced to operator — H8 paper-read of FBA 1999
