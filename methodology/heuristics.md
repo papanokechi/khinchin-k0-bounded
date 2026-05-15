@@ -416,6 +416,163 @@ committed into the dependency chain.
 
 ---
 
+## H9 — Theorem-vs-heuristic classification on cited bounds
+
+**Intent:** prevent the M2.3-class precision-budget error documented in
+`harness/precision_budget.md` §7 and `literature/_fidelity_findings.md`
+Catch #2 — the H8 paper-read of FBA 1999 revealed that the folklore
+relation `H ≈ 10^{P/n}` (which had been quoted as if theorem-grade in
+the U-MISSION-K directive's H8 sub-question) is NOT stated as a
+theorem in the primary source. FBA 1999 proves Theorem 1, Theorem 3,
+and Corollary 2 — distinct, weaker, but still rigorous statements. BBC
+1997's empirically-used confidence factor c ≈ 2.06 over the bare
+folklore is itself community-validated empirical practice, not
+theorem-derived. The same H8 sub-question's framing risk would recur
+on any cited quantitative bound whose theorem-grade status was assumed
+rather than paper-read-verified.
+
+**Heuristic (operator wording verbatim, U-MISSION-L 2026-05-15 ~21:36 JST):**
+
+> Any claim cited in M2.3 predicate, M3.1 harness, or M6 manuscript must
+> carry a `verification_class` in its JSONL entry. Load-bearing classification.
+
+**Four verification classes (operator wording verbatim):**
+
+1. **`rigorous_theorem`** — a stated, proven theorem of the primary source.
+   The cited bound is the exact statement of a numbered Theorem in the
+   primary source's text. Example: FBA 1999 Theorem 1 statement
+   `M_x ≥ 1/max_j |h_{j,j}|`.
+
+2. **`proven_corollary`** — a stated, proven proposition, lemma, or
+   corollary of the primary source. The cited bound is a directly
+   proven downstream statement, not the bare theorem. Example: FBA
+   1999 Corollary 2 statement on iteration count.
+
+3. **`field_standard_practice`** — community-validated empirical methods
+   used by the BBC / BBP / Bailey-class experimental-mathematics literature.
+   Distinct from agent-derived empirical heuristics: these are methods
+   that the field treats as standard (e.g., the H ≈ 10^{P/(c·n)} confidence
+   relation with c ≈ 2.06, calibrated empirically across decades of PSLQ
+   computations in published Math.Comp. / Experimental Math. papers).
+   **Operator strengthening (U-MISSION-L):** this fourth class is distinct
+   from `empirical_heuristic` precisely because it carries community
+   validation weight. M6 reception in experimental-mathematics venues
+   treats `field_standard_practice` claims as default-acceptable; venues
+   in pure number theory may not. M6 §Discussion must declare the class.
+
+4. **`empirical_heuristic`** — agent-derived empirical methods (CLI-
+   internal observations from running code, scaling rules-of-thumb the
+   CLI invented, etc.) that do not have community validation. Lowest
+   claim class; must be flagged explicitly in any predicate that uses
+   them, and should not be load-bearing on M6 results without explicit
+   operator ratification.
+
+**Sub-rules implied by the operator wording:**
+
+1. **Load-bearing rule** is non-discretionary. The three dependency
+   targets — M2.3 predicate, M3.1 harness, M6 manuscript — fully define
+   the H9 binding scope. Any claim from the M2.1 ledger that enters one
+   of those three downstream uses must carry a `verification_class`
+   field before the use is committed.
+
+2. **Storage convention.** Per the M2.1 process-to-content rule, the
+   `claims.jsonl` 7-field schema is locked and `_schema.md` is a
+   one-time scaffold. To honor H9's structural requirement without
+   violating the schema lock, `verification_class` is stored as a
+   sub-key inside the existing `independent_verifier_result` dict
+   (which is a free-form object — only `verified` and `method` are
+   validator-checked). The `validate_claims_jsonl.py` validator
+   permits arbitrary sub-keys, so no validator change is required.
+
+3. **Class assignment is per-claim, not per-paper.** A single primary
+   source can give multiple cited claims at different verification
+   classes. Example: FBA 1999 supplies both `rigorous_theorem`
+   (Theorem 1's certificate `M_x ≥ 1/max_j|h_{j,j}|`) and the absence
+   of any stated `H ≈ 10^{P/n}` theorem — the absence is the source
+   of the M2.3 Catch #2. Classes are assigned to the SPECIFIC cited
+   statement, not to the paper.
+
+4. **Inheritance rule for harness output claims.** If the M3.1 harness
+   produces a confidence claim (e.g., "null PSLQ at P = 2160 dps,
+   n = 15, maxcoeff = 10^60") that depends on a literature claim of
+   class C, the harness's downstream output inherits class C unless a
+   stronger argument is constructed and documented. In particular, a
+   `field_standard_practice` empirical input cannot produce a
+   `rigorous_theorem` output.
+
+5. **M6 manuscript classification disclosure.** Every quantitative
+   confidence claim in M6 must declare its `verification_class` in a
+   manuscript table or footnote. Reviewers should be able to inspect
+   the predicate's evidence ladder. This is the M6-phase enforcement
+   of H9.
+
+**Scope (operator wording verbatim):**
+
+> Subordinate to Brief §M2.3; sibling to H7 (capability-claim functional
+> verification) and H8 (literature-claim paper-read verification).
+> Forward-binding on M2.3 onward.
+
+**Retroactive-binding scope at install:**
+
+The entries currently relied on by M2.3 calibration that must carry a
+`verification_class` at install time:
+
+- `lit-001` (Papanokechi 2026 signature paper) — claim class:
+  `field_standard_practice` (the cited scope-distinction passage is a
+  standard literature handoff, not a quantitative bound).
+- `lit-002` (Bailey-Borwein-Crandall 1997) — multiple claims:
+  - The 7350 dps PSLQ null result on K_0 pure powers: `field_standard_practice`
+    (community-validated empirical practice; not a stated theorem).
+  - The c ≈ 2.06 confidence factor (M2.3 calibration anchor): `field_standard_practice`.
+- `lit-003` (OEIS A002210) — claim class: `field_standard_practice`
+  (OEIS is the field's canonical numerical-record database).
+- `lit-009` (Ferguson-Bailey-Arno 1999) — multiple claims:
+  - Theorem 1 (`M_x ≥ 1/max_j|h_{j,j}|`): `rigorous_theorem`.
+  - Theorem 3 (overshoot bound): `rigorous_theorem`.
+  - Corollary 2 (iteration bound): `proven_corollary`.
+  - **Folklore `H ≈ 10^{P/n}`: `field_standard_practice`**
+    (Bailey-Borwein-Plouffe / BBC empirical norm; NOT a stated theorem
+    of FBA 1999, as paper-read verified per H8 / `_fidelity_findings.md`
+    §6 Catch #2).
+- `lit-018` (fidelity catch, no prior K_0 PSLQ on the mission's specific
+  basis B_D(C)) — claim class: `field_standard_practice` (literature
+  fidelity catch documented via paper-reads of lit-001, lit-002).
+
+All other M2.1 entries (lit-004 to lit-008, lit-010 to lit-017, lit-019,
+lit-020) are NOT currently in the M2.3 dependency chain. Per the
+operator's retroactive-binding scope clause inherited from H8, those
+entries may remain without `verification_class` until they enter the
+chain.
+
+**Defers to:** Brief §M2.3 (success-predicate definition — H9 specifies a
+*classification rule* for the predicate's evidence; does not override the
+Brief's predicate content). Sibling to H7 (capability functional
+verification — different problem, both binding) and H8 (literature
+paper-read verification — different problem, both binding).
+
+**Sibling to H7 and H8, NOT generalization.** H7 covers *functional
+verification of capability claims*; H8 covers *paper-read verification of
+literature claims*; H9 covers *theorem-vs-heuristic classification of
+the verified literature claims when they are cited in load-bearing
+contexts*. The three heuristics chain naturally: H7 confirms the
+capability runs; H8 confirms the cited paper says what we say it says;
+H9 classifies what kind of statement the cited claim IS (theorem vs.
+heuristic) for downstream predicate construction. **None generalizes any
+other.**
+
+**Conflict path:** if a Brief amendment specifies a different
+classification taxonomy (e.g., a peer-review-style external-referee
+strength scale), H9 yields to that taxonomy. Log conflict in
+`mutation_log/`.
+
+**Forward-binding on M2.3, M3.x, M5, M6:** every new claim citation
+introduced after this H9 install date (2026-05-15 ~21:36 JST) that
+touches the M2.3 / M3.1 / M6 dependency triad must carry a
+`verification_class` in its `independent_verifier_result` sub-key
+before being committed into the dependency chain.
+
+---
+
 ## Conflict log
 
 | Date | Heuristic | Conflicting authority | Resolution | mutation_log ref |

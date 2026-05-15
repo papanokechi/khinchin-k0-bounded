@@ -96,7 +96,7 @@ Per the operator's M2-risk-class framing, the following currently-unverified led
 
 ---
 
-## 6. Catch #2 (M2.3, 2026-05-15 ~21:30 JST) — "FBA 1999 states `H ≈ 10^{P/n}` as a theorem" (REFUTED — folklore-grade not theorem-grade)
+## 6. Catch #2 (M2.3, 2026-05-15 ~21:30 JST) — "FBA 1999 states `H ≈ 10^{P/n}` as a theorem" (REFUTED — folklore-grade not theorem-grade) → **RESOLVED U-MISSION-L 2026-05-15 ~21:36 JST**
 
 **Class:** algorithm-correctness-claim heuristic-vs-theorem distinction (operator-predicted M2.3 finding class)
 
@@ -110,27 +110,41 @@ What FBA 1999 actually proves (paper-read verbatim):
 
 The folklore `H ≈ 10^{P/n}` is an **empirical scaling** of `max_i |h_{i,i}|` against precision P at typical PSLQ convergence. It is consistent with FBA 1999's framework but is NOT a stated theorem. BBC 1997 (lit-002) calibrates this empirically with `c ≈ 2.06` confidence factor over the bare folklore: at n=51, P=7350 dps, BBC reported H=10^70 versus 10^{7350/51}≈10^144 from the bare folklore — i.e., the BBC-1997 community practice is to use a ~2× more conservative bound than the folklore heuristic.
 
-**Mission impact:**
+**Catch #2 resolution (U-MISSION-L, 2026-05-15 ~21:36 JST):**
 
-- lit-009 promoted `unverified_abstract_only` → `verified` / `paper_read_verified`. Status flipped in `claims.jsonl` at this commit.
-- lit-009 `statement` field rewritten to record the actual theorems (Theorem 1 + Theorem 3 + Corollary 2) and to explicitly flag the folklore-vs-theorem distinction.
-- `harness/precision_budget.md` §7 surfaces the halt-class finding to operator with two resolution options:
-  - **Option A**: accept the heuristic with explicit AEAL labeling (`verification_class: empirical_heuristic`). CLI default recommendation.
-  - **Option B**: require rigorous Theorem-1 certificate → declare new Capability Gap CG-2 (mpmath.pslq does not expose H-matrix diagonals).
-- M2.3 success-predicate text in `_m2.3_calibration_anchor.md` §7 (new section) is **NOT YET DRAFTED**; held pending operator H8 resolution.
-- Candidate new heuristic H9 (theorem-vs-heuristic claim classification) proposed in `harness/precision_budget.md` §9 for operator review at §7 resolution.
+Operator accepted Option A with strengthening to **two-tier predicate** — empirical (`field_standard_practice` per H9) + rigorous (`proven_corollary` per H9). The originally-feared Option B Capability Gap CG-2 was dissolved by a follow-up source inspection: mpmath.pslq's `verbose=True` mode DOES print a Theorem-1-style rigorous bound at every iteration (the printed "Norm" field, computed internally from `max|H[i,j]|` with 100x safety factor), and this is captureable via stdout redirection — see `harness/rigorous_bound.py` module docstring. Four divergences from FBA 1999 are documented and flagged (D1: max-all-entries vs max-diagonal; D2: γ=√(4/3) exact vs strict; D3: mpmath cites Bailey 1998 not FBA 1999; D4: 100x safety factor) — none invalidates Corollary 2 applicability; D2/D3 are forward-flagged for downstream H8 strengthening if rigorous tier is load-bearing in M6.
+
+The two-tier predicate is drafted in `_m2.3_calibration_anchor.md` §7. (P, H_target) committed: **Option α** — P=2160 dps, H_empirical=10⁷⁰ (BBC strict parity). H_rigorous is reported alongside H_empirical from the same PSLQ run; reaches 10⁷⁰ at K ≈ 50-100k iterations per `precision_budget.md` §5.2.
+
+H9 INSTALLED with four classes (operator-strengthened from CLI-proposed three): `rigorous_theorem`, `proven_corollary`, `field_standard_practice`, `empirical_heuristic`. Documented in `methodology/heuristics.md` H9 entry.
+
+**Mission impact (updated post-U-MISSION-L):**
+
+- lit-009 already promoted to `verified` / `paper_read_verified` at prior commit `7a28604`.
+- lit-009 `independent_verifier_result.verification_class = proven_corollary` (the primary cited bound now used in M2.3 predicate is FBA Cor 2, with per-statement breakdown in `methodology/heuristics.md` H9).
+- `harness/precision_budget.md` rewritten: §7.3 records U-MISSION-L resolution; §5 revised with rigorous-bound investigation; §6.2 commits Option α; §8 references the predicate draft; §9 marks H9 installed.
+- `literature/_m2.3_calibration_anchor.md` §7 NEW — drafts the M2.3 final two-tier predicate with three Excluded Families (EF1-EF3); previous §7 "AEAL discipline note" renamed to §8.
+- `harness/rigorous_bound.py` NEW — implements the rigorous-bound derivation (FBA T1 via mpmath verbose; FBA Cor 2 via iteration count); demo output captured at `harness/_rigorous_bound_demo_output.txt`.
+- `claims.jsonl` H9 verification_class fields added to 5 load-bearing entries (lit-001, lit-002, lit-003, lit-009, lit-018) via sub-key in `independent_verifier_result` (validator PASS 20 entries 0 errors; schema lock preserved).
+- M3.1 implementation **gated on operator ratification** of `_m2.3_calibration_anchor.md` §7 predicate text per U-MISSION-L Step 4.
 
 **Counts:**
 
 - This is the **5th halt-class finding** for the unsolved-relay mission overall.
 - This is the **1st halt-class finding within M2** — matching the operator's M2.1-GREENLIGHT prediction: "M2.3 will probably have one finding (likely in the precision_budget.md derivation — PSLQ confidence relations are subtler than the textbook formula suggests)."
+- **Catch #2 RESOLVED** at U-MISSION-L without re-halt. The AEAL maturation curve framing was operator-validated: M2.2 had zero findings, M2.3 surfaced exactly one finding in exactly the predicted class.
 
 **See:**
 
-- `harness/precision_budget.md` (full M2.3 derivation + halt-class finding + two operator-options)
-- `literature/lit-009-ferguson-bailey-arno-1999.md` (paper-read-verified annotation, post-revision)
-- `mutation_log/m2.2_to_m2.3_pslq_certificate_halt_20260515.md` (halt-event log)
+- `harness/precision_budget.md` (full M2.3 derivation + U-MISSION-L two-tier resolution + §6.2 Option α commitment)
+- `harness/rigorous_bound.py` (Tier 2 implementation; module docstring documents 4 divergences D1-D4)
+- `literature/_m2.3_calibration_anchor.md` §7 (M2.3 final predicate text, drafted, awaiting operator ratification)
+- `literature/lit-009-ferguson-bailey-arno-1999.md` (paper-read-verified annotation)
+- `methodology/heuristics.md` H9 (four-class verification_class taxonomy)
+- `mutation_log/m2.2_to_m2.3_pslq_certificate_halt_20260515.md` (Catch #2 halt-event log; predecessor)
+- `mutation_log/m2.3_u_mission_l_two_tier_predicate_20260515.md` (U-MISSION-L resolution log; this resolution's mutation_log entry)
 - Operator U-MISSION-K (2026-05-15 ~21:14 JST) directive specifying the non-collapsible four-step sequence
+- Operator U-MISSION-L (2026-05-15 ~21:36 JST) directive resolving Catch #2 and approving H9
 
-**AEAL discipline note:** Per operator's U-MISSION-J ratification, **this finding does NOT consume the mutation budget**: lit-009's `statement`-field rewrite is a documentation event (the paper's content is unchanged; the field-map is being corrected). The H8 promotion is a verification-status change, not a hypothesis change. The mutation budget at M2 milestone-block remains at **0/1 consumed**.
+**AEAL discipline note:** Per operator's U-MISSION-J ratification AND U-MISSION-L re-ratification, **this finding and its resolution do NOT consume the mutation budget**: lit-009's `statement`-field rewrite is a documentation event; the H8 promotion + H9 classification additions are verification-status changes / field-map updates; the two-tier predicate is a confidence-reporting-structure extension, not a hypothesis change. Per U-MISSION-L verbatim: "Classify as field-map update, not hypothesis mutation: the hypothesis (test for integer relations in B_D(C)) is unchanged; the confidence reporting structure is being extended." The mutation budget at M2 milestone-block remains at **0/1 consumed**.
 

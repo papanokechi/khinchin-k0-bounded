@@ -1,0 +1,34 @@
+==============================================================================
+harness/rigorous_bound.py demo — M2.3 evidence pass
+FBA-1999 rigorous M_x lower bound via mpmath.pslq verbose outputs
+==============================================================================
+
+K_critical_for_M_x(1, n=15)       = 6750 iter
+K_critical_for_M_x(10^10, n=15)   = 17112 iter
+K_critical_for_M_x(10^60, n=15)   = 68920 iter
+K_critical_for_M_x(10^70, n=15)   = 79282 iter
+
+=== dps=100 maxsteps=2000 ===
+  n=15, dps=100, maxcoeff=10^60, maxsteps=2000
+  iterations(K) = 2000, final_norm = 624, relation = None
+  termination_reason = maxsteps_reached, elapsed = 2.29s
+  H_rigorous(Thm1)  = 100 * 624 = 62400 (log10 = 4.795)
+  H_rigorous(Cor2)  = trivial (K = 2000 < K_critical = 6750)
+  H_rigorous(combined) = max(Thm1, Cor2) = 62400.0
+
+=== dps=500 maxsteps=2000 ===
+  n=15, dps=500, maxcoeff=10^60, maxsteps=2000
+  iterations(K) = 2000, final_norm = 624, relation = None
+  termination_reason = maxsteps_reached, elapsed = 2.47s
+  H_rigorous(Thm1)  = 100 * 624 = 62400 (log10 = 4.795)
+  H_rigorous(Cor2)  = trivial (K = 2000 < K_critical = 6750)
+  H_rigorous(combined) = max(Thm1, Cor2) = 62400.0
+
+=== dps=500 maxsteps=5000 ===
+  n=15, dps=500, maxcoeff=10^60, maxsteps=5000
+  iterations(K) = 5000, final_norm = 14344090578, relation = None
+  termination_reason = maxsteps_reached, elapsed = 6.28s
+  H_rigorous(Thm1)  = 100 * 14344090578 = 1434409057800 (log10 = 12.157)
+  H_rigorous(Cor2)  = trivial (K = 5000 < K_critical = 6750)
+  H_rigorous(combined) = max(Thm1, Cor2) = 1.4344e+12
+

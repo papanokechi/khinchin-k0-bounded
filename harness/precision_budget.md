@@ -1,12 +1,12 @@
 # harness/precision_budget.md
 
-# M2.3 precision-budget derivation — STATUS: HALT-CLASS FINDING SURFACED (FBA-1999 heuristic-vs-theorem)
+# M2.3 precision-budget derivation — STATUS: U-MISSION-L TWO-TIER PREDICATE INSTALLED
 
 **Mission:** unsolved-relay
 **Milestone:** M2.3 (success-predicate calibration)
-**Authority:** Operator U-MISSION-K (2026-05-15 ~21:14 JST)
-**Sequence position:** Step 1 of non-collapsible 4-step sequence; HALT triggered at Step 2 (H8 paper-read of PSLQ confidence-relation source)
-**Subordinate to:** Brief §M2.3; H8 (paper-read on dependency literature claims)
+**Authority:** Operator U-MISSION-K (2026-05-15 ~21:14 JST) + U-MISSION-L (2026-05-15 ~21:36 JST)
+**Sequence position:** U-MISSION-K Step 1 + U-MISSION-L Steps 1-3 complete; Step 4 (predicate draft in `literature/_m2.3_calibration_anchor.md` §7) executed in same commit batch. **HALT for operator ratification before M3.1 implementation.**
+**Subordinate to:** Brief §M2.3; H7 (capability functional verification); H8 (paper-read on dependency literature claims); H9 (theorem-vs-heuristic classification, **installed at U-MISSION-L**)
 
 ---
 
@@ -141,22 +141,57 @@ The Bailey-Borwein-Plouffe community uses **empirical c-factor calibration** aga
 
 ---
 
-## §5 mpmath.pslq's actual return contract
+## §5 mpmath.pslq's actual return contract — REVISED at U-MISSION-L
 
-The M3.1 harness uses `mpmath.pslq(x, tol=..., maxcoeff=..., maxsteps=...)`. Functional verification at M2.2 capability audit (§2) confirmed:
-- Returns an integer tuple if a relation is found within `maxsteps` iterations with `|coefficients| ≤ maxcoeff` at tolerance `tol`.
-- Returns `None` otherwise.
+**Pre-U-MISSION-L reading (now superseded; preserved for audit):**
+> mpmath.pslq does NOT expose the rigorous certificate `M_x ≥ 1/max|h_{i,i}|` from FBA 1999 Theorem 1. The diagonal entries of the internal H matrix are NOT returned to the caller. The harness's negative-result claim is therefore structurally weaker than the rigorous Theorem-1 certificate.
 
-**mpmath.pslq does NOT expose the rigorous certificate** `M_x ≥ 1/max|h_{i,i}|` from FBA 1999 Theorem 1. The diagonal entries of the internal H matrix are NOT returned to the caller.
+**§5 REVISED (U-MISSION-L investigation, evidenced by `harness/rigorous_bound.py` module docstring and demo output):**
 
-Therefore, the harness's negative-result claim is structurally:
-> "After at most `maxsteps` iterations, with required tolerance `tol` and coefficient cap `maxcoeff`, no integer relation was found."
+The pre-U-MISSION-L reading was correct that the H-matrix diagonals are not in the return value, but was INCOMPLETE in two respects:
 
-This is **weaker than the rigorous Theorem-1 certificate** in two ways:
-1. The `maxsteps` cutoff is artificial; the rigorous certificate would only require that PSLQ has *terminated* (not just been stopped after k steps).
-2. The `maxcoeff` cap restricts the search, but mpmath does NOT then certify `M_x ≥ maxcoeff` — it just reports "did not find a relation matching constraints".
+1. **mpmath.pslq's `verbose=True` mode prints a Theorem-1-style lower bound on M_x at every iteration**, computed internally as:
 
-**Consequence:** the M3.1 harness's "no relation up to H_target" claim CANNOT be backed by FBA-1999 Theorem 1 rigorously **without exposing the H-matrix diagonals**. The claim must instead be backed by **empirical confidence calibration** against BBC 1997 (c ≈ 2.06 at matching P/n), with explicit AEAL flag that this is a **folklore-grade certificate**, not a theorem-grade certificate.
+   ```python
+   recnorm = max(abs(h) for h in H.values())   # max over ALL entries of H
+   norm = ((1 << (2*prec)) // recnorm) >> prec # = floor(1 / max|H|)
+   norm //= 100                                # 100x safety factor
+   ```
+
+   This is captureable via stdout redirection (`io.StringIO` + `contextlib.redirect_stdout`), parseable via regex, and gives a **rigorous lower bound on M_x = 100 × reported_norm** via FBA 1999 Theorem 1 combined with the elementary inequality `max_{i,j}|H[i,j]| ≥ max_j|h_{j,j}|`.
+
+2. **FBA 1999 Corollary 2 gives a second, independent rigorous lower bound** on M_x derivable from iteration count alone: if PSLQ ran K iterations without termination, then any relation has `M_x > exp((K - 2·dim_R·n^3) / (2·dim_R·n^2))`. For n=15 (real case), Cor 2 becomes non-trivial only when K > 6,750 iterations (the integer-relation lower bound M_x ≥ 1 floor).
+
+**The rigorous bound thus IS available from mpmath outputs** — via `harness/rigorous_bound.py` (verbose-mode stdout capture + parsing for Theorem 1, plus iteration-count formula for Corollary 2). The M3.1 harness can report **both tiers** in its predicate evidence:
+- Tier 1 (empirical, `field_standard_practice` per H9): BBC-1997-calibrated `H_empirical ≈ 10^{P/(c·n)}` with c ≈ 2.06.
+- Tier 2 (rigorous, `proven_corollary` per H9): `H_rigorous = max(100·reported_norm, exp((K-2·n^3)/(2·n^2)))` per FBA 1999 Theorem 1 / Corollary 2.
+
+### §5.1 Four divergences from FBA 1999 (paper-read derived, see `rigorous_bound.py` module docstring)
+
+| ID | Divergence | Practical impact |
+|---|---|---|
+| D1 | mpmath uses `max_{i,j} \|H[i,j]\|` (all entries); FBA T1 uses `max_j \|h_{j,j}\|` (diagonal only) | mpmath's bound is rigorous but strictly weaker; H_rigorous is several decades smaller than optimal FBA T1 bound |
+| D2 | mpmath uses γ = √(4/3) exactly; FBA Def 5 requires γ > √(4/3) strict | Boundary case covered by Bailey 1998 expository paper (mpmath's stated source); Theorem 1 + Corollary 2 unaffected; Theorem 3 (overshoot) requires Bailey 1998 H8 paper-read if cited |
+| D3 | mpmath cites Bailey 1998, NOT FBA 1999, in docstring | Forward-flagged: Bailey 1998 H8 paper-read recommended if rigorous tier is load-bearing in M2.3 predicate |
+| D4 | mpmath applies `norm //= 100` safety factor | Conservative (rigor preserved); reported_norm = 0 is uninformative; H_rigorous = 100·reported_norm |
+
+**None of D1-D4 invalidates Corollary 2 applicability.** The two-tier predicate is structurally sound; D2 / D3 are forward-flagged for downstream H8 strengthening at operator discretion.
+
+### §5.2 Achievable rigorous bound regime — empirical (n=15)
+
+Three measured points from `harness/rigorous_bound.py` demo (see `harness/_rigorous_bound_demo_output.txt`):
+
+| K (iter) | dps | Elapsed | final_norm | H_rigorous_Thm1 = 100·norm | H_rigorous_Cor2 |
+|---:|---:|---:|---:|---:|---:|
+| 2000 | 100 | 2.0 s | 624 | 6.24 × 10⁴ | trivial (K < 6750) |
+| 2000 | 500 | 2.5 s | 624 | 6.24 × 10⁴ | trivial (K < 6750) |
+| 5000 | 500 | 6.3 s | 1.43 × 10¹⁰ | **1.43 × 10¹²** | trivial (K < 6750) |
+
+**Growth pattern observed:** mpmath's reported norm grows roughly geometrically with iteration count K above the initial integer-truncation floor (norm = 0 for K ≲ 900 at n=15). Extrapolating from K=2000 → 5000 (norm: 624 → 1.43×10¹⁰; growth rate ≈ 1 decade per ~400 iterations), reaching **H_rigorous = 10⁷⁰** at n=15 requires K ≈ 50,000+ iterations.
+
+Wall-clock estimate at dps=500: 50,000 iter × 1.3 ms/iter ≈ **65 s per PSLQ run** to natural termination at H_rigorous = 10⁷⁰. At dps=2160 (BBC parity, Option α): ~2-3× slower → **~150-200 s per run**. 96h budget accommodates several thousand such runs.
+
+**Conclusion: BBC-parity rigorous bound H_rigorous = 10⁷⁰ at n=15 IS achievable in M3.1, contingent on raising mpmath's `maxsteps` from default 100 to ~100,000.** Empirical tier (10⁷⁰ at dps=2160) and rigorous tier (10⁷⁰ at K ≈ 50-100k iter) **converge at the same H_target = 10⁷⁰** in the M3.1 regime — the two-tier predicate is operationally compatible with Option α.
 
 ---
 
@@ -180,19 +215,34 @@ Parameters: `maxcoeff=10^60`, `maxsteps=2000`, `tol=10^{-int(P·0.6)}` (precisio
 
 96h wall-clock cap (Brief §M3.2) at 38 s per run at P=4000 dps accommodates ~9000 runs. At BBC-parity P=2160 dps: ~17,000 runs. **No infeasibility surfaces. No U-MISSION-K wall-clock surface.**
 
-### §6.2 Provisional (P, H_target) candidate pairs
+### §6.2 (P, H_target) COMMITMENT — U-MISSION-L Option α SELECTED
 
-Three candidates, each conditional on operator's H8 resolution (§7):
+Operator U-MISSION-L (2026-05-15 ~21:36 JST) verbatim:
+> "(P, H_target) selection: ADOPT Option α (P=2160, H=10^70 BBC parity) for the empirical scope claim. BBC's exact precision-per-dimension makes M6 directly comparable. Cost differential vs Option β is negligible at 96h budget; legitimacy gain is non-negligible. Option γ rejected. Option β rejected."
 
-| Option | P (dps) | H_target (BBC c=2.06) | Wall (single run) | Confidence framing |
-|---|---:|---:|---:|---|
-| α — BBC strict parity | 2160 | 10^70 | ~18 s | Match BBC 1997 §4 Test 1 confidence-per-dimension exactly |
-| β — Modest aspiration | 2000 | 10^60 (c≈2.4) | ~16 s | Slightly more conservative than BBC; round-number P |
-| γ — Conservative | 1500 | 10^48 (c≈2.06) | ~10 s | Lower budget; same c as BBC; tighter H_target |
+**Committed pair for the M2.3 success predicate:**
 
-CLI default recommendation (subject to operator override): **Option β** — round-number P=2000 dps + H_target=10^60 with c≈2.4 buffer over BBC. Rationale: 10^60 is a clean cap; c=2.4 is more conservative than BBC's c=2.06; wall-clock budget comfortable.
+| Tier | Confidence relation | P (dps) | H_target | c-factor | Verification class (per H9) |
+|---|---|---:|---:|---:|---|
+| Tier 1 (empirical) | H ≈ 10^{P/(c·n)} | 2160 | **10⁷⁰** | 2.06 (BBC strict parity) | `field_standard_practice` |
+| Tier 2 (rigorous) | FBA T1 / Cor 2 via `rigorous_bound.py` | 2160 | **10⁷⁰** (at K ≈ 50–100k iter; see §5.2) | n/a (theorem-derived) | `proven_corollary` |
 
-**All three options assume the H ≈ 10^{P/n} heuristic is operationally adopted as the empirical confidence relation.** Per §7 below, this adoption itself is the halt-pending decision.
+Wall-clock per single PSLQ run at this (P, H_target):
+- Empirical-mode (maxsteps=2000, terminate-on-maxcoeff): ~18 s (§6 table extrapolated)
+- Rigorous-mode (maxsteps=100,000, run to natural termination): ~150-200 s (§5.2 extrapolated)
+
+96h budget accommodates ~1700 rigorous-mode runs OR ~17,000 empirical-mode runs. The M3.1 cascade (P, 2P, 4P stability check across the predicate's non-Excluded-Family basis sweeps) is comfortably within budget.
+
+Options β and γ are **rejected per operator**; preserved in §6.3 (historical) for audit only.
+
+### §6.3 Rejected options — preserved for audit trail
+
+| Option | Why rejected | Verbatim operator language |
+|---|---|---|
+| β — P=2000, H=10⁶⁰, c≈2.4 | "Cost differential vs Option β is negligible at 96h budget; legitimacy gain is non-negligible." | U-MISSION-L |
+| γ — P=1500, H=10⁴⁸, c=2.06 | "Option γ rejected." | U-MISSION-L |
+
+CLI default recommendation at §7 was Option β; operator selected α with explicit reasoning (BBC strict-parity → M6 directly comparable). Operator override absorbed; α is the commitment.
 
 ---
 
@@ -220,80 +270,84 @@ Paper-read revealed a different relation (Theorem 1's per-iteration certificate,
 
 This is the **5th halt-class finding overall** for the mission and the **1st in M2** — matching operator's prediction in M2.1 GREENLIGHT: "M2.3 will probably have one finding (likely in the precision_budget.md derivation — PSLQ confidence relations are subtler than the textbook formula suggests)."
 
-### §7.3 Two resolution options for operator
+### §7.3 Resolution — U-MISSION-L OPTION A WITH TWO-TIER STRENGTHENING
 
-#### Option A — Accept empirical heuristic with explicit AEAL labeling
+Operator U-MISSION-L (2026-05-15 ~21:36 JST) verbatim:
 
-- Treat `H ≈ 10^{P/n}` as an **empirical confidence heuristic** consistent with FBA 1999 framework + BBC 1997 calibration data.
-- Update lit-009 to clarify: "FBA 1999 proves the rigorous certificate M_x ≥ 1/max|h_{i,i}|; the H ≈ 10^{P/n} folklore is an empirical scaling of this certificate against precision P, calibrated against BBC 1997's c ≈ 2.06 confidence factor; it is NOT a stated theorem in FBA 1999."
-- M2.3 success predicate's negative arm uses `H_target` derived from the heuristic, with explicit AEAL claim-class qualifier `heuristic_certificate` (NOT `rigorous_certificate`).
-- Proceed to predicate draft (Step 3 of operator's U-MISSION-K sequence).
+> "Catch #2 resolution: ACCEPT Option A, with strengthening to two-tier predicate (empirical + rigorous). The folklore H ≈ 10^{P/n} relation is field standard practice in experimental mathematics, not theorem-grade — operator-side framing in the previous reply implicitly treated it as theorem-grade and that framing was wrong. H8 caught not just a literature claim but a meta-claim about how to verify literature claims. CLI correctly halted rather than retrofitting."
 
-Trade-off: claim strength is honestly characterized but the predicate's negative arm is folklore-grade, not theorem-grade. The M6 manuscript must declare this explicitly.
+**Resolution adopted: Option A with two-tier strengthening.** The pre-U-MISSION-L Option A (single-tier empirical) and Option B (rigorous-tier-only with capability-gap declaration) are both subsumed. Both tiers coexist:
 
-#### Option B — Require rigorous certificate; declare capability gap
+| Tier | Confidence relation | Verification class (per H9) | Carried in M3.1 harness output |
+|---|---|---|---|
+| **Tier 1 — Empirical** | H_empirical = BBC-1997-calibrated `H ≈ c · 10^{P/(c·n)}` with c ≈ 2.06 | `field_standard_practice` | Always (every PSLQ run reports H_empirical from (P, n, c)) |
+| **Tier 2 — Rigorous** | H_rigorous = max(FBA T1 via `100·reported_norm`, FBA Cor 2 via `exp((K-2n³)/(2n²))`) | `proven_corollary` | When K is large enough for non-trivial Cor 2 OR `reported_norm > 0` |
 
-- Require the M3.1 harness to expose the rigorous `M_x ≥ 1/max|h_{i,i}|` certificate. This requires either:
-  - (i) A custom mpmath.pslq wrapper that reads the internal H-matrix diagonals (mpmath's source is patchable but this is non-trivial work, ~hours-to-days).
-  - (ii) A different PSLQ implementation that exposes the certificate natively. `arb`/`flint` is the candidate but was DECLINED at U-MISSION-D ("If a future milestone genuinely requires interval arithmetic that neither mpmath nor gp can provide, log it as a Capability Gap and stop per §0.2; do not retrofit the install"). U-MISSION-D's "interval arithmetic" framing is adjacent but not identical to "rigorous PSLQ certificate"; the new gap is specifically the absence of certificate-exposing PSLQ in the mission's capability base.
-- Declare new Capability Gap CG-2 (paralleling the U-MISSION-D-declined CG-1 for interval arithmetic). Per Brief §0.2, log and stop.
-- The predicate's negative arm would then need either heuristic framing (regressing to Option A) or scope reduction (e.g., positive predicate only, negative reduced to "PSLQ did not find a relation under mpmath's empirical cap" without claiming a height bound).
+**Capability Gap CG-2 (originally Option B's escalation) is NOT declared.** §5 revised: mpmath.pslq's verbose mode DOES expose a rigorous-bound proxy (the printed `Norm` field per iteration), which `harness/rigorous_bound.py` parses into `H_rigorous`. The originally-feared rigid capability gap is dissolved; the two-tier predicate is operationally feasible with the existing mpmath capability.
 
-Trade-off: claim strength is theorem-grade if implemented, but capability gap may halt or scope-reduce M3.1.
+**Specific predicate language commitments** (drafted in `literature/_m2.3_calibration_anchor.md` §7 in same commit batch):
 
-#### CLI default recommendation
+- Negative arm at Tier 1: "Null PSLQ at (P=2160 dps, n=15, maxcoeff=10⁶⁰) with cascade stability across 2P and 4P implies no integer relation with height ≤ H_empirical = 10⁷⁰ under BBC-1997-calibrated empirical scaling. **Verification class: `field_standard_practice`.**"
+- Negative arm at Tier 2: "Per FBA 1999 Theorem 1 and Corollary 2, the same PSLQ run produces H_rigorous = max(100·final_norm, exp((K-2·15³)/(2·15²))) as a rigorous lower bound on the minimum integer-relation norm M_x. **Verification class: `proven_corollary`.** H_rigorous ≥ 10⁷⁰ requires K ≈ 50-100k iterations (§5.2) — feasible at ~150-200 s per run in the M3.1 cascade."
+- M6 manuscript discloses both tiers in a confidence-table with H9 class labels.
 
-**Option A.** Rationale:
+**Mutation budget at M2 milestone-block:** 0/1 still consumed. Per operator U-MISSION-L verbatim: "Classify as field-map update, not hypothesis mutation: the hypothesis (test for integer relations in B_D(C)) is unchanged; the confidence reporting structure is being extended."
 
-- The folklore `H ≈ 10^{P/n}` heuristic is what the entire experimental-mathematics community has used for 30+ years; this is the empirical-mathematics standard claim class.
-- BBC 1997, Bailey-Borwein-Plouffe 1997, Bailey 1998, and successor papers all use this framing; M6's reception in Math.Comp. / Experimental Mathematics will treat folklore-certificate claims as standard.
-- AEAL's seven-field schema can carry the `heuristic_certificate` qualifier cleanly via `verification_class: empirical_heuristic`.
-- The mission's stated form is a **bounded negative result**; the bound is a folklore-grade confidence statement, NOT a transcendence proof. Folklore-grade is honestly the right claim class.
+### §7.4 lit-009 promotion — executed at M2.3 Catch #2 commit
 
-**Recommendation: adopt Option A with explicit AEAL labeling.** Decision is operator's.
+Already done (prior commit `7a28604`): lit-009 promoted from `unverified_abstract_only` → `verified` / `paper_read_verified` per H8; statement field rewritten with actual Theorems 1/3/Corollary 2 + explicit folklore-vs-theorem flag; validator PASS 20 entries 0 errors.
 
-### §7.4 Sub-question: lit-009 promotion regardless of Option
-
-Independent of which option operator selects:
-
-- **lit-009 must promote** from `unverified_abstract_only` to `paper_read_verified` per H8.
-- The promoted entry's content will reflect the heuristic-vs-theorem distinction (§3.2-3.4 above).
-- The lit-009 "Mission role" line "The M3.1 harness does NOT require a paper-read of this entry" is **OVERTURNED**: the harness's confidence claim depends on FBA 1999 → enters M2.3 dependency chain → H8 binds → paper-read required.
-
-This sub-step is non-conditional and is executed alongside this document.
+At U-MISSION-L (this commit), lit-009's `independent_verifier_result.verification_class` is set per H9 (multiple classes — one per cited statement; see `methodology/heuristics.md` H9 retroactive-binding scope).
 
 ---
 
-## §8 Pending §7 predicate draft
+## §8 M2.3 PREDICATE DRAFT — written in `literature/_m2.3_calibration_anchor.md` §7
 
-Per operator U-MISSION-K sequence step 3, the M2.3 success predicate text in `literature/_m2.3_calibration_anchor.md` §7 (new section) is **NOT DRAFTED** at this commit. It is held pending operator H8 resolution per §7 above.
+Per U-MISSION-L operator non-collapsible Step 3:
+> "Update harness/precision_budget.md §7 with the two-tier predicate text and the chosen (P=2160, H_empirical=10⁷⁰) pair, plus whatever H_rigorous emerges from step 2."
 
-When operator resolves:
-- **If Option A**: §7 predicate text invokes `H_target` from §6.2 (Option α/β/γ pending operator-select) + the three Excluded Families per U-MISSION-K + the AEAL `verification_class: empirical_heuristic` qualifier on the negative arm.
-- **If Option B**: §7 predicate text invokes the rigorous certificate; CG-2 declaration triggers per Brief §0.2; mission scope reduces or pauses pending capability resolution.
+Two-tier predicate text is drafted in `literature/_m2.3_calibration_anchor.md` §7 (new section, with existing AEAL discipline note renamed §8) per operator non-collapsible Step 4:
+> "Draft M2.3 final predicate text in literature/_m2.3_calibration_anchor.md §7 with three Excluded Families AND two-tier scope claim. Halt for operator ratification before M3.1 implementation."
+
+**Operator ratification is the gate for M3.1 implementation.** This precision_budget.md is the technical anchor; the calibration_anchor.md §7 is the formal predicate text the operator ratifies.
 
 ---
 
-## §9 H-pattern installation candidate (for operator review at §7 resolution)
+## §9 H9 INSTALLED — four verification classes
 
-This finding raised the bar on what "verified confidence relation" means for the mission. A possible H-class heuristic to install:
+H9 was proposed at the M2.3 halt-class finding (pre-U-MISSION-L) with three classes. Operator U-MISSION-L approved with strengthening to **four classes**:
 
-> **H9 (proposed, pending operator approval) — Theorem-vs-heuristic distinction on cited bounds.** Any quantitative bound cited from a primary source must be classified at one of three claim classes: `rigorous_theorem` (a stated, proven theorem of the source), `proven_corollary` (a stated, proven proposition or corollary of the source), or `empirical_heuristic` (a folklore scaling or rule-of-thumb consistent with the source's framework but not stated as a theorem). The claim's AEAL `verification_class` field must record the classification. M3.1 harness output claims must inherit the claim class of the strongest bound they depend on. Subordinate to Brief §M2.3; sibling to H7 (capability-claim functional verification) and H8 (literature-claim paper-read verification). Forward-binding on M2.3 onward.
+> "H9: APPROVE with strengthenings:
+> - Four verification classes, not three: rigorous_theorem, proven_corollary, field_standard_practice, empirical_heuristic. field_standard_practice covers community-validated empirical methods (BBC/BBP/Bailey-class) distinct from agent-derived empirical heuristics.
+> - Any claim cited in M2.3 predicate, M3.1 harness, or M6 manuscript must carry a verification_class in its JSONL entry. Load-bearing classification."
 
-**Decision: operator approves H9 or not, at §7 resolution.**
+**Status: installed at `methodology/heuristics.md` H9** in the same commit batch as this update. The four classes:
+
+| Class | Definition | Example (this mission) |
+|---|---|---|
+| `rigorous_theorem` | Stated, proven theorem of the primary source | FBA 1999 Theorem 1 |
+| `proven_corollary` | Stated, proven proposition / lemma / corollary | FBA 1999 Corollary 2; the H_rigorous bound derived from it |
+| `field_standard_practice` | Community-validated empirical (BBC/BBP/Bailey-class) | The H ≈ 10^{P/(c·n)} folklore with c ≈ 2.06; BBC 1997 §4 PSLQ nulls |
+| `empirical_heuristic` | Agent-derived empirical methods, no community validation | CLI's internal scaling rules-of-thumb (if any are introduced) |
+
+Storage convention: `verification_class` field is placed as a sub-key inside `independent_verifier_result` in `claims.jsonl` (preserves 7-field schema; validator unaffected).
+
+Forward-binding on M2.3, M3.x, M5, M6 per H9 install date. See `methodology/heuristics.md` for full H9 sub-rules.
 
 ---
 
 ## §10 Provenance — this document
 
-- Authored: 2026-05-15 ~21:30 JST
+- **Original authoring:** 2026-05-15 ~21:30 JST (U-MISSION-K Step 1, halt at Step 2)
+- **U-MISSION-L revision:** 2026-05-15 ~21:36 JST (this revision)
 - Author: CLI (papanokechi/khinchin-k0-bounded, mission unsolved-relay)
-- Authority: operator U-MISSION-K (M2.3 GREENLIGHT, 2026-05-15 ~21:14 JST)
+- Authority: operator U-MISSION-K (M2.3 GREENLIGHT) + U-MISSION-L (two-tier predicate + Option α + H9 install)
 - H8 retrieval evidence: §3.1 SHA-256 + saved PDF at `harness/_pslq_candidates/cpslq.pdf`
-- Benchmark evidence: `harness/_bench_pslq_dim15.py` + §6 table; reproducible in ~70 seconds
-- Hold status: §7 predicate draft NOT WRITTEN — held pending operator H8 resolution
+- Benchmark evidence: `harness/_bench_pslq_dim15.py` + §6 table
+- Rigorous-bound investigation evidence: `harness/rigorous_bound.py` + `harness/_rigorous_bound_demo_output.txt`
+- Hold status: §7 predicate text DRAFTED at `literature/_m2.3_calibration_anchor.md` §7 — held for operator ratification before M3.1 implementation per U-MISSION-L non-collapsible Step 4.
 
 ---
 
-**END — STATUS: HALT FOR OPERATOR H8 RESOLUTION**
+**END — STATUS: U-MISSION-L TWO-TIER PREDICATE INSTALLED; OPERATOR RATIFICATION PENDING ON `_m2.3_calibration_anchor.md` §7 BEFORE M3.1 IMPLEMENTATION**
 
