@@ -1,0 +1,61 @@
+# env/M1.lock — Environment snapshot at M1.3 Gold Freeze G1
+# Mission: unsolved-relay (target: Khinchin K_0)
+# Generated: 2026-05-15T19:37:03+09:00
+
+## System
+os: Microsoft Windows 11 Pro Insider Preview 10.0.29585
+ram_total: 15.9 GB
+arch: amd64 (x86_64)
+
+## Toolchain (H7-verified — see capability/probe_results_20260515_v2.md)
+python: 3.12.10
+lean: version 4.29.1, x86_64-w64-windows-gnu, commit f72c35b3f637c8c6571d353742168ab66cc22c00, Release)
+lake: Lake version 5.0.0-src+f72c35b (Lean version 4.29.1)
+
+# PARI/GP (snapshot binary; see mutation_log/m1.3_pari_gp_install_20260515.md)
+pari_gp_binary: C:\Users\shkub\PARI\gp.exe
+pari_gp_version: 2.18.1
+
+## Python packages (pip show)
+Name: mpmath
+Version: 1.3.0
+Name: sympy
+Version: 1.14.0
+Name: numpy
+Version: 2.4.4
+Name: gmpy2
+Version: 2.3.0
+
+## Confirmed NOT AVAILABLE (hard filters; see capability/probe_results_20260515.md §3)
+not_available:
+  - python-flint (arb bindings)
+  - fpylll
+  - cypari2
+  - sagemath
+  - scipy
+  - mpsolve
+
+## Integrity hashes (SHA256) of key frozen artefacts
+artefacts:
+  targets/triage.json: f3fc4254129e52c6e3315fb71b891788ec8a536b7994bd98954809e601c7f5c3
+  targets/selected.md: 22fedb2661f2fe12d91362faa4b5e60f17e5b8df67bf4b123a3f517f914e945d
+  targets/M1.2_scoring.json: 71afd5be227833dedd42da1f0a6ba2b4c68423e7c015710bf8c702cb37970d96
+  methodology/heuristics.md: fd403a223dacf3c5bf5232036d6acb6b1407f045c0ad4e68de440c127bde2495
+  capability/probe_results_20260515_v2.md: 25b0b9b644abd2f236eddff5b64997e9ca9fee035b0e7c4d9271653bb6cda782
+
+## Operator
+github_user: papanokechi
+repo: papanokechi/khinchin-k0-bounded
+
+## Brief / AEAL references
+brief_version: operator-paste 2026-05-15 ~17:26 JST
+aeal_version: v1
+aeal_zenodo: doi:10.5281/zenodo.19562751 (per khinchin-signature-pslq citation; not independently verified this freeze)
+
+## Mutation budget at G1
+m1_mutations_consumed: 0
+m1_mutation_log_entries: 4
+  - m1.0_to_m1.1_operator_amendments_20260515.md       (boundary directive, 0 mutations)
+  - m1.1_to_m1.2_shortlist_construction_20260515.md    (boundary directive, 0 mutations)
+  - m1.2_to_m1.3_brief_fidelity_correction.md          (frame correction, 0 mutations)
+  - m1.3_pari_gp_install_20260515.md                   (capability install event, 0 mutations)

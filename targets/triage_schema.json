@@ -1,0 +1,80 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://papanokechi.example/unsolved-relay/targets/triage.schema.json",
+  "title": "Unsolved-Relay Triage Row",
+  "description": "Schema for one row in targets/triage.json, per Mission Brief §M1.1.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "problem",
+    "category",
+    "known_partial_results_url",
+    "machinery_required",
+    "machinery_available_locally",
+    "falsifiable_sub_question",
+    "estimated_compute_to_partial_result_hours",
+    "publishability_of_negative_result",
+    "AEAL_compliance_risk"
+  ],
+  "properties": {
+    "problem": {
+      "type": "string",
+      "minLength": 3,
+      "description": "Common name of the unsolved problem (e.g., 'Erdős–Straus conjecture')."
+    },
+    "category": {
+      "type": "string",
+      "enum": [
+        "number_theory",
+        "combinatorics",
+        "dynamics",
+        "analysis",
+        "discrete_geometry",
+        "transcendence",
+        "diophantine_approximation",
+        "partition_theory"
+      ],
+      "description": "Top-level subject area. Survey spans at least 5 distinct categories per §M1.1."
+    },
+    "known_partial_results_url": {
+      "type": "string",
+      "anyOf": [
+        { "format": "uri" },
+        { "pattern": "^$" }
+      ],
+      "description": "URL (Wikipedia / arXiv / DOI / OEIS) anchoring the strongest known partial result. Empty string allowed only if literature is too sparse to cite a single canonical anchor — flag in falsifiable_sub_question."
+    },
+    "machinery_required": {
+      "type": "array",
+      "items": { "type": "string", "minLength": 2 },
+      "minItems": 1,
+      "uniqueItems": true,
+      "description": "List of techniques needed for the bounded sub-question (e.g., 'PSLQ at 200 dps', 'Lean 4 Mathlib4', 'sieve-of-Atkin')."
+    },
+    "machinery_available_locally": {
+      "type": "boolean",
+      "description": "TRUE iff every item in machinery_required has been previously deployed by the operator (per Mission Brief §M1.1 hard filter). FALSE → row must NOT proceed to M1.2 selection."
+    },
+    "falsifiable_sub_question": {
+      "type": "string",
+      "minLength": 30,
+      "description": "Single bounded sub-question that M2–M6 will assault. Must be falsifiable within 5 weeks on a single workstation."
+    },
+    "estimated_compute_to_partial_result_hours": {
+      "type": "number",
+      "exclusiveMinimum": 0,
+      "maximum": 840,
+      "description": "Honest upper-estimate of CPU-hours to reach the partial/negative result the success predicate would accept. Cap is 5 weeks × 168 h/week = 840 h."
+    },
+    "publishability_of_negative_result": {
+      "type": "string",
+      "enum": ["high", "medium", "low"],
+      "description": "How venue-receptive the community is to a documented negative or bounded-range result on this problem."
+    },
+    "AEAL_compliance_risk": {
+      "type": "string",
+      "enum": ["low", "medium", "high"],
+      "description": "Risk that the bounded sub-question will invite Searcher's-Fatigue substitution (sweep-for-reasoning). HIGH = avoid; LOW = clean AEAL fit."
+    }
+  }
+}

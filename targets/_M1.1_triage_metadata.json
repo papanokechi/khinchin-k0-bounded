@@ -1,0 +1,28 @@
+{
+  "schema": "triage_schema.json",
+  "builder": "build_triage_m1_1.py",
+  "built_at_utc": "2026-05-15T08:53:27.471824+00:00",
+  "built_at_jst_local": "2026-05-15 ~17:42 JST (operator-time)",
+  "mutation_log": "mutation_log/m1.0_to_m1.1_operator_amendments_20260515.md",
+  "row_count": 28,
+  "operator_clear_count_target": 27,
+  "actual_advancing_count": 28,
+  "count_explanation": "Operator instructed 'proceed on 27 clear entries'; #18 cleared via literature recheck (in operator's 27), #23 cleared via overlap audit (ADDED, not in operator's 27), #26 recommended-drop via overlap audit (NOT included). Net = 26 unconditional + #18 + #23 = 28.",
+  "machinery_gap_rows": [
+    {
+      "row_idx": 6,
+      "problem": "Cunningham #7",
+      "reason": "NFS not in kit"
+    },
+    {
+      "row_idx": 21,
+      "problem": "spt #22",
+      "reason": "mock-modular not in kit"
+    },
+    {
+      "row_idx": 24,
+      "problem": "crank-moment #25",
+      "reason": "mock-modular not in kit"
+    }
+  ]
+}
