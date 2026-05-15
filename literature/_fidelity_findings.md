@@ -32,19 +32,31 @@ This document is the running ledger of those catches. It is content (per the M1.
 
 ---
 
-## 2. Proposal — H8 literature-analog of H7 (surfaced for operator decision U-MISSION-J)
+## 2. ~~Proposal — H8 literature-analog of H7~~ → **INSTALLED as H8 (U-MISSION-J approved 2026-05-15 ~21:00 JST)**
+
+**Status:** H8 INSTALLED in `methodology/heuristics.md` with operator-verbatim wording at U-MISSION-J approval 2026-05-15 ~21:00 JST. See `methodology/heuristics.md` H8 entry and `mutation_log/m2.1_to_m2.2_u_mission_j_h8_install_20260515.md`.
+
+The CLI's pre-install proposal text is preserved below for traceability. **The final installed wording extends the CLI draft in three places:**
+
+1. **Dependency triad explicit** (CLI draft had a single target "M3.x harness"): operator's version names (a) M2.3 success predicate, (b) M3.1 harness design, and (c) M6 manuscript scope-distinction story.
+2. **"Confident false positives in both directions"** is named explicitly as the failure mode in the operator wording. This captures the dual-direction signature observed in Catch #1 (false-negative AND false-positive within the same query topic).
+3. **Retroactive-binding scope tightened** to "entries currently relied on by M2.3 calibration" — operator's version is more permissive than the CLI draft's blanket retroactive binding on all `unverified_*` entries. Entries not yet in the dependency chain may remain in their current state until they enter it.
+
+### Pre-install CLI draft (preserved verbatim for traceability)
 
 The U-MISSION-H sequence installed H7 ("functional verification on capability claims: name resolution alone is not function; require minimum working example"). The Catch #1 above is exactly H7's logical structure applied to **literature**, not capabilities. CLI proposes installing H8 in `methodology/heuristics.md` at M2.1 closure (operator-gated):
 
 > **H8 — Paper-read verification on computational literature claims.** For any computational claim about prior published work that the M3.x harness depends on, **direct retrieval and reading of the primary source is required**. AI-aggregated web search results, abstract-only summaries, citation chains through tertiary aggregators (Wikipedia, MathWorld, OEIS commentary), and AI-summarized quote extractions are INSUFFICIENT for verification. They may surface the existence of a claim and orient research but do not verify content. The bar matches H7 for capabilities: the claim must be exercised by direct inspection of the primary source (PDF read, TeX source read, AMS-canonical-URL render check) OR marked `unverified_*` in the AEAL `independent_verifier_result.method` field with the appropriate sub-status (`paywall_blocked`, `book_not_digitized`, `abstract_only_unverified`, `fidelity_watch`). DOI-syntax check against canonical journal URL is required for any AI-aggregator-sourced citation.
 
-**Operator decision token: U-MISSION-J.**
+**Operator decision token: U-MISSION-J — RESOLVED 2026-05-15 ~21:00 JST APPROVE with extended scope.**
 
-Subordinate to AEAL Brief §M2.1, sibling to H7. Forward-binding on M3.1 harness-dependent literature claims; retroactively binding only on `claims.jsonl` entries with `status` in {`verified`, `unverified_abstract_only`, `unverified_paywall_blocked`, `theoretical_citation_only`, `fidelity_watch`} — confirming or updating their status against the H8 bar.
+~~Subordinate to AEAL Brief §M2.1, sibling to H7. Forward-binding on M3.1 harness-dependent literature claims; retroactively binding only on `claims.jsonl` entries with `status` in {`verified`, `unverified_abstract_only`, `unverified_paywall_blocked`, `theoretical_citation_only`, `fidelity_watch`} — confirming or updating their status against the H8 bar.~~
 
-If H8 is installed, the heuristic count goes `≤7 → ≤8` and the health-score footer in `methodology/heuristics.md` should attach H8 to the "literature-fidelity-honesty" axis.
+**Installed scope (operator's binding wording — see `methodology/heuristics.md` H8 for full text):** Subordinate to Brief §M2.1; sibling to H7. **Retroactively binding only on entries currently relied on by M2.3 calibration** (lit-001, lit-002, lit-003 are all already `paper_read_verified` or canonical-database-verified — all H8-compliant). **Entries not yet relied on may remain in their current verification state until they enter the dependency chain.**
 
-If H8 is NOT installed, the lit-018 catch remains documented as a one-off; H7 remains the only formal verification-discipline heuristic and applies only to capabilities.
+~~If H8 is installed, the heuristic count goes `≤7 → ≤8` and the health-score footer in `methodology/heuristics.md` should attach H8 to the "literature-fidelity-honesty" axis.~~ — DONE.
+
+~~If H8 is NOT installed, the lit-018 catch remains documented as a one-off; H7 remains the only formal verification-discipline heuristic and applies only to capabilities.~~ — not the path taken; H8 installed.
 
 ---
 

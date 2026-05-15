@@ -75,15 +75,18 @@ Either path would have leaked into the M6 deposit. The catch at M2.1 averts that
 
 This entry IS that catch.
 
-## 7. AEAL escalation question (operator decision pending)
+## 7. AEAL escalation question RESOLVED — operator U-MISSION-J 2026-05-15 ~21:00 JST
 
-Is this a 5th-class halt-and-flag (per the M1 halt-and-flag pattern, which trained on capability, scope, brief-fidelity, and process-vs-content classes)?
+**Halt-status decision: CONFIRMED no 5th-class halt.** Operator verbatim:
 
-**CLI read: NO halt required.**
+> "Halt-status: CONFIRMED no 5th-class halt. BBC-1997 finding confirms M1.2 sub-question scope rather than contradicting it. `selected.md` remains frozen."
 
-Rationale:
-1. Lit-002 (BBC 1997) does NOT contradict the frozen `targets/selected.md`. The hybrid basis B_D(C) explicitly includes `log K_0` and `K_0·c` rows, which BBC explicitly named as OPEN — so the BBC discovery CONFIRMS the novelty axis of selected.md rather than invalidating it.
-2. The pure-power portion `{1, K_0, …, K_0^D ≤ 6}` is grandfathered by BBC at stronger parameters, but this is a **calibration finding for M2.3**, not a frozen-claim contradiction at gold/M1.
-3. The H7-literature-analog proposal is a HEURISTIC addition (akin to U-MISSION-H's H7 install), not a Brief mutation.
+**U-MISSION-J H8 install: APPROVED.** See `methodology/heuristics.md` H8 entry (installed with operator-verbatim wording, extended scope covering M2.3 / M3.1 / M6 dependency triad).
 
-If the operator disagrees and judges this to be a 5th-class halt, the freeze remains; this entry and `_m2.3_calibration_anchor.md` together constitute the operator-decision surface. **Decision token: U-MISSION-J (lit-018 halt status + H7-literature install).**
+**M2.3 binding requirement added by operator:** the M2.3 success predicate must explicitly exclude the pure-power family {1, K_0, K_0², …, K_0^D} as BBC-grandfathered prior art. See `_m2.3_calibration_anchor.md` §6.5.
+
+**M6 scope-positioning note added by operator:** the manuscript has a "two-anchored legitimacy story" — operator's signature paper handoff (Anchor 1) + BBC §4 close handoff (Anchor 2) — to be cited explicitly in M6 §Introduction within the first three paragraphs. See `_m2.3_calibration_anchor.md` §6.6.
+
+**Mutation budget ratification (operator):** lit-018 catch is correctly classified as a documentation event, NOT a hypothesis mutation. §7 budget consumption is reserved for changes to the operator's hypothesis. Refinements to the prior-work field map under H6/H8 are field-map updates, not hypothesis mutations.
+
+This entry's `status` REMAINS `fidelity_caught_refuted` (the catch itself stands as documented; the operator-decision metadata is captured here in §7 rather than altering the AEAL-schema status field).

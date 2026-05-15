@@ -34,7 +34,7 @@ AI-breakthrough logic" framing):
 
 ## What this file IS
 
-- A small (≤ 7 entries) catalog of execution-efficiency aids that **defer**
+- A small (≤ 8 entries) catalog of execution-efficiency aids that **defer**
   to the Brief on every load-bearing decision.
 
 ---
@@ -302,6 +302,120 @@ capability actually works).
 
 ---
 
+## H8 — Paper-read verification on dependency literature claims
+
+**Intent:** prevent the M2.1-class literature-fidelity error documented in
+`literature/lit-018-fidelity-no-prior-k0-pslq-refuted.md` and
+`literature/_fidelity_findings.md` Catch #1 — the AI-aggregated web search
+that returned both a confident false-negative ("no published K_0-specific
+PSLQ null result") AND a confident false-positive (BBC 1997 quoted with a
+hallucinated sentence and a DOI off by one digit), both refuted by direct
+PDF retrieval of BBC 1997.
+
+**Heuristic (operator wording verbatim, U-MISSION-J 2026-05-15 ~21:00 JST):**
+
+> Any literature claim that the M2.3 success predicate, the M3.1 harness
+> design, or the M6 manuscript's scope-distinction story depends on must be
+> verified by direct reading of the primary source (paper, preprint,
+> supplementary material). Web aggregators, citation databases, and
+> LLM-mediated summaries are not sufficient and can produce confident false
+> positives in both directions (false existence and false non-existence,
+> sometimes both for the same claim). For paywalled or non-digitized
+> primary sources, mark `verified_independently: false` with the specific
+> blocker and do not propagate the claim into the predicate.
+
+**Sub-rules implied by the operator wording:**
+
+1. **Three dependency targets** define the H8 scope: (a) the M2.3 success
+   predicate, (b) the M3.1 harness design, (c) the M6 manuscript's
+   scope-distinction story. A literature claim that touches any of these
+   three targets is "in the dependency chain" for H8.
+2. **Direct primary-source reading** is the required verification mode.
+   Acceptable primary sources: the published journal PDF, the publisher's
+   canonical HTML render, an author-archived preprint PDF (e.g., from
+   `arxiv.org`, `davidhbailey.com`, INRIA HAL), TeX source (with
+   author/repo provenance), or supplementary material directly attached to
+   the publication.
+3. **Insufficient verification modes (H8-rejected):** web aggregator
+   summaries (Bing, Google search results pages), citation databases
+   (Google Scholar metadata, Semantic Scholar abstracts), tertiary
+   encyclopaedias (Wikipedia, MathWorld) when treated as primary, and
+   LLM-mediated paper summaries (any AI summarization of a paper without
+   verifying against the original).
+4. **Confident false positives in both directions** is the named failure
+   mode. H8 specifically guards against the AI-aggregator pattern where
+   a single query topic can produce both a false-negative ("X does not
+   exist") and a false-positive ("X exists and says Y" where Y is
+   hallucinated) within minutes. The dual-direction failure is the
+   signature of H8-target risk.
+5. **Honest paywall / non-digitization** is permitted. If a primary source
+   cannot be retrieved (paywall, book not digitized, author-archive
+   non-existent), mark `verified_independently: false` in the AEAL
+   `independent_verifier_result.method` field with the specific blocker
+   (`paywall_blocked`, `book_not_digitized`, `abstract_only_unverified`).
+   **Do not propagate the claim into the M2.3 predicate, the M3.1 harness
+   design, or the M6 scope-distinction story until the primary source is
+   read.** Honest blockage is preferable to propagated unverified claims.
+
+**Scope (operator wording verbatim):**
+
+> Subordinate to Brief §M2.1; sibling to H7. Retroactively binding only on
+> entries currently relied on by M2.3 calibration; entries not yet relied
+> on may remain in their current verification state until they enter the
+> dependency chain.
+
+**Retroactive-binding scope at install:**
+
+The entries currently relied on by M2.3 calibration (per
+`literature/_m2.3_calibration_anchor.md` §5) are:
+
+- `lit-001` (Papanokechi 2026 signature paper) — verified, `paper_read_verified`. **H8-compliant.**
+- `lit-002` (BBC 1997) — verified, `paper_read_verified` via PDF + pypdf extraction. **H8-compliant.**
+- `lit-003` (OEIS A002210) — verified, `oeis_or_tertiary_aggregator_verified` cross-checked against `mpmath.khinchin` at 500 dps. **H8-compliant** (OEIS is the canonical authoritative database for the K_0 numerical-value claim, not a citation aggregator about a paper's content).
+
+All other M2.1 literature entries (lit-004 through lit-017, lit-019,
+lit-020) are NOT currently in the dependency chain for M2.3. Per the
+operator's retroactive-binding clause, those entries may remain in their
+current verification state. If during M3.1 harness design or M6 manuscript
+drafting any of those entries enters the dependency chain, an H8
+paper-read must be performed at that point.
+
+**Watch-list (`literature/_fidelity_findings.md` §3) maintenance:**
+
+The watch-list of entries flagged as "could enter the dependency chain"
+is maintained going forward. Any new H8 paper-read triggered by chain
+entry must update both `lit-NNN-<slug>.md` and `_index.md` status fields
+and append a brief entry to `_fidelity_findings.md` §1 (new catch) or
+§3 (watch-list status update).
+
+**Defers to:** Brief §M2.1 (literature ledger schema and content requirements
+— H8 specifies a *verification mode* for the `independent_verifier_result`
+field, does not override the Brief's schema). Sibling to H7 (capability
+claims) — different problem domain, different mechanism, both binding.
+
+**Sibling to H7, NOT generalization.** H7 covers *functional verification
+of capability claims* (does the binary / library actually work?); H8
+covers *paper-read verification of literature claims* (does the cited
+paper actually say what we are claiming it says?). Different problem
+domains, different mechanisms, both binding. Both arose from the same
+class of generic failure (confident wrong answer from a surface-level
+check) but the mitigations are dissimilar — H7 requires running code, H8
+requires reading prose. Listed sequentially because both were added in
+the M1→M2 transition cycle. **Neither generalizes the other.**
+
+**Conflict path:** if a Brief amendment specifies a different verification
+modality (e.g., a peer-review-style external referee verification on each
+load-bearing literature claim), H8 yields to that modality. Log conflict
+in `mutation_log/`.
+
+**Forward-binding on M2.2, M3.x, M5, M6:** every new literature claim
+introduced after this H8 install date (2026-05-15 ~21:00 JST) that touches
+the M2.3 / M3.1 / M6 dependency triad must produce an H8-compliant
+verification record (paper-read OR honest blockage flag) before being
+committed into the dependency chain.
+
+---
+
 ## Conflict log
 
 | Date | Heuristic | Conflicting authority | Resolution | mutation_log ref |
@@ -332,4 +446,9 @@ that the independence requirement is actually being applied to the full
 operator namespace, not just to the active-queue subset. H7 directly bears
 on the **capability-gap honesty** axis — it converts name-resolution probes
 into functional-verification probes, eliminating an entire class of silent
-false positives (e.g., PowerShell-alias shadows on binaries).
+false positives (e.g., PowerShell-alias shadows on binaries). H8 directly
+bears on a fourth, M2-emergent axis: **literature-fidelity honesty.** It
+converts AI-aggregator summary probes into paper-read probes, eliminating
+the dual-direction false-positive failure mode (confident false existence
++ confident false non-existence within the same query topic) that surfaced
+as Catch #1 in `literature/_fidelity_findings.md`.
