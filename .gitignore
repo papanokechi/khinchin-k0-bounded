@@ -33,3 +33,7 @@ tmp/
 # --- Outputs not meant for the repo ---
 # (any large data dump / intermediate computation that should land on Zenodo, not git)
 artifacts/large/
+
+# --- harness/ paper-read cache (provenance via SHA-256, not binary in repo) ---
+harness/_pslq_candidates/*.pdf
+harness/_pslq_candidates/*.txt

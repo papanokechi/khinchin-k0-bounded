@@ -68,7 +68,7 @@ Per the operator's M2-risk-class framing, the following currently-unverified led
 |---|---|---|---|
 | lit-006 (Shanks-Wrench 1959) | `unverified_paywall_blocked` | computational-record-cited-but-not-independently-reproduced | First published K_0 high-precision computation; cited transitively via BBC 1997. If M3.1 ever wants to claim 'precision record stands at X' we need to read Shanks-Wrench to know X. |
 | lit-007 (Khinchin 1935) | `unverified_abstract_only` | foundational-but-not-read | Original statement of Khinchin's theorem. EuDML may host free PDF; not retrieved this session. |
-| lit-009 (Ferguson-Bailey-Arno 1999) | `unverified_abstract_only` | algorithm-correctness-claim | PSLQ definitive paper. M3.1 harness uses mpmath.pslq which encapsulates the algorithm; if we ever cite "PSLQ bounds at height H imply…" we need to verify against this paper directly. |
+| ~~lit-009 (Ferguson-Bailey-Arno 1999)~~ → **PROMOTED `verified` 2026-05-15 ~21:30 JST** | ~~`unverified_abstract_only`~~ → `verified` / `paper_read_verified` | ~~algorithm-correctness-claim~~ → **TRIGGER FIRED → Catch #2 surfaced** | M3.1 harness's confidence relation cited from this paper → entered M2.3 dep chain at U-MISSION-K → H8 retroactive-binding triggered → paper-read executed. Result: heuristic-vs-theorem distinction surfaced as Catch #2 (§6 below). |
 | lit-010 (Bailey-Plouffe 1997) | `fidelity_watch` | absence-claim-from-aggregator | The claim that K_0 is "not in this paper's null-result tables" was the partial source of search-query-1's false negative in Catch #1. Paper-read needed to confirm or refute. |
 | lit-013, lit-014 (Vallée surveys) | `theoretical_citation_only` | theoretical-context-not-method | Lower risk because they're not method-load-bearing per the seeds/26 DO-NOT-REENTER clause; but if the operator ever wants to cite a specific statement about GKW spectrum, paper-read needed. |
 
@@ -90,3 +90,47 @@ Per the operator's M2-risk-class framing, the following currently-unverified led
 - **`lit-018-fidelity-no-prior-k0-pslq-refuted.md`** — Catch #1's AEAL-schema entry with full audit trail
 - **`_m2.3_calibration_anchor.md`** — consequence of Catch #1's resolution: M2.3 success predicate must respect BBC 1997 grandfathering
 - **`methodology/heuristics.md`** — would receive H8 if operator approves U-MISSION-J at M2.1 closure
+- **`lit-009-ferguson-bailey-arno-1999.md`** — primary source paper-read-verified at U-MISSION-K halt (Catch #2 resolution-pending)
+- **`harness/precision_budget.md`** — Catch #2's primary document; H8 paper-read of FBA 1999 + heuristic-vs-theorem finding surfaced
+- **`mutation_log/m2.2_to_m2.3_pslq_certificate_halt_20260515.md`** — Catch #2's halt-event log
+
+---
+
+## 6. Catch #2 (M2.3, 2026-05-15 ~21:30 JST) — "FBA 1999 states `H ≈ 10^{P/n}` as a theorem" (REFUTED — folklore-grade not theorem-grade)
+
+**Class:** algorithm-correctness-claim heuristic-vs-theorem distinction (operator-predicted M2.3 finding class)
+
+**Summary:** The previous lit-009 entry asserted that Ferguson-Bailey-Arno (1999), "Analysis of PSLQ", proves "at precision P, PSLQ certifies absence of integer relations with coefficient height ≲ 10^{P/dim}". Direct paper-read of the FBA 1999 preprint (Bailey archive `cpslq.pdf`, SHA-256 `3E330BC1...12890B5`, 26 pages, 218,997 bytes) revealed that no such theorem appears in the paper.
+
+What FBA 1999 actually proves (paper-read verbatim):
+
+- **Theorem 1** (p.10): `M_x ≥ 1 / max_i |h_{i,i}(k)|` — per-iteration rigorous lower-bound certificate on the smallest possible relation norm, parametrized by the running H-matrix diagonals.
+- **Theorem 3** (p.15): `|m| ≤ γ^{n-2} M_x` for `γ > 2/√3` (real case) — overshoot bound on PSLQ-found relations.
+- **Corollary 2** (p.14): PSLQ(τ) terminates in `< (n choose 2) · log_τ(γ^{n-1} M_x)` iterations — polynomial-time bound.
+
+The folklore `H ≈ 10^{P/n}` is an **empirical scaling** of `max_i |h_{i,i}|` against precision P at typical PSLQ convergence. It is consistent with FBA 1999's framework but is NOT a stated theorem. BBC 1997 (lit-002) calibrates this empirically with `c ≈ 2.06` confidence factor over the bare folklore: at n=51, P=7350 dps, BBC reported H=10^70 versus 10^{7350/51}≈10^144 from the bare folklore — i.e., the BBC-1997 community practice is to use a ~2× more conservative bound than the folklore heuristic.
+
+**Mission impact:**
+
+- lit-009 promoted `unverified_abstract_only` → `verified` / `paper_read_verified`. Status flipped in `claims.jsonl` at this commit.
+- lit-009 `statement` field rewritten to record the actual theorems (Theorem 1 + Theorem 3 + Corollary 2) and to explicitly flag the folklore-vs-theorem distinction.
+- `harness/precision_budget.md` §7 surfaces the halt-class finding to operator with two resolution options:
+  - **Option A**: accept the heuristic with explicit AEAL labeling (`verification_class: empirical_heuristic`). CLI default recommendation.
+  - **Option B**: require rigorous Theorem-1 certificate → declare new Capability Gap CG-2 (mpmath.pslq does not expose H-matrix diagonals).
+- M2.3 success-predicate text in `_m2.3_calibration_anchor.md` §7 (new section) is **NOT YET DRAFTED**; held pending operator H8 resolution.
+- Candidate new heuristic H9 (theorem-vs-heuristic claim classification) proposed in `harness/precision_budget.md` §9 for operator review at §7 resolution.
+
+**Counts:**
+
+- This is the **5th halt-class finding** for the unsolved-relay mission overall.
+- This is the **1st halt-class finding within M2** — matching the operator's M2.1-GREENLIGHT prediction: "M2.3 will probably have one finding (likely in the precision_budget.md derivation — PSLQ confidence relations are subtler than the textbook formula suggests)."
+
+**See:**
+
+- `harness/precision_budget.md` (full M2.3 derivation + halt-class finding + two operator-options)
+- `literature/lit-009-ferguson-bailey-arno-1999.md` (paper-read-verified annotation, post-revision)
+- `mutation_log/m2.2_to_m2.3_pslq_certificate_halt_20260515.md` (halt-event log)
+- Operator U-MISSION-K (2026-05-15 ~21:14 JST) directive specifying the non-collapsible four-step sequence
+
+**AEAL discipline note:** Per operator's U-MISSION-J ratification, **this finding does NOT consume the mutation budget**: lit-009's `statement`-field rewrite is a documentation event (the paper's content is unchanged; the field-map is being corrected). The H8 promotion is a verification-status change, not a hypothesis change. The mutation budget at M2 milestone-block remains at **0/1 consumed**.
+
