@@ -4,19 +4,25 @@
 **Locked at:** M2.1 entry (one-time scaffold per process-to-content rule).
 **Subordinate to:** Brief §M2.1, AEAL §0.1, `methodology/heuristics.md` H7 (functional verification on computational claims that the M3.1 harness will depend on).
 
-## 7-field AEAL §0.1 schema (applied to literature claims)
+## 7-field AEAL §0.1 schema (applied to literature + deposit claims)
 
 Each entry in `claims.jsonl` is a single JSON object with EXACTLY these seven fields:
 
 | Field | Type | Description |
 |---|---|---|
-| `id` | string | `lit-NNN-slug` (zero-padded 3-digit, kebab-case slug) |
+| `id` | string | Class-dispatched: `lit-NNN-slug` (literature-class) OR `deposit-CLASS-NNN-slug` with CLASS ∈ {`hal`, `zenodo`, `osf`, `preprint-server`, `institutional-repo`} (deposit-class). Zero-padded 3-digit, kebab-case slug. The id prefix is the validator's class dispatcher. |
 | `statement` | string | The verifiable assertion about prior work being recorded. Quoted text wins over paraphrase. |
-| `evidence_class` | string | One of: `primary_paper`, `secondary_paper`, `book`, `survey`, `tertiary_aggregator`, `oeis`, `numerical_record`, `literature_fidelity_catch`, `theoretical_obstruction_citation_only`, `primary_deposit_receipt` |
-| `precision_or_dependencies` | object | Concrete quantitative parameters (precision, degree D, height H, basis size, year, DOI). For non-computational claims, document key non-numerical parameters. |
-| `reproduce_command` | string | A concrete command or URL that lets a future reader retrieve the same artifact. For paywalled papers, the DOI URL + author-host mirror URL. For OEIS, the OEIS URL. For book references, the citation + library lookup string. |
-| `independent_verifier_result` | object | Structured. Required keys: `verified: bool`, `method: enum`, optional `paywall_blocker: string`, optional `notes: string`. |
-| `status` | string | One of: `verified`, `unverified_abstract_only`, `unverified_paywall_blocked`, `unverified_book_not_digitized`, `fidelity_watch`, `fidelity_caught_refuted`, `theoretical_citation_only`, `pending_verification`. |
+| `evidence_class` | string | Class-dispatched. Literature-class set: `primary_paper`, `secondary_paper`, `book`, `survey`, `tertiary_aggregator`, `oeis`, `numerical_record`, `literature_fidelity_catch`, `theoretical_obstruction_citation_only`. Deposit-class set: `primary_deposit_receipt`. |
+| `precision_or_dependencies` | object | Concrete quantitative parameters (precision, degree D, height H, basis size, year, DOI). For non-computational claims, document key non-numerical parameters. For deposit-class claims, includes repository identifiers + deposit metadata (e.g. `hal_id`, `zenodo_relation_type`, `pdf_sha256`). |
+| `reproduce_command` | string | A concrete command or URL that lets a future reader retrieve the same artifact. For paywalled papers, the DOI URL + author-host mirror URL. For OEIS, the OEIS URL. For book references, the citation + library lookup string. For deposit-class, the repository portal action + audit-trail URLs. |
+| `independent_verifier_result` | object | Structured. Required keys: `verified: bool` (literature-class) / `bool \| null` (deposit-class pre-audit), `method: enum` (class-dispatched: literature-class methods OR deposit-class methods), optional `paywall_blocker: string`, optional `notes: string`, optional `verification_class`/`audit_slot` (deposit-class convention). |
+| `status` | string | Class-agnostic flat enum. One of: `verified`, `unverified_abstract_only`, `unverified_paywall_blocked`, `unverified_book_not_digitized`, `fidelity_watch`, `fidelity_caught_refuted`, `theoretical_citation_only`, `pending_verification`. The `pending_verification` value is the natural pre-audit state for deposit-class claims (paired with `verified: null`). |
+
+> **Class-dispatch architecture (slot-217 cycle 2026-05-16):** the validator dispatches
+> on the `id` prefix to a class-specific rule set — see the "Authorized exceptions
+> ledger" entry below for the full architecture write-up + the in-scope/out-of-scope
+> boundary. The seven-field top-level schema is class-agnostic; only the per-field
+> bindings diverge between literature-class and deposit-class.
 
 ### `independent_verifier_result.method` enum
 
@@ -102,32 +108,55 @@ documented inline below. Adding to this ledger requires the same Brief §7 anti-
 review as any other meta-work — the ledger does not weaken the default rule, it makes
 exceptions auditable.
 
-- **2026-05-16, slot-217 audit cycle, SIARC HAL/Episciences pipeline bootstrap.**
-  Added `primary_deposit_receipt` to the `evidence_class` enum (field-additive only;
-  no structural change to the 7-field schema). Rationale: HAL/Episciences deposit
-  records are a new recurring claim class (first-of-class test: future HAL deposits,
-  preprint-server deposits, institutional-repository deposits, and any other artifact
-  issuing a primary deposit receipt will use this same enum value). Documented in the
-  HAL test deposit runbook §3 (`control-center/cheat-sheets/HAL_LOG_LADDER_TEST_DEPOSIT_RUNBOOK_v1.md`).
-  Operator confirmation in slot-217 audit-input package, 2026-05-16.
+- **2026-05-16, slot-217 audit cycle, SIARC HAL/Episciences pipeline bootstrap — validator class-dispatch architecture.**
+  The validator was originally written for a single (implicit) claim class — literature
+  claims with `lit-NNN-slug` ids, the literature-class evidence_class enum, the
+  literature-class method enum, and a boolean `verified` field. The SIARC HAL/Episciences
+  pipeline introduces a second claim class — deposit claims with `deposit-CLASS-NNN-slug`
+  ids (CLASS ∈ {hal, zenodo, osf, preprint-server, institutional-repo}), a single-element
+  deposit-class evidence_class set (`primary_deposit_receipt`), a single-element
+  deposit-class method set (`deposit_receipt_verified`), and a `verified` field that
+  takes value `null` while the audit is pre-moderation (paired with `status:
+  pending_verification`) before transitioning to a bool at SIARC slot-218 audit close.
+  Rather than encode the divergence as enumerated sibling exceptions (one entry per
+  enum value or per strict-check fixed), the change is framed as a single architectural
+  shift: the validator dispatches on the claim id prefix to a class-specific rule set.
 
-- **2026-05-16, slot-217 cycle continuation, SIARC HAL/Episciences pipeline bootstrap (cont.).**
-  Added `pending_verification` to the `status` enum and `deposit_receipt_verified` to
-  the `independent_verifier_result.method` enum (both field-additive only; no structural
-  change to the 7-field schema). Rationale: the `primary_deposit_receipt` evidence class
-  introduced in the prior sibling entry requires a pre-audit status (claim recorded at
-  deposit time, audit closes at SIARC slot-218 post-moderation) and a corresponding
-  verification method (the deposit receipt is the canonical primary artifact; modality
-  detail — portal screenshot, email confirmation PDF, API response payload — is
-  `notes`-level, not enum-level). All three additions (this entry's two + the prior
-  entry's one) are "first instance of a class" per the enum-extension test: the SIARC
-  HAL/Episciences pipeline is the first deposit-class claim infrastructure; future
-  deposits (Zenodo, OSF, preprint servers, institutional repositories) will share these
-  enum values. Method name `deposit_receipt_verified` chosen over
-  `deposit_receipt_and_portal_screenshot` per operator's "reconsider method name
-  generality before commit" directive (2026-05-16 ~21:20 JST) — the canonical method
-  describes the evidence-class (deposit receipt), not the modality mix (which varies by
-  issuing repository). Operator confirmation in 2026-05-16 ~21:20 JST decision turn.
+  **In-scope of this entry (applied across commits 9d4c902, 2ca55ad, and the
+  class-dispatch refactor commit landing the same day):**
+
+  | Surface | Literature-class binding | Deposit-class binding |
+  |---|---|---|
+  | id prefix | `lit-` (default) | regex `^deposit-(hal|zenodo|osf|preprint-server|institutional-repo)-\d{3}-` |
+  | evidence_class set | `primary_paper`, `secondary_paper`, `book`, `survey`, `tertiary_aggregator`, `oeis`, `numerical_record`, `literature_fidelity_catch`, `theoretical_obstruction_citation_only` | `primary_deposit_receipt` |
+  | method set | `paper_read_verified`, `abstract_only_unverified`, `paywall_blocked`, `book_not_digitized`, `oeis_or_tertiary_aggregator_verified`, `computed_reproduction`, `search_aggregated_unverified` | `deposit_receipt_verified` |
+  | `verified` field rule | must be bool | bool, OR `null` when `status: pending_verification` (pre-audit state) |
+  | status enum | flat enum, class-agnostic | flat enum, class-agnostic; `pending_verification` is the natural pre-audit state for deposit-class |
+
+  Modality detail for deposit-class verification (portal screenshot, email confirmation
+  PDF, API response payload, moderation notification) lives in
+  `independent_verifier_result.notes`, not in the method enum value — the method names
+  the canonical artifact class (deposit receipt), modality describes the corroborating
+  evidence shape, which varies by issuing repository. Method name `deposit_receipt_verified`
+  chosen over `deposit_receipt_and_portal_screenshot` per operator directive 2026-05-16
+  ~21:20 JST ("reconsider method name generality before commit").
+
+  **Out-of-scope (operator-bounded, this entry):** literature-class shape changes; the
+  seven-field top-level schema; introduction of a third claim class beyond
+  literature + deposit. Any of these would require fresh Brief §7 anti-thrashing review.
+
+  **Forward-compatibility:** new deposit repositories (e.g., extending the regex with
+  `arxiv` or `figshare`) extend the prefix pattern; new deposit-class statuses or
+  methods extend `DEPOSIT_EVIDENCE_CLASSES` / `DEPOSIT_METHODS` partitions in
+  `validate_claims_jsonl.py` without requiring fresh architecture review (those are
+  enum-additive within the existing class-dispatch frame). New claim classes (beyond
+  literature + deposit) DO require fresh Brief §7 review.
+
+  **Provenance:** slot-217 audit-input package (initial evidence_class extension,
+  2026-05-16 ~20:59 JST → commit 9d4c902); slot-217 cycle continuation (status + method
+  enum + method-name-generality directive, 2026-05-16 ~21:20 JST → commit 2ca55ad);
+  slot-217 cycle continuation round 2 (class-dispatch reframe + id-prefix + verified-null
+  + class-conditional enum partitions, 2026-05-16 ~21:35 JST → this commit).
 
 ## File layout
 
