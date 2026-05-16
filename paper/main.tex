@@ -243,7 +243,7 @@ The contribution of this manuscript is twofold and intentionally narrow:
 
 We further report, as a small methodological contribution, an
 operational-bound capping observation: the BBC empirical-scaling formula
-$H \approx c \cdot 10^{P/(c\,n)}$
+$H \approx 10^{P/(c\,n)}$
 extrapolates outside the PSLQ-with-\textsf{maxcoeff} search range at small
 $n$, so the operational empirical bound must be reported as
 $\min(\text{formula}, 10^{\log_{10}\textsf{maxcoeff}})$
@@ -318,13 +318,13 @@ verification-class taxonomy (Section~\ref{sec:h9}):
 At BBC-1997 confidence calibration, no integer relation among the basis
 elements has all coefficients of size $\le \Hemp$, where
 \begin{equation}\label{eq:Hemp}
-  \Hemp \;=\; c \cdot 10^{P/(c\,n)},\qquad c \approx 2.06,\;P=2160,\;n=15
+  \Hemp \;=\; 10^{P/(c\,n)},\qquad c \approx 2.06,\;P=2160,\;n=15
   \;\Rightarrow\; \Hemp \;\approx\; 7.997\times 10^{69}.
 \end{equation}
 The operational tier is the capped value
 $\Hempop = \min(\Hemp, 10^{\log_{10}\textsf{maxcoeff}}) = \min(\Hemp, 10^{70})$;
 both are reported (Section~\ref{sec:results-bounds}).
-The verification class \fsp{} reflects that the bound $H \approx c\cdot 10^{P/(c\,n)}$
+The verification class \fsp{} reflects that the bound $H \approx 10^{P/(c\,n)}$
 is community-validated empirical practice (the BBC c-calibration over the
 bare Bailey--Plouffe ``general rule'' of \cite[\S 2]{bailey1998}, see Section
 \ref{sec:h9}), not a theorem of the underlying algorithm.
@@ -431,8 +431,9 @@ is known to somewhat greater than $m\cdot n$ digit precision.''}
 \end{quote}
 This is the canonical statement of the
 $H \approx 10^{P/n}$
-empirical-scaling folklore; BBC~1997 calibrates the leading constant
-$c \approx 2.06$ to absorb its ``somewhat greater than'' hedge.
+empirical-scaling folklore; BBC~1997 refines this to $H \approx 10^{P/(c\,n)}$
+with a calibrated confidence factor $c \approx 2.06$ in the exponent denominator,
+absorbing the ``somewhat greater than'' hedge.
 The class \fsp{} formalizes this primary-source distinction: a community-validated
 empirical scaling stated as a rule of practice, not as a theorem of PSLQ.
 
@@ -516,7 +517,7 @@ Section~\ref{sec:repro-cascade}.
 \subsection{Operational-bound capping clause}\label{sec:capping}
 
 The BBC empirical-scaling formula
-$\Hempfo = c\cdot 10^{P/(c\,n)}$
+$\Hempfo = 10^{P/(c\,n)}$
 extrapolates outside the algorithm's \textsf{maxcoeff} search range at
 small $n$ for our parameters:
 at $P=2160$ dps, $c=2.06$, the formula evaluates to
@@ -691,8 +692,8 @@ $8640$  & $29\,363$ & (identical) & $1.0361\times 10^{72}$ \\
 
 The two-tier bounds for the primary cascade are
 \begin{align*}
-\Hempfo &= c\cdot 10^{P/(c\,n)}
-       \;\approx\; 2.06 \cdot 10^{2160 / (2.06\cdot 15)}
+\Hempfo &= 10^{P/(c\,n)}
+       \;\approx\; 10^{2160 / (2.06\cdot 15)}
        \;\approx\; 7.997\times 10^{69}
        & \text{(class \fsp{})}, \\
 \Hempop &= \min(\Hempfo, 10^{70})
@@ -828,9 +829,9 @@ the present scope.
 Across the $64$ empirical sub-bases of
 \texttt{m32b\_empirical\_sweep.jsonl},
 the canonical operational empirical bound
-$\Hempop = \min(c\cdot 10^{P/(c\,n)},\; 10^{\log_{10}\textsf{maxcoeff}})$
+$\Hempop = \min(10^{P/(c\,n)},\; 10^{\log_{10}\textsf{maxcoeff}})$
 differs from the uncapped BBC scaling formula
-$\Hempfo = c\cdot 10^{P/(c\,n)}$
+$\Hempfo = 10^{P/(c\,n)}$
 at every $n \le 14$ sub-basis: at $P=2160$ dps, $c \approx 2.06$,
 $\textsf{maxcoeff}=10^{70}$, the formula yields
 $\approx 10^{70}$
@@ -867,14 +868,14 @@ Every candidate failed at the same root: $\K$'s transcendence status is
 itself the major open question in this corner of the literature, and any
 structural certificate strong enough to rule out integer relations in
 $\BDC$ at relation Euclidean norm
-$\le 1.036\times 10^{72}$ would imply progress on that
+$\le 1.0361\times 10^{72}$ would imply progress on that
 question.
 We classify this gap as fundamental: no known structural result is strong
 enough --- not merely a machinery-availability problem --- and the null
 result therefore stands on numerical and rigorous-bound evidence per the
 two-tier predicate
 ($\Hempop \approx 7.997\times 10^{69}$ \fsp{};
-$\Hrig = 1.036\times 10^{72}$ \pc{} on the Euclidean norm).
+$\Hrig = 1.0361\times 10^{72}$ \pc{} on the Euclidean norm).
 
 \paragraph{Sub-classification of the failure modes.}
 The seven candidates fail for two qualitatively different reasons.
