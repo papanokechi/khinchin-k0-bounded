@@ -19,7 +19,7 @@ Mutation budget at M2 milestone-block remains 0/1 consumed.
 
 ## §1 — Bailey 1998 H8 paper-read (rigorous-tier proof-of-bound)
 
-**Status:** `done` — H8 fire EXECUTED 2026-05-16 ~15:55 JST. Verdict: D2 + D3 CLEARED; D5 new finding (strengthening). No §Methods text adjustment required. Output: `literature/lit-010-bailey-plouffe-1997-recognizing.md` upgraded `fidelity_watch → verified`. Audit trail: `literature/_fidelity_findings.md` §8 + `mutation_log/m6_step1_bailey_1998_h8_fire_20260516.md` (12th entry). Commit hash: to be filled at commit time.
+**Status:** `done` — H8 fire EXECUTED 2026-05-16 ~15:55 JST. Verdict: D2 + D3 CLEARED; D5 new finding (strengthening). No §Methods text adjustment required. Output: `literature/lit-010-bailey-plouffe-1997-recognizing.md` upgraded `fidelity_watch → verified`. Audit trail: `literature/_fidelity_findings.md` §8 + `mutation_log/m6_step1_bailey_1998_h8_fire_20260516.md` (12th entry). Commit hash: `b08162a`.
 
 **Trigger condition (MUST execute when ALL true):**
 - M6 manuscript will cite the rigorous tier (`verification_class = proven_corollary`, H_rigorous = 1.036 × 10⁷²) as proof-of-bound for the EF1-complement null result.
