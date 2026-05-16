@@ -64,6 +64,21 @@ Plus a PARI/GP `lindep` independent corroboration leg per candidate (65 second-l
 
 The matching prose in `paper/main.tex` §B.3 (line 1054) states the ratio as approximately 5/65; this document is the source-of-truth for that approximation.
 
+### Methodology-convention note
+
+The Agent Health Score methodology document (`handoff/agent_health_score_methodology.md` §Axis 1) defines the denominator under an *evidence-unit convention*: independent-leg corroboration counts as **two** units per sub-basis (the `mpmath`-leg record and the PARI/GP `lindep`-leg record on the same sub-basis are each one denominator unit; methodology rule at §Axis 1 "Independent-leg corroboration"). Applying that convention strictly to this mission's data:
+
+| Convention | Denominator computation | Ratio |
+|---|---|---|
+| **Sub-basis-level convention** (headline; cited in `paper/main.tex` §B.3 line 1054) | 65 sub-bases × 1 unit = 65 | **5 / 65 ≈ 0.077** |
+| **Evidence-unit convention** (methodology-formalized; for strict audit replicability) | 65 sub-bases × 2 legs = 130 | 5 / 130 ≈ 0.038 |
+
+Both values report the same underlying mission state — they differ only in the *granularity at which independent legs are counted*, and both point in the same direction (conservative; lower ratio = more favorable). The headline value `5 / 65` is the manuscript-facing number and is the figure quoted by §Appendix B; the evidence-unit value `5 / 130` is the audit-facing number and is the figure a methodology-strict auditor would compute. The convention choice is a *reporting granularity* decision, not a methodology change — see the methodology document's Axis 1 "Reporting convention" subsection for the formal disposition.
+
+At neither granularity does the ratio approach the high-ratio over-generalization failure mode (where claims ≈ records). The qualitative verdict (`conservative — low ratio = good`) is invariant under the convention choice.
+
+The M3.2a primary cascade JSONL is treated as part of the same sub-basis as the `primary_full` row of m32b (both refer to the same `B_D(C)` at D=6, n=15) for both convention counts; the per-precision-tier multiplier in the methodology document's "Cascade records" rule (which would otherwise add 2 more units for the (P, 2P, 4P) triple) is not invoked here because the cascade is bit-for-bit redundant across tiers by H10 dry-run design — the rationale is recorded here per the methodology's "author judgment" cascade-rule clause.
+
 ---
 
 ## Axis 2 — Reproduce-command coverage
@@ -141,6 +156,27 @@ For completeness — every claimed capability was also functionally verified per
 | **Capability-gap-documentation rate** | **2 / 2 = 100 %** |
 
 **Interpretation.** No gap encountered during the mission was concealed. The M4 gap is the load-bearing one: it could have been papered over with an additional ~10⁴-candidate empirical sweep at a slightly higher precision, which would have inflated the apparent rigor of the manuscript without changing the load-bearing claim's evidence class. The FUNDAMENTAL classification, with explicit narration of why each of 7 candidate structural arguments is insufficient, is the honest-gap-documentation outcome.
+
+### Five-question honest-self-assessment record
+
+Per the methodology document `handoff/agent_health_score_methodology.md` §Axis 3 "Suspected-gap honest self-assessment procedure" and §Axis 3 "Reporting requirements" (every Axis 3 report MUST include the five-question record), the following retrospective applies to the full M1–M6 mission window (snapshot: `papanokechi/khinchin-k0-bounded@e0defff` + `gold/M1..M5` tags):
+
+| # | Question (paraphrased) | Answer | Rationale (one sentence with source-of-truth) |
+|---|---|---|---|
+| Q1 | Was any capability silently treated as verified, with no `*_gap.md` documenting the interim unverified state? | **NO** | Every `capability/*.available.md` file is the post-H7 functional-verification artifact; the one borderline case (`pari_gp.available.md` after the M1.3 false-positive install state) is explicitly documented in `mutation_log/m1.3_pari_gp_install_20260515.md` as the install-and-verify trajectory that motivated H7's installation — i.e., the interim state was surfaced as the heuristic's trigger event, not concealed. |
+| Q2 | Was any precision / scaling / `maxcoeff` limit silently worked around, with no `*_gap.md`? | **NO** | The single precision-budget event in the M1–M6 window (the `mpirical_height` float overflow at n ≤ 3 + `H_empirical` ↔ `maxcoeff` semantic question, surfaced at M3.2b first execution) is documented in `mutation_log/m3.2b_u_mission_n_resolution_20260516.md` and resolved via U-MISSION-N two-field reporting (`H_empfo` formula + `H_empop` capped) with H10 (full-regime dry-run mandatory before canonical execution) installed as the heuristic response. Catch #3 in `literature/_fidelity_findings.md` carries the audit trail. |
+| Q3 | Did the empirical sweep silently grow past the stated stopping criterion, triggered by an unfavorable boundary case? | **NO** | The 65-sub-basis sweep is the *declared* M2.3 sweep, not an unsanctioned extension. The expansion from primary (1 sub-basis) to 65 was a *design* choice anchored in `_m2.3_calibration_anchor.md` §7.3's Excluded-Families taxonomy; no boundary case prompted a silent scope-extend. |
+| Q4 | Did any open subgoal get silently folded into §Results / §Discussion as resolved (precision-class downgrade between source and manuscript not flagged)? | **NO** | Walked all 5 load-bearing claims C1–C5. C1 (M3.2 null at primary, `tested`), C2 (`H_empop`, `tested`), C4 (bit-for-bit reproducibility, `tested`) are reported at their source precision class. C3 (`H_rig`) is `proven_corollary` and derives from FBA 1999 T1+Cor2 paper-read entry `lit-009` — class match. C5 (M4 capability gap is FUNDAMENTAL) is `documented_capability_gap` and is presented *as* a gap, not folded as resolved — precisely the AEAL-discipline outcome. No claim's manuscript-class exceeds its evidence-chain class. |
+| Q5 | Did the mission silently re-enter a scope-ceded area? | **NO** | The single DO-NOT-REENTER seed (seed-26 Gauss–Kuzmin) is referenced 11 times across `mutation_log/`, `capability/symbolic_closure.gap.md`, `paper/main.tex`, and `_m2.3_calibration_anchor.md`. Every reference *explicitly* cites `seeds/26 DO-NOT-REENTER` by name and acknowledges the parking — including the M4 7-candidate survey at `m4_symbolic_closure_gap_20260516.md` line 40 ("CF-theoretic ... off-limits per `seeds/26 DO-NOT-REENTER`") and `paper/main.tex` §4.3 (lines 871–887: "The seventh (non-GKW CF-theoretic) is internally scope-ceded under a..."). The scope-cession was surfaced, not breached. |
+
+| Quantity | Value |
+|---|---|
+| Documented capability gaps (from numerator) | 2 |
+| Suspected-but-undocumented gaps (sum over Q1–Q5 `yes` answers) | 0 |
+| Suspected-but-undocumented gaps (from partial-document 0.5-unit penalty rule) | 0 (both `*.gap.md` files contain the 4 required sections per methodology §Axis 3 "Numerator") |
+| **Capability-gap-documentation rate, methodology-formalized** | **2 / (2 + 0) = 2 / 2 = 100 %** |
+
+**Cross-check verdict.** The formalized five-question assessment yields the same 2/2 = 100% as the prior Axis 3 number. The current Axis 3 value stands with the additional rigor of an explicit suspected-gap audit on the M1–M6 retrospective; no §Appendix B prose change is required. The audit also confirms the *type* of the 100% score: it is a `documented = encountered` rate, not a `low-gap-count` aesthetic — i.e., 2/2 means two gaps were encountered AND two were documented, NOT that the mission encountered few gaps.
 
 ---
 

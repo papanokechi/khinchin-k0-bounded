@@ -55,6 +55,9 @@ The concrete-data view is `handoff/agent_health_score.md`. The four axes per Bri
 >   - *Journal of Number Theory* — already explored at Item 28; operator may want to defer to allow a citation gap.
 >   - *Integers: Electronic Journal of Combinatorial Number Theory* — open-access, lower citation barrier, fast turnaround.
 >   - Zenodo deposit + arXiv preprint (operator pseudonymity stance: see §5 below) — venue-independent, often the right first step before formal journal submission.
+>
+> - Future deposit spinoffs (M7+; out of M6 scope):
+>   - **AEAL Agent Health Score methodology + validator script + cross-mission deployment notes.** The four-axis Agent Health Score methodology (`handoff/agent_health_score_methodology.md`, commit `8261d6e`) defines numerator / denominator semantics, the five-question Axis 3 honest-self-assessment, the bidirectional-verification property, and the auxiliary halt-and-flag axis. A natural second deposit from the present mission's methodology output would package: (i) the methodology document; (ii) a `_agent_health_score_validator.py` implementation (Layer-2 substrate; specification stub already in the methodology document's §Validator alignment); (iii) cross-mission deployment notes drawn from re-applying the four axes to a future SIARC mission for empirical validation that the methodology generalizes. Positioning: methodological contribution distinct from the K₀-bounded result; M7+ scope; not in the M6 Zenodo deposit. Surfaced here as a placeholder-pool item so the operator can decide at venue-selection time whether to flag it as a tracked next-paper candidate or to defer.
 
 ---
 

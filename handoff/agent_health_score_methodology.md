@@ -99,11 +99,29 @@ for f in $(git ls-tree -r <tag> -- harness/sweep_output/ | awk '{print $4}'); do
 done | awk '{s+=$1} END {print s}'
 ```
 
+### Reporting convention
+
+The denominator rules above (sweep-record counting, independent-leg multiplier, cascade-record per-precision-tier rule) define the **evidence-unit convention** — the most fine-grained count, used as the audit-replicability default.
+
+Two reporting conventions are accepted in published artifacts:
+
+| Convention | Denominator counts | Purpose |
+|---|---|---|
+| **Sub-basis-level convention** | one unit per distinct sub-basis tested, regardless of how many independent legs verified it | Manuscript-facing (§Appendix B); answers "how many *targets* did the mission consolidate against?" |
+| **Evidence-unit convention** (default; methodology-formalized) | one unit per evidence-bearing JSONL row, with the independent-leg multiplier applied | Audit-facing; answers "how many *evidence units* did the mission collect?" Re-derivable from `harness/sweep_output/` directly. |
+
+When a document reports Axis 1 under the sub-basis-level convention, it MUST explicitly say so (e.g., "claim-to-sweep ratio at the sub-basis level: 5 / 65") AND it MUST cross-reference this section. Conversely, when a document reports under the evidence-unit convention, the explicit label "evidence-unit-level" is required.
+
+Both conventions are valid; they answer different questions, and they typically point in the same direction (a low ratio at one granularity implies a low ratio at the other). The methodology-formalized default for new missions is the evidence-unit convention; the sub-basis-level convention is preserved for legacy reporting compatibility with §Appendix B prose written before this methodology was canonicalized.
+
+A report that quotes a single ratio without convention label is *underspecified* and an auditor should request clarification before assigning a verdict to the axis.
+
 ### Reporting requirements
 
 The §Appendix B paragraph quoting Axis 1 must:
 
 - State the numerator and denominator as integers (not as a decimal ratio alone).
+- State which reporting convention (sub-basis-level or evidence-unit-level) the figure uses, per the "Reporting convention" subsection above.
 - Cite `harness/sweep_output/` JSONL filenames and their record counts.
 - Cite `paper/preflight_compliance.md` for the manuscript-level claim list.
 - Acknowledge the *consolidation interpretation* explicitly — i.e., that the low ratio is the desirable direction, not a sign that the manuscript is light on results.
