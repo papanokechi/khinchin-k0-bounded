@@ -1,0 +1,135 @@
+[sweep] mode=m31-extended-dry-run  output=harness\sweep_output\m31_extended_dryrun_20260516_113214.jsonl
+[sweep] dry_run=True  canonical=False
+[sweep] n_candidates=65  precisions=(540, 1080, 2160)
+[sweep] maxsteps_default=(5000, 3000, 2000)  maxcoeff_exp=40
+[sweep] 1/65  family=primary_full  n=15
+[sweep]     verdict=cascade_stable_null  class=field_standard_practice  H_emp_op=2.99e+17  H_rig=6.24e+04  elapsed=43.07s
+[sweep] 2/65  family=full_complement  n=8
+[sweep]     verdict=cascade_stable_null  class=field_standard_practice  H_emp_op=5.85e+32  H_rig=1.16e+21  elapsed=6.01s
+[sweep] 3/65  family=complement_plus_K0_0  n=9
+[sweep]     verdict=cascade_stable_null  class=field_standard_practice  H_emp_op=1.34e+29  H_rig=5.47e+15  elapsed=8.75s
+[sweep] 4/65  family=complement_plus_K0_1  n=9
+[sweep]     verdict=cascade_stable_null  class=field_standard_practice  H_emp_op=1.34e+29  H_rig=3.12e+16  elapsed=8.15s
+[sweep] 5/65  family=complement_plus_K0_2  n=9
+[sweep]     verdict=cascade_stable_null  class=field_standard_practice  H_emp_op=1.34e+29  H_rig=1.43e+16  elapsed=9.03s
+[sweep] 6/65  family=complement_plus_K0_3  n=9
+[sweep]     verdict=cascade_stable_null  class=field_standard_practice  H_emp_op=1.34e+29  H_rig=3.50e+15  elapsed=7.87s
+[sweep] 7/65  family=complement_plus_K0_4  n=9
+[sweep]     verdict=cascade_stable_null  class=field_standard_practice  H_emp_op=1.34e+29  H_rig=1.26e+16  elapsed=7.91s
+[sweep] 8/65  family=complement_plus_K0_5  n=9
+[sweep]     verdict=cascade_stable_null  class=field_standard_practice  H_emp_op=1.34e+29  H_rig=6.18e+15  elapsed=8.01s
+[sweep] 9/65  family=complement_plus_K0_6  n=9
+[sweep]     verdict=cascade_stable_null  class=field_standard_practice  H_emp_op=1.34e+29  H_rig=9.06e+16  elapsed=7.90s
+[sweep] 10/65  family=pair_log_1  n=2
+[sweep]     verdict=cascade_stable_null  class=field_standard_practice  H_emp_op=1.00e+40  H_rig=2.51e+42  elapsed=0.07s
+[sweep] 11/65  family=pair_log_K_0  n=2
+[sweep]     verdict=cascade_stable_null  class=field_standard_practice  H_emp_op=1.00e+40  H_rig=3.26e+42  elapsed=0.07s
+[sweep] 12/65  family=pair_log_K_0^2  n=2
+[sweep]     verdict=cascade_stable_null  class=field_standard_practice  H_emp_op=1.00e+40  H_rig=6.89e+42  elapsed=0.07s
+[sweep] 13/65  family=pair_log_K_0^3  n=2
+[sweep]     verdict=cascade_stable_null  class=field_standard_practice  H_emp_op=1.00e+40  H_rig=3.76e+42  elapsed=0.09s
+[sweep] 14/65  family=pair_log_K_0^4  n=2
+[sweep]     verdict=cascade_stable_null  class=field_standard_practice  H_emp_op=1.00e+40  H_rig=1.01e+42  elapsed=0.08s
+[sweep] 15/65  family=pair_log_K_0^5  n=2
+[sweep]     verdict=cascade_stable_null  class=field_standard_practice  H_emp_op=1.00e+40  H_rig=1.49e+42  elapsed=0.09s
+[sweep] 16/65  family=pair_log_K_0^6  n=2
+[sweep]     verdict=cascade_stable_null  class=field_standard_practice  H_emp_op=1.00e+40  H_rig=3.35e+42  elapsed=0.07s
+[sweep] 17/65  family=pair_log_K_0*pi  n=2
+[sweep]     verdict=cascade_stable_null  class=field_standard_practice  H_emp_op=1.00e+40  H_rig=1.43e+42  elapsed=0.07s
+[sweep] 18/65  family=pair_log_K_0*e  n=2
+[sweep]     verdict=cascade_stable_null  class=field_standard_practice  H_emp_op=1.00e+40  H_rig=2.43e+42  elapsed=0.07s
+[sweep] 19/65  family=pair_log_K_0*ln2  n=2
+[sweep]     verdict=cascade_stable_null  class=field_standard_practice  H_emp_op=1.00e+40  H_rig=2.78e+42  elapsed=0.11s
+[sweep] 20/65  family=pair_log_K_0*gamma  n=2
+[sweep]     verdict=cascade_stable_null  class=field_standard_practice  H_emp_op=1.00e+40  H_rig=2.53e+42  elapsed=0.07s
+[sweep] 21/65  family=pair_log_K_0*zeta(2)  n=2
+[sweep]     verdict=cascade_stable_null  class=field_standard_practice  H_emp_op=1.00e+40  H_rig=1.50e+42  elapsed=0.07s
+[sweep] 22/65  family=pair_log_K_0*zeta(3)  n=2
+[sweep]     verdict=cascade_stable_null  class=field_standard_practice  H_emp_op=1.00e+40  H_rig=1.45e+42  elapsed=0.08s
+[sweep] 23/65  family=pair_log_K_0*G  n=2
+[sweep]     verdict=cascade_stable_null  class=field_standard_practice  H_emp_op=1.00e+40  H_rig=3.50e+42  elapsed=0.08s
+[sweep] 24/65  family=pair_bilinear_K_0*pi_K_0*e  n=2
+[sweep]     verdict=cascade_stable_null  class=field_standard_practice  H_emp_op=1.00e+40  H_rig=1.96e+43  elapsed=0.07s
+[sweep] 25/65  family=pair_bilinear_K_0*pi_K_0*ln2  n=2
+[sweep]     verdict=cascade_stable_null  class=field_standard_practice  H_emp_op=1.00e+40  H_rig=1.16e+43  elapsed=0.08s
+[sweep] 26/65  family=pair_bilinear_K_0*pi_K_0*gamma  n=2
+[sweep]     verdict=cascade_stable_null  class=field_standard_practice  H_emp_op=1.00e+40  H_rig=9.42e+42  elapsed=0.08s
+[sweep] 27/65  family=pair_bilinear_K_0*pi_K_0*zeta(2)  n=2
+[sweep]     verdict=cascade_stable_null  class=field_standard_practice  H_emp_op=1.00e+40  H_rig=1.65e+42  elapsed=0.08s
+[sweep] 28/65  family=pair_bilinear_K_0*pi_K_0*zeta(3)  n=2
+[sweep]     verdict=cascade_stable_null  class=field_standard_practice  H_emp_op=1.00e+40  H_rig=3.08e+43  elapsed=0.07s
+[sweep] 29/65  family=pair_bilinear_K_0*pi_K_0*G  n=2
+[sweep]     verdict=cascade_stable_null  class=field_standard_practice  H_emp_op=1.00e+40  H_rig=7.04e+42  elapsed=0.08s
+[sweep] 30/65  family=pair_bilinear_K_0*e_K_0*ln2  n=2
+[sweep]     verdict=cascade_stable_null  class=field_standard_practice  H_emp_op=1.00e+40  H_rig=1.58e+42  elapsed=0.08s
+[sweep] 31/65  family=pair_bilinear_K_0*e_K_0*gamma  n=2
+[sweep]     verdict=cascade_stable_null  class=field_standard_practice  H_emp_op=1.00e+40  H_rig=3.86e+43  elapsed=0.07s
+[sweep] 32/65  family=pair_bilinear_K_0*e_K_0*zeta(2)  n=2
+[sweep]     verdict=cascade_stable_null  class=field_standard_practice  H_emp_op=1.00e+40  H_rig=1.82e+42  elapsed=0.08s
+[sweep] 33/65  family=pair_bilinear_K_0*e_K_0*zeta(3)  n=2
+[sweep]     verdict=cascade_stable_null  class=field_standard_practice  H_emp_op=1.00e+40  H_rig=1.61e+43  elapsed=0.07s
+[sweep] 34/65  family=pair_bilinear_K_0*e_K_0*G  n=2
+[sweep]     verdict=cascade_stable_null  class=field_standard_practice  H_emp_op=1.00e+40  H_rig=2.67e+42  elapsed=0.07s
+[sweep] 35/65  family=pair_bilinear_K_0*ln2_K_0*gamma  n=2
+[sweep]     verdict=cascade_stable_null  class=field_standard_practice  H_emp_op=1.00e+40  H_rig=1.09e+44  elapsed=0.08s
+[sweep] 36/65  family=pair_bilinear_K_0*ln2_K_0*zeta(2)  n=2
+[sweep]     verdict=cascade_stable_null  class=field_standard_practice  H_emp_op=1.00e+40  H_rig=1.42e+42  elapsed=0.07s
+[sweep] 37/65  family=pair_bilinear_K_0*ln2_K_0*zeta(3)  n=2
+[sweep]     verdict=cascade_stable_null  class=field_standard_practice  H_emp_op=1.00e+40  H_rig=3.26e+43  elapsed=0.07s
+[sweep] 38/65  family=pair_bilinear_K_0*ln2_K_0*G  n=2
+[sweep]     verdict=cascade_stable_null  class=field_standard_practice  H_emp_op=1.00e+40  H_rig=1.97e+42  elapsed=0.09s
+[sweep] 39/65  family=pair_bilinear_K_0*gamma_K_0*zeta(2)  n=2
+[sweep]     verdict=cascade_stable_null  class=field_standard_practice  H_emp_op=1.00e+40  H_rig=2.58e+43  elapsed=0.07s
+[sweep] 40/65  family=pair_bilinear_K_0*gamma_K_0*zeta(3)  n=2
+[sweep]     verdict=cascade_stable_null  class=field_standard_practice  H_emp_op=1.00e+40  H_rig=1.18e+42  elapsed=0.08s
+[sweep] 41/65  family=pair_bilinear_K_0*gamma_K_0*G  n=2
+[sweep]     verdict=cascade_stable_null  class=field_standard_practice  H_emp_op=1.00e+40  H_rig=1.28e+42  elapsed=0.08s
+[sweep] 42/65  family=pair_bilinear_K_0*zeta(2)_K_0*zeta(3)  n=2
+[sweep]     verdict=cascade_stable_null  class=field_standard_practice  H_emp_op=1.00e+40  H_rig=1.33e+42  elapsed=0.08s
+[sweep] 43/65  family=pair_bilinear_K_0*zeta(2)_K_0*G  n=2
+[sweep]     verdict=cascade_stable_null  class=field_standard_practice  H_emp_op=1.00e+40  H_rig=4.33e+42  elapsed=0.08s
+[sweep] 44/65  family=pair_bilinear_K_0*zeta(3)_K_0*G  n=2
+[sweep]     verdict=cascade_stable_null  class=field_standard_practice  H_emp_op=1.00e+40  H_rig=4.78e+42  elapsed=0.08s
+[sweep] 45/65  family=triplet_log_K_0*pi_K_0*e  n=3
+[sweep]     verdict=cascade_stable_null  class=field_standard_practice  H_emp_op=1.00e+40  H_rig=1.45e+42  elapsed=0.17s
+[sweep] 46/65  family=triplet_log_K_0*pi_K_0*ln2  n=3
+[sweep]     verdict=cascade_stable_null  class=field_standard_practice  H_emp_op=1.00e+40  H_rig=1.44e+42  elapsed=0.18s
+[sweep] 47/65  family=triplet_log_K_0*pi_K_0*gamma  n=3
+[sweep]     verdict=cascade_stable_null  class=field_standard_practice  H_emp_op=1.00e+40  H_rig=1.64e+42  elapsed=0.24s
+[sweep] 48/65  family=triplet_log_K_0*pi_K_0*zeta(2)  n=3
+[sweep]     verdict=cascade_stable_null  class=field_standard_practice  H_emp_op=1.00e+40  H_rig=1.49e+42  elapsed=0.18s
+[sweep] 49/65  family=triplet_log_K_0*pi_K_0*zeta(3)  n=3
+[sweep]     verdict=cascade_stable_null  class=field_standard_practice  H_emp_op=1.00e+40  H_rig=1.70e+42  elapsed=0.19s
+[sweep] 50/65  family=triplet_log_K_0*pi_K_0*G  n=3
+[sweep]     verdict=cascade_stable_null  class=field_standard_practice  H_emp_op=1.00e+40  H_rig=1.02e+42  elapsed=0.20s
+[sweep] 51/65  family=triplet_log_K_0*e_K_0*ln2  n=3
+[sweep]     verdict=cascade_stable_null  class=field_standard_practice  H_emp_op=1.00e+40  H_rig=1.10e+42  elapsed=0.21s
+[sweep] 52/65  family=triplet_log_K_0*e_K_0*gamma  n=3
+[sweep]     verdict=cascade_stable_null  class=field_standard_practice  H_emp_op=1.00e+40  H_rig=1.04e+42  elapsed=0.25s
+[sweep] 53/65  family=triplet_log_K_0*e_K_0*zeta(2)  n=3
+[sweep]     verdict=cascade_stable_null  class=field_standard_practice  H_emp_op=1.00e+40  H_rig=1.11e+42  elapsed=0.18s
+[sweep] 54/65  family=triplet_log_K_0*e_K_0*zeta(3)  n=3
+[sweep]     verdict=cascade_stable_null  class=field_standard_practice  H_emp_op=1.00e+40  H_rig=1.33e+42  elapsed=0.16s
+[sweep] 55/65  family=triplet_log_K_0*e_K_0*G  n=3
+[sweep]     verdict=cascade_stable_null  class=field_standard_practice  H_emp_op=1.00e+40  H_rig=1.66e+42  elapsed=0.17s
+[sweep] 56/65  family=triplet_log_K_0*ln2_K_0*gamma  n=3
+[sweep]     verdict=cascade_stable_null  class=field_standard_practice  H_emp_op=1.00e+40  H_rig=1.37e+42  elapsed=0.17s
+[sweep] 57/65  family=triplet_log_K_0*ln2_K_0*zeta(2)  n=3
+[sweep]     verdict=cascade_stable_null  class=field_standard_practice  H_emp_op=1.00e+40  H_rig=1.76e+42  elapsed=0.16s
+[sweep] 58/65  family=triplet_log_K_0*ln2_K_0*zeta(3)  n=3
+[sweep]     verdict=cascade_stable_null  class=field_standard_practice  H_emp_op=1.00e+40  H_rig=2.03e+42  elapsed=0.16s
+[sweep] 59/65  family=triplet_log_K_0*ln2_K_0*G  n=3
+[sweep]     verdict=cascade_stable_null  class=field_standard_practice  H_emp_op=1.00e+40  H_rig=1.37e+42  elapsed=0.17s
+[sweep] 60/65  family=triplet_log_K_0*gamma_K_0*zeta(2)  n=3
+[sweep]     verdict=cascade_stable_null  class=field_standard_practice  H_emp_op=1.00e+40  H_rig=1.63e+42  elapsed=0.16s
+[sweep] 61/65  family=triplet_log_K_0*gamma_K_0*zeta(3)  n=3
+[sweep]     verdict=cascade_stable_null  class=field_standard_practice  H_emp_op=1.00e+40  H_rig=1.61e+42  elapsed=0.17s
+[sweep] 62/65  family=triplet_log_K_0*gamma_K_0*G  n=3
+[sweep]     verdict=cascade_stable_null  class=field_standard_practice  H_emp_op=1.00e+40  H_rig=1.40e+42  elapsed=0.15s
+[sweep] 63/65  family=triplet_log_K_0*zeta(2)_K_0*zeta(3)  n=3
+[sweep]     verdict=cascade_stable_null  class=field_standard_practice  H_emp_op=1.00e+40  H_rig=1.11e+42  elapsed=0.15s
+[sweep] 64/65  family=triplet_log_K_0*zeta(2)_K_0*G  n=3
+[sweep]     verdict=cascade_stable_null  class=field_standard_practice  H_emp_op=1.00e+40  H_rig=1.93e+42  elapsed=0.18s
+[sweep] 65/65  family=triplet_log_K_0*zeta(3)_K_0*G  n=3
+[sweep]     verdict=cascade_stable_null  class=field_standard_practice  H_emp_op=1.00e+40  H_rig=1.13e+42  elapsed=0.19s
+[sweep] DONE  output=harness\sweep_output\m31_extended_dryrun_20260516_113214.jsonl  total_elapsed=113.18s
