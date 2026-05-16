@@ -34,7 +34,7 @@ AI-breakthrough logic" framing):
 
 ## What this file IS
 
-- A small (≤ 8 entries) catalog of execution-efficiency aids that **defer**
+- A small (≤ 10 entries) catalog of execution-efficiency aids that **defer**
   to the Brief on every load-bearing decision.
 
 ---
@@ -573,6 +573,117 @@ before being committed into the dependency chain.
 
 ---
 
+## H10 — Full-regime dry-run mandatory before canonical execution
+
+**Intent:** prevent the M3.2b-class crash documented in
+`literature/_fidelity_findings.md` §7 (Catch #3) and `mutation_log/m3.2b_u_mission_n_resolution_20260516.md`
+— `harness/verify.py empirical_height(P=2160, n=2)` overflowed IEEE 754
+double on the 10th of 65 candidates after passing all dry-run validation
+at P=50/100/200 with no `n=2,P=2160` exercise in any prior smoke-test.
+The code path existed but had never been exercised at canonical scale.
+
+**Heuristic.** Any sweep introducing new (P, n, basis_structure, or
+other operationally-significant) regions requires a **full-regime
+dry-run at canonical precision** before canonical execution. If a
+`--m31-extended-dry-run`-equivalent already exists in the codebase, it
+MUST be invoked across the full sweep enumeration. If it does not exist
+for the new regime, it MUST be built before canonical execution
+proceeds.
+
+**What full-regime dry-run means in this mission's harness:**
+
+- Iterates the **full sweep enumeration** (all 65 sub-bases in M3.2's
+  case, or whatever the canonical sweep cardinality is) — not a
+  3-candidate smoke sample.
+- Runs at **canonical precision** (P=2160 dps for the M3.2 cascade
+  primary leg) — not at P=50/100/200 dry-run reductions.
+- Uses **synthetic-relation or low-`maxsteps` PSLQ** to keep
+  wall-clock bounded (a few minutes to ~15 min total) while still
+  exercising every code path the canonical sweep will touch at the
+  canonical (P, n, maxcoeff_exp) tuple.
+- Emits an ungated JSONL clearly marked `dry_run: true`, suitable for
+  harness-validation inspection but NOT feeding M6 manuscript claims.
+
+**Insufficient dry-run modes (each can silently false-positive H10):**
+
+- **3-candidate sample.** Catches type errors and trivial logic bugs but
+  not regime-specific bugs (overflow at small n, basis-build cold-cache
+  costs at large P, gp_lindep timeout at long basis vectors).
+- **Single-precision smoke.** Catches arithmetic correctness at one P
+  but not behavior across the cascade's full P range.
+- **Synthetic basis without small-n.** Catches large-n bugs but misses
+  small-n boundary cases like the n=2 pair sub-bases.
+
+**Required form of an H10-compliant pre-canonical dry-run:**
+
+1. Invokes the canonical sweep enumerator (e.g.,
+   `harness.basis.enumerate_sub_bases()`) — not a hard-coded subset.
+2. Runs at canonical primary precision (the cascade's middle leg is
+   acceptable if the highest leg is wall-clock-prohibitive; the dry-run
+   inherits H10 from whichever P is canonical for the regime).
+3. Produces JSONL with `dry_run: true` in the meta header AND in every
+   per-candidate record, so canonical and dry-run outputs are never
+   conflated downstream.
+4. Surfaces any code-path failure (overflow, timeout, type error,
+   subprocess crash, basis build failure) before canonical execution is
+   greenlighted.
+5. Is invoked explicitly per the canonical sweep's argparse flag (e.g.,
+   `--m31-extended-dry-run` for this mission's M3.2 harness).
+
+**Defers to:** Brief §M3.x (canonical sweep execution — H10 specifies a
+*pre-execution validation step* but does not override the Brief's
+canonical execution structure). Subordinate; does not loosen any Brief
+gate.
+
+**Supersedes:** the implicit assumption that the M3.1 `--dry-run` mode
+(3 candidates at P=50/100/200) constitutes sufficient pre-canonical
+validation for M3.2 (65 candidates at P=2160/4320/8640). H10 makes the
+gap between dry-run scope and canonical scope an explicit
+verification surface.
+
+**Retroactively binding only on regimes about to be exercised:** the
+M3.2a primary cascade at `d55ffbc` (n=15, P=2160) is retroactively
+H10-compliant via M3.2a's own clean-null outcome plus its match with
+M2.3 §6 wall-clock benchmark coverage at canonical P. The M3.2b sweep
+is NOT retroactively H10-compliant — the U-MISSION-N resolution
+explicitly mandates a `--m31-extended-dry-run` pass at canonical
+precision across all 65 sub-bases before the M3.2b canonical re-run.
+
+**Forward-binding on every subsequent milestone introducing a new
+sweep regime:** before any canonical execution that introduces a new
+(P, n, basis_structure) region, a full-regime dry-run at canonical
+precision is mandatory. Examples in the upstream pipeline: any M4
+extension sweep that broadens D or |C|; any M5 Lean-formalization
+batch that introduces a new compile-target regime; any M6 manuscript
+re-verification sweep that retargets a specific n / P combination.
+
+**Conflict path:** H10 does not override a Brief gate that explicitly
+authorizes canonical execution without a dry-run prerequisite (none
+currently exists in the Brief). If a future Brief amendment specifies
+a different pre-execution validation modality (e.g., a formal-methods
+proof of harness correctness), H10 yields to that modality. Log
+conflict in `mutation_log/`.
+
+**Sibling to H7, NOT generalization.** H7 covers *functional
+verification of capability claims* (does the binary / library actually
+work as claimed?); H10 covers *full-regime pre-canonical exercise of
+the harness* (does the existing code path actually work at canonical
+scale across the full sweep enumeration?). Different problem domains:
+H7 catches "tool isn't installed but name resolves"; H10 catches "code
+path exists but hasn't been exercised at canonical scale". Different
+mechanisms: H7 requires running a tool's minimal example; H10 requires
+running the harness's full enumeration at canonical (P, n, basis)
+tuples with low-wall-clock synthetic load.
+
+**Forward-binding on M3.2b canonical re-run (immediate):** the
+post-U-MISSION-N M3.2b canonical re-run is gated on a successful
+`harness/sweep.py --m31-extended-dry-run` pass at P=2160 across the
+full 65-sub-basis enumeration. The dry-run must complete with zero
+overflows, zero crashes, and zero unexpected verification_class
+assignments before `--full --m32-full-greenlighted` is re-authorized.
+
+---
+
 ## Conflict log
 
 | Date | Heuristic | Conflicting authority | Resolution | mutation_log ref |
@@ -608,4 +719,17 @@ bears on a fourth, M2-emergent axis: **literature-fidelity honesty.** It
 converts AI-aggregator summary probes into paper-read probes, eliminating
 the dual-direction false-positive failure mode (confident false existence
 + confident false non-existence within the same query topic) that surfaced
-as Catch #1 in `literature/_fidelity_findings.md`.
+as Catch #1 in `literature/_fidelity_findings.md`. H9 extends the
+literature-fidelity axis with a **theorem-vs-heuristic classification**
+layer (four `verification_class` values: `rigorous_theorem`,
+`proven_corollary`, `field_standard_practice`, `empirical_heuristic`),
+preventing the implicit theorem-grading of folklore relations that
+surfaced as Catch #2. H10 bears on a fifth, M3-emergent axis:
+**code-path-exercise honesty.** It catches "code path exists but
+hasn't been exercised at canonical scale" — the failure mode that
+surfaced as Catch #3 (`empirical_height(P=2160, n=2)` IEEE 754
+overflow) when the M3.1 3-candidate dry-run at P=50/100/200 silently
+passed validation while the canonical M3.2b sweep at P=2160 across
+n∈{2,3,8,9,15} crashed on the 10th of 65 candidates. H10 is sibling
+to H7: H7 is "the tool works"; H10 is "the harness works across the
+full regime it claims to support".

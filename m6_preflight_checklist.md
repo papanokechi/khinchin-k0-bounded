@@ -139,6 +139,23 @@ If M6 venue requires data deposit (Zenodo, Dryad, or similar), upload the canoni
 
 **Status:** `pending`.
 
+### §3.4 — Operational-bound capping observation (M6 §Discussion methods contribution)
+
+**Authority:** operator U-MISSION-N RESOLUTION 2026-05-16 ~11:18 JST verbatim:
+> "the operational-bound capping observation is a small but genuine methodological contribution. M6 §Discussion should include a paragraph noting that the BBC empirical scaling extrapolates outside the algorithm's maxcoeff bound at small n, and that operational empirical bounds must be reported as min(formula, maxcoeff) to remain testable. This isn't a major contribution — but it's the kind of small methods observation that strengthens the manuscript's overall density."
+
+**Background:** M3.2b at canonical P=2160, c=2.06, maxcoeff=10⁷⁰ surfaced that the BBC empirical scaling `H = c · 10^(P/(c·n))` evaluates to ~10⁵²⁴ at n=2 and ~10³⁴⁹ at n=3 — both far above the algorithm's maxcoeff search bound of 10⁷⁰. PSLQ-with-maxcoeff cannot detect any integer relation whose maximum coefficient exceeds maxcoeff, regardless of the formula's extrapolation. Reporting the uncapped formula as the operational empirical bound at small n is vacuous: the algorithm did not search the formula's claimed range.
+
+**M6 §Discussion paragraph (draft, ~150 words):**
+
+> Across the 64 empirical sub-bases of `m32b_empirical_sweep.jsonl`, the canonical operational empirical bound `H_empirical_operational = min(c·10^(P/(c·n)), 10^maxcoeff_exp)` differs from the uncapped BBC scaling formula `H_empirical_formula = c·10^(P/(c·n))` at every n ≤ 14 sub-basis (at P=2160 dps, c≈2.06, maxcoeff=10⁷⁰, the formula yields ~10⁷⁰ exactly at n≈14.97 ≈ 15). At n=15 (the primary sub-basis), formula ≈ 7.997×10⁶⁹ ≤ maxcoeff and the cap is inactive. At small n (n=2, 3), the formula evaluates well above the maxcoeff bound (10⁵²⁴ and 10³⁴⁹ respectively); reporting these as operational bounds would overclaim the searched range. We retain both values in the JSONL output: `H_empirical_operational` for predicate evaluation and table reporting; `H_empirical_formula` for transparency about where the empirical extrapolation diverges from the searched range. This is a small methodological refinement to BBC-class empirical-tier reporting at parameter regimes where the scaling formula extrapolates outside the algorithm's maxcoeff bound.
+
+**Status:** `pending`.
+
+**Anchor:** `literature/_m2.3_calibration_anchor.md` §7.10 (operational-bound capping clause); `methodology/heuristics.md` H10 (full-regime dry-run mandate that surfaced the underlying gap); `mutation_log/m3.2b_u_mission_n_resolution_20260516.md` (9th mutation_log entry recording the resolution).
+
+**Trigger to fire:** at M6 drafting (during §Discussion writing).
+
 ---
 
 ## Maintenance protocol
