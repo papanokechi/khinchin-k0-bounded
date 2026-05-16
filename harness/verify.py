@@ -62,9 +62,27 @@ class LegResult:
     verbose_lines: int = 0
 
 
-def empirical_height(P: int, n: int, c: float = 2.06) -> float:
-    """BBC-1997-calibrated empirical height bound. Tier 1 of the two-tier predicate."""
-    return 10 ** (P / (c * n))
+def empirical_height(P: int, n: int, c: float = 2.06):
+    """BBC-1997-calibrated empirical height bound. Tier 1 of the two-tier predicate.
+
+    Returns Python float when ``P/(c*n) < 307`` (fits IEEE 754 double), else
+    Python int via mpmath (any size). Per U-MISSION-N R1 mechanical fix
+    (2026-05-16 ~11:18 JST): use mpmath to avoid OverflowError at small-n
+    sub-bases where the exponent exceeds float range.
+
+    For the canonical operational bound (capped at maxcoeff) used by the
+    predicate claim, call ``empirical_height_dual`` instead — see
+    U-MISSION-N R2.beta strengthening.
+    """
+    exponent = P / (c * n)
+    if exponent < 307.0:
+        return 10.0 ** exponent
+    saved_dps = mp.dps
+    try:
+        mp.dps = max(50, int(exponent) + 20)
+        return int(mp.power(mp.mpf(10), mp.mpf(exponent)))
+    finally:
+        mp.dps = saved_dps
 
 
 def run_pslq_with_capture(basis_values: tuple, maxcoeff_exp: int, maxsteps: int,
