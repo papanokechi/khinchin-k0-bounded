@@ -19,10 +19,19 @@ Modes (mutually exclusive):
                                Wall-clock: < 1 minute. JSONL: dry_run=true.
                                Output filename: m31_dryrun_<timestamp>.jsonl
 
-  --m31-extended-dry-run       Primary cascade (n=15) at REDUCED precision
-                               (P=540/1080/2160, maxsteps=5000/3000/2000).
-                               Ungated; intended for harness validation only.
-                               Wall-clock: ~10-15 minutes. JSONL: dry_run=true.
+  --m31-extended-dry-run       FULL-REGIME pre-canonical dry-run per H10
+                               mandate (U-MISSION-N RESOLUTION 2026-05-16
+                               ~11:18 JST). Enumerates ALL 65 sub-bases
+                               (primary_full + 64 empirical) at canonical
+                               primary precision range P=540/1080/2160 with
+                               reduced maxsteps (5000/3000/2000) and reduced
+                               maxcoeff_exp=40. Exercises every (P, n,
+                               basis_structure) tuple the canonical M3.2b
+                               sweep will touch. Ungated; intended for
+                               harness validation only.
+                               Wall-clock: ~10-15 minutes (most candidates
+                               terminate within seconds at maxcoeff=10^40).
+                               JSONL: dry_run=true.
                                Output filename: m31_extended_dryrun_<timestamp>.jsonl
 
   --m32-primary-measurement    Canonical primary cascade (n=15) at full
@@ -173,7 +182,11 @@ def run_sweep(mode: str, output_dir: Path) -> Path:
         rigorous_for = lambda fam: False
         run_gp = lambda fam: False
     elif mode == "m31-extended-dry-run":
-        candidates = [(f, i) for (f, i) in enumerate_sub_bases() if f == "primary_full"]
+        # Per H10 mandate (U-MISSION-N RESOLUTION 2026-05-16 ~11:18 JST):
+        # full-regime dry-run enumerates ALL 65 sub-bases at canonical
+        # primary precision range, NOT just primary_full. This is the
+        # H10-mandated pre-canonical step for M3.2b canonical re-run.
+        candidates = list(enumerate_sub_bases())
         precisions = EXTENDED_DRY_RUN_PRECISIONS
         maxsteps_default = EXTENDED_DRY_RUN_MAXSTEPS
         maxcoeff_exp = EXTENDED_DRY_RUN_MAXCOEFF_EXP
@@ -266,7 +279,7 @@ def main():
                     help="3-candidate tiny-precision smoke test (ungated, < 1 min).")
     ap.add_argument("--m31-extended-dry-run", dest="m31_extended_dry_run",
                     action="store_true",
-                    help="Primary cascade at reduced precision (ungated, ~10-15 min, dry_run=true).")
+                    help="FULL-REGIME pre-canonical dry-run per H10 mandate: all 65 sub-bases at P=540/1080/2160 (ungated, ~10-15 min, dry_run=true).")
     ap.add_argument("--m32-primary-measurement", dest="m32_primary_measurement",
                     action="store_true",
                     help="Canonical primary cascade at full precision (M3.2a, ~90 min). "
