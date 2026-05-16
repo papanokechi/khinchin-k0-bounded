@@ -38,6 +38,7 @@ ALLOWED_EVIDENCE_CLASSES = {
     "numerical_record",
     "literature_fidelity_catch",
     "theoretical_obstruction_citation_only",
+    "primary_deposit_receipt",  # slot-217 operator-authorized extension 2026-05-16; see _schema.md "Authorized exceptions ledger"
 }
 
 ALLOWED_STATUSES = {

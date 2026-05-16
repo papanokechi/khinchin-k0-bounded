@@ -12,7 +12,7 @@ Each entry in `claims.jsonl` is a single JSON object with EXACTLY these seven fi
 |---|---|---|
 | `id` | string | `lit-NNN-slug` (zero-padded 3-digit, kebab-case slug) |
 | `statement` | string | The verifiable assertion about prior work being recorded. Quoted text wins over paraphrase. |
-| `evidence_class` | string | One of: `primary_paper`, `secondary_paper`, `book`, `survey`, `tertiary_aggregator`, `oeis`, `numerical_record`, `literature_fidelity_catch`, `theoretical_obstruction_citation_only` |
+| `evidence_class` | string | One of: `primary_paper`, `secondary_paper`, `book`, `survey`, `tertiary_aggregator`, `oeis`, `numerical_record`, `literature_fidelity_catch`, `theoretical_obstruction_citation_only`, `primary_deposit_receipt` |
 | `precision_or_dependencies` | object | Concrete quantitative parameters (precision, degree D, height H, basis size, year, DOI). For non-computational claims, document key non-numerical parameters. |
 | `reproduce_command` | string | A concrete command or URL that lets a future reader retrieve the same artifact. For paywalled papers, the DOI URL + author-host mirror URL. For OEIS, the OEIS URL. For book references, the citation + library lookup string. |
 | `independent_verifier_result` | object | Structured. Required keys: `verified: bool`, `method: enum`, optional `paywall_blocker: string`, optional `notes: string`. |
@@ -85,6 +85,22 @@ further meta-work on the ledger format itself triggers Brief §7 anti-thrashing 
 Every other file under `literature/` is content: a numbered claim entry (`lit-NNN-*.md`),
 the JSONL master (`claims.jsonl`), an M2.3 calibration anchor (`_m2.3_calibration_anchor.md`),
 or a literature-fidelity-finding document (`_fidelity_findings.md`).
+
+### Authorized exceptions ledger
+
+The process-to-content rule above admits explicit operator-authorized exceptions, each
+documented inline below. Adding to this ledger requires the same Brief §7 anti-thrashing
+review as any other meta-work — the ledger does not weaken the default rule, it makes
+exceptions auditable.
+
+- **2026-05-16, slot-217 audit cycle, SIARC HAL/Episciences pipeline bootstrap.**
+  Added `primary_deposit_receipt` to the `evidence_class` enum (field-additive only;
+  no structural change to the 7-field schema). Rationale: HAL/Episciences deposit
+  records are a new recurring claim class (first-of-class test: future HAL deposits,
+  preprint-server deposits, institutional-repository deposits, and any other artifact
+  issuing a primary deposit receipt will use this same enum value). Documented in the
+  HAL test deposit runbook §3 (`control-center/cheat-sheets/HAL_LOG_LADDER_TEST_DEPOSIT_RUNBOOK_v1.md`).
+  Operator confirmation in slot-217 audit-input package, 2026-05-16.
 
 ## File layout
 
