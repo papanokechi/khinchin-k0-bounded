@@ -1,0 +1,1070 @@
+% main.tex --- unsolved-relay M6 manuscript draft
+% Khinchin K_0 bounded two-tier null result
+%
+% Compile with:  pdflatex main && bibtex main && pdflatex main && pdflatex main
+% Bibliography:  references.bib (paper-read-verified entries only)
+% Preflight compliance: see paper/preflight_compliance.md
+%
+% Authority chain (gold tags on origin/main of github.com/papanokechi/khinchin-k0-bounded):
+%   gold/M1 = 15b216f   (target frozen)
+%   gold/M2 = ca9c989   (M2.3 predicate frozen)
+%   gold/M3 = 9c2702d   (canonical JSONL outputs frozen)
+%   gold/M4 = fd13eeb   (capability-gap document frozen)
+%   gold/M5 = 208f6fc   (Lean 4 skeleton + axiom set frozen)
+%
+% Manuscript drafting commit base: HEAD at b08162a (M6 Step 1 H8 paper-read complete).
+
+\documentclass[11pt,a4paper]{article}
+
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage[english]{babel}
+\usepackage{amsmath, amssymb, amsthm}
+\usepackage{mathtools}
+\usepackage{microtype}
+\usepackage[a4paper,margin=2.5cm]{geometry}
+\usepackage{enumitem}
+\usepackage{booktabs}
+\usepackage{hyperref}
+\usepackage[capitalise]{cleveref}
+\usepackage{xcolor}
+\usepackage{listings}
+\usepackage{longtable}
+
+\hypersetup{
+  colorlinks=true,
+  linkcolor=blue!50!black,
+  citecolor=blue!50!black,
+  urlcolor=blue!50!black
+}
+\setlength{\emergencystretch}{3em}
+\sloppy
+
+\lstset{
+  basicstyle=\ttfamily\small,
+  breaklines=true,
+  columns=fullflexible,
+  frame=single,
+  framesep=4pt,
+  xleftmargin=4pt,
+  xrightmargin=4pt
+}
+
+\newcommand{\K}{K_{0}}
+\newcommand{\Hrig}{H_{\mathrm{rigorous}}}
+\newcommand{\Hemp}{H_{\mathrm{empirical}}}
+\newcommand{\Hempop}{H_{\mathrm{empirical}}^{\mathrm{op}}}
+\newcommand{\Hempfo}{H_{\mathrm{empirical}}^{\mathrm{fo}}}
+\newcommand{\BDC}{B_{D}(C)}
+\newcommand{\fsp}{\textsf{field\_standard\_practice}}
+\newcommand{\pc}{\textsf{proven\_corollary}}
+\newcommand{\rt}{\textsf{rigorous\_theorem}}
+\newcommand{\eh}{\textsf{empirical\_heuristic}}
+
+\title{A bounded two-tier null result for integer relations on a hybrid
+  Khinchin-$\K$ basis,\\ with a documented capability gap and a Lean~4
+  statement-shape encoding}
+\author{[Author]\thanks{Repository: \url{https://github.com/papanokechi/khinchin-k0-bounded}. Canonical
+  artifacts are tagged \texttt{gold/M1}--\texttt{gold/M5} on \texttt{origin/main}.}}
+\date{Draft: \today}
+
+\begin{document}
+\maketitle
+
+\begin{abstract}
+We test for integer relations on the hybrid basis
+$\BDC = \{1, \K, \K^{2}, \ldots, \K^{D}, \log\K\} \cup \{\K\cdot c : c \in C\}$
+at $D=6$ and
+$C=\{\pi, e, \log 2, \gamma, \zeta(2), \zeta(3), G\}$
+(dimension $n=15$).
+A cascading-precision PSLQ harness based on \texttt{mpmath.pslq} at
+$P=2160$~dps with cascade legs at $2P$ and $4P$
+returns a cascade-stable null on all $65$ scanned sub-bases,
+independently corroborated by a PARI/GP \texttt{lindep} second leg.
+We report the null at two complementary tiers under an explicit
+verification-class taxonomy (\fsp{}, \pc{}):
+the empirical tier bounds the coefficient height
+$\Hempop \approx 7.997 \times 10^{69}$ at the Bailey--Borwein--Crandall (1997)
+confidence calibration~\cite{bbc1997}, classified \fsp{} per the
+Bailey--Plouffe (1998) ``general rule'' for PSLQ
+detection~\cite{bailey1998};
+the rigorous tier bounds the relation Euclidean norm
+$\Hrig = 1.0361 \times 10^{72}$ via the
+Ferguson--Bailey--Arno (1999) Theorem~1 and Corollary~2
+overshoot--free framework~\cite{fba1999}, classified \pc{}
+(implying $\max_{i}|m_{i}| \ge \Hrig/\sqrt{n} \approx 2.676 \times 10^{71}$).
+Three Excluded Families
+delineate this bounded scope from
+(EF1) the BBC 1997 pure-power null,
+(EF2) the operator's prior signature-statistic null on $\pi$'s continued
+fraction~\cite{papanokechi2026signature},
+and (EF3) Gauss--Kuzmin--Wirsing spectral-method imports.
+A symbolic-closure attempt in \texttt{SymPy} surveying seven candidate structural
+arguments (Lindemann--Weierstrass, Schanuel, Nesterenko, Mahler-measure, Galois,
+non-GKW CF-theoretic, height theory) plus a four-path probe returned a documented
+fundamental capability gap, rooted in $\K$'s unresolved transcendence status.
+The result statement is additionally encoded in Lean~4 with an explicit
+auxiliary-axiom trust boundary; the encoding type-checks against Mathlib4
+v4.14.0 but is not a first-principles formal proof.
+\end{abstract}
+
+%======================================================================
+\section{Introduction}
+%======================================================================
+
+Khinchin's constant
+\[
+  \K \;\approx\; 2.6854520010653064453097148\ldots
+\]
+is the almost-everywhere geometric mean of partial quotients of the regular
+continued-fraction expansion of a real number~\cite{khinchin1934}.
+The constant is computable to arbitrary precision via classical accelerated
+series, but its arithmetic nature is open: no published proof of
+irrationality, algebraicity, or transcendence exists as of this writing.
+The standard expectation in the transcendence literature is that $\K$ is
+transcendental; every published attack on irrationality has stalled at
+infrastructure questions rather than a clean obstruction.
+
+\paragraph{The bounded sub-question.}
+We test, at working precision $P = 2160$ decimal places via PSLQ with a
+cascading-precision harness, for integer relations among the hybrid basis
+\begin{equation}\label{eq:basis}
+  \BDC \;=\; \bigl\{1,\, \K,\, \K^{2}, \ldots,\, \K^{D},\, \log\K\bigr\}
+  \;\cup\;
+  \bigl\{\K \cdot c \;:\; c \in C\bigr\}
+\end{equation}
+with
+\begin{equation}\label{eq:cset}
+  D \;=\; 6, \qquad
+  C \;=\; \bigl\{\pi,\, e,\, \log 2,\, \gamma,\, \zeta(2),\, \zeta(3),\, G\bigr\},
+  \qquad
+  n \;=\; \dim \BDC \;=\; 15,
+\end{equation}
+with a coefficient bound $H$ specified at two tiers in
+Section~\ref{sec:methods} below (the empirical tier as a coefficient-height
+bound; the rigorous tier as a Euclidean-norm bound with implied
+coefficient-height bound).
+The bounded sub-question has two terminal outcomes: a positive result
+(PSLQ returns a relation surviving cascade and independent verification)
+or a negative result (cascade-stable null with an explicit pair of height
+bounds and verification classes).
+Both terminal outcomes are first-class deliverables under the mission's
+explicit-evidence-acceptance-and-logging discipline.
+
+\paragraph{Prior art and the named-open complement.}
+This work sits inside a small ecosystem of prior numerical attacks on $\K$'s
+arithmetic relations.
+We anchor the scope on two paper-read-verified citations and one explicit
+methodological-cede:
+
+\begin{enumerate}[label=(\arabic*),itemsep=2pt,topsep=2pt]
+\item Bailey, Borwein, and Crandall~\cite{bbc1997}
+  (henceforth ``BBC~1997'') tested at the parameters
+  $(D{=}50, H{=}10^{70}, 7350~\text{dps})$
+  the pure-power basis $\{1, \K, \K^{2}, \ldots, \K^{50}\}$
+  and reported a cascade-stable null (Test~1, \S 4).
+  BBC's \S 4 close names
+  \emph{``log $\K$, $(\log\K)(\log 2)$, or one of many other forms involving $\K$''}
+  as open.
+  This open passage is the named complement that the present basis
+  $\BDC$ explicitly targets.
+
+\item The operator's prior work~\cite{papanokechi2026signature}
+  (henceforth ``the signature paper'') tested, at $300$~dps base with
+  $600$~dps confirmation, the signature-statistic family
+  $\{S_{n}, \log S_{n}, S_{n}-\K, \log n\}$ on $\pi$'s continued-fraction
+  partial-quotient sequence at $\textsf{maxcoeff}=10^{3}$,
+  with $546$ attempts and a $10^{6}$ wide-cap diagnostic, returning a
+  precision-controlled null.
+  The Discussion section of that paper handed off, verbatim:
+  \emph{``Templates involving $n^{1/2}$, $n^{2}$, or algebraic combinations
+  of $\K$ with other known constants lie entirely outside the tested
+  family and remain open.''}
+  The present basis $\BDC$ is precisely that
+  ``algebraic-combinations-with-other-known-constants'' extension under the
+  same AEAL discipline.
+
+\item The Gauss--Kuzmin--Wirsing spectral framework, while theoretically
+  connected to $\K$ via the transfer-operator point of view, is ceded
+  methodologically: theoretical citation is permitted; method-import is
+  prohibited per a mission-internal binding.
+  This binding is mission-procedural; it neither weakens nor strengthens
+  the present numerical claims.
+\end{enumerate}
+
+These three prior areas form the three Excluded Families (EF1, EF2, EF3)
+defined formally in Section~\ref{sec:methods}.
+The mission-relevant complement is the union
+\begin{equation}\label{eq:complement}
+  \BDC \setminus (\text{EF1} \cup \text{EF2} \cup \text{EF3})
+\end{equation}
+i.e.\ the rows $\log\K$ and $\K\cdot c$ for $c \in C$ together with all
+hybrid combinations crossing the pure-power and log/bilinear sub-blocks.
+
+\paragraph{The contribution.}
+The contribution of this manuscript is twofold and intentionally narrow:
+\begin{enumerate}[label=(\alph*),itemsep=2pt,topsep=2pt]
+\item \textbf{A two-tier bounded null on the named-open complement of
+  Eq.~\eqref{eq:complement}.}
+  At the height where BBC~1997 reported a single-tier empirical null on a
+  \emph{different} basis (the EF1 pure-power family), this work reports a
+  \emph{two-tier} null on the full basis $\BDC$ (which \emph{includes} the
+  named-open EF1-complement rows): empirical
+  $\Hempop \approx 7.997\times 10^{69}$ (\fsp{}, BBC-class height
+  bound at the primary $n=15$ sub-basis, where the operational cap is
+  inactive) and rigorous
+  $\Hrig = 1.0361\times 10^{72}$ (\pc{}, FBA~1999 Theorem~1 + Corollary~2;
+  bounds the Euclidean norm of any non-trivial integer relation, which by
+  $\|m\|_{2} \le \sqrt{n}\,\max_{i}|m_{i}|$ implies the coefficient-height
+  bound $\max_{i}|m_{i}| \ge \Hrig/\sqrt{15} \approx 2.676\times 10^{71}$).
+  This is not a bound-beating result on the same basis; it is a
+  \emph{stronger-class} result on a basis-class BBC named open.
+
+\item \textbf{A documented capability gap, and an explicit Lean~4 trust
+  boundary.}
+  A symbolic-closure attempt for the null result surveyed seven candidate
+  structural arguments (Lindemann--Weierstrass, Schanuel, Nesterenko,
+  Mahler-measure, Galois, non-GKW CF-theoretic, height theory) and ran a
+  four-path probe in \texttt{SymPy} 1.14.0.
+  All seven candidates fail at a shared root: $\K$'s transcendence status
+  is itself the major open question in this corner of the literature, and any
+  certificate strong enough to rule out integer relations in $\BDC$
+  would imply progress on that question.
+  We classify this as a fundamental capability gap, not a contingent
+  machinery-availability problem.
+  In parallel, the result statement is encoded in Lean~4 with an explicit
+  auxiliary-axiom trust boundary; the encoding type-checks against Mathlib4,
+  but is not a first-principles formal proof of the null.
+  Statement-shape encoding with explicit trust boundary makes the implicit
+  assumptions of the two-tier predicate machine-readable.
+\end{enumerate}
+
+We further report, as a small methodological contribution, an
+operational-bound capping observation: the BBC empirical-scaling formula
+$H \approx c \cdot 10^{P/(c\,n)}$
+extrapolates outside the PSLQ-with-\textsf{maxcoeff} search range at small
+$n$, so the operational empirical bound must be reported as
+$\min(\text{formula}, 10^{\log_{10}\textsf{maxcoeff}})$
+to remain testable.
+
+\paragraph{Outline.}
+Section~\ref{sec:methods} fixes the two-tier predicate, the harness
+architecture, the verification-class taxonomy, the PSLQ algorithm citation
+chain, and the Lean~4 scope statement.
+Section~\ref{sec:results} reports the numerical outcomes:
+the $65$-sub-basis empirical sweep, the primary cascade reproducibility, the
+PARI/GP second-leg agreement, and the two-tier bounds with H9 verification
+classes.
+Section~\ref{sec:discussion} discusses the operational-bound capping
+observation, the M4 fundamental capability gap with its
+structurally-unavailable / scope-ceded sub-classification, and the
+basis-class distinction with respect to BBC~1997.
+Appendix~\ref{app:reproducibility} provides reproducibility data;
+Appendix~\ref{app:aeal} describes the mission's heuristic-accumulation
+methodology as a small but real meta-contribution.
+
+%======================================================================
+\section{Methods}\label{sec:methods}
+%======================================================================
+
+\subsection{Basis construction and three Excluded Families}\label{sec:basis-ef}
+
+The basis $\BDC$ in Eq.~\eqref{eq:basis} is a hybrid of three sub-blocks:
+the pure-power tower $\{1, \K, \K^{2}, \ldots, \K^{D}\}$ (dimension $D+1=7$),
+the singleton $\{\log\K\}$ (dimension $1$), and the bilinear set
+$\{\K\cdot c : c \in C\}$ (dimension $|C|=7$), for a total of $n=D+1+1+|C|=15$.
+The Excluded Families partition the mission-relevant scope as follows.
+
+\paragraph{EF1 (BBC-grandfathered pure-power subset).}
+EF1 is the linear span of $\{1, \K, \K^{2}, \ldots, \K^{D}\}$.
+A relation lying entirely in EF1 reproduces, at strictly weaker parameters
+$(D{\le}6 \text{ vs.\ } D{\le}50,\;P{=}2160 \text{ vs.\ } 7350\;\text{dps})$,
+the BBC~1997 \S 4 Test~1 null.
+Such a finding is logged as a BBC-reproduction diagnostic rather than a
+primary result.
+
+\paragraph{EF2 (signature-paper-grandfathered).}
+EF2 is the signature-statistic family on $\pi$'s continued fraction
+$\{S_{n}, \log S_{n}, S_{n}-\K, \log n\}$.
+By construction $\BDC$ contains no element of EF2; the harness does not test it.
+The signature paper~\cite{papanokechi2026signature} is the legitimacy anchor
+for the present extension.
+
+\paragraph{EF3 (GKW-method-ceded).}
+EF3 covers methodological imports from the Gauss--Kuzmin--Wirsing transfer-operator
+spectral theory.
+Theoretical citation is permitted; method-import is prohibited.
+If PSLQ surfaces a relation whose interpretation requires GKW machinery, the
+harness halts and the relation routes to the mission's mutation log for
+operator review rather than into this manuscript.
+
+\subsection{The two-tier predicate}\label{sec:two-tier}
+
+A run of the harness on a sub-basis $B \subseteq \BDC$ produces a
+\emph{cascade-stable null} if
+\texttt{mpmath.pslq} returns \texttt{None} on $B$ at all three precisions
+$\{P, 2P, 4P\} = \{2160, 4320, 8640\}$ dps with the same
+\textsf{maxcoeff} bound $10^{70}$ and the H9 maxsteps schedule (Section
+\ref{sec:harness}), AND a second-leg PARI/GP \texttt{lindep} run on $B$
+returns either no relation or a relation whose largest coefficient exceeds
+the empirical operational height $\Hempop$.
+
+For a cascade-stable null we report at two height tiers under the H9
+verification-class taxonomy (Section~\ref{sec:h9}):
+
+\paragraph{Tier 1 --- empirical, classified \fsp{}.}
+At BBC-1997 confidence calibration, no integer relation among the basis
+elements has all coefficients of size $\le \Hemp$, where
+\begin{equation}\label{eq:Hemp}
+  \Hemp \;=\; c \cdot 10^{P/(c\,n)},\qquad c \approx 2.06,\;P=2160,\;n=15
+  \;\Rightarrow\; \Hemp \;\approx\; 7.997\times 10^{69}.
+\end{equation}
+The operational tier is the capped value
+$\Hempop = \min(\Hemp, 10^{\log_{10}\textsf{maxcoeff}}) = \min(\Hemp, 10^{70})$;
+both are reported (Section~\ref{sec:results-bounds}).
+The verification class \fsp{} reflects that the bound $H \approx c\cdot 10^{P/(c\,n)}$
+is community-validated empirical practice (the BBC c-calibration over the
+bare Bailey--Plouffe ``general rule'' of \cite[\S 2]{bailey1998}, see Section
+\ref{sec:h9}), not a theorem of the underlying algorithm.
+
+\paragraph{Tier 2 --- rigorous, classified \pc{}.}
+At the FBA~1999 Theorem~1 + Corollary~2 conservative form, every non-trivial
+integer relation $m$ among the basis elements has Euclidean norm
+$\|m\|_{2} \ge \Hrig$, where $\Hrig$ is the largest value the per-iteration
+lower-bound certificate
+$M = 1/\max_{i,j}|H_{i,j}|$
+attains across the cascade, scaled by mpmath's documented
+integer-truncation safety factor:
+\begin{equation}\label{eq:Hrig}
+  \Hrig \;=\; 100 \cdot \max_{k \in \mathrm{cascade}} \mathrm{reported\_norm}_{k}.
+\end{equation}
+The convention $\|\cdot\|_{2}$ for the relation norm follows the
+verbatim Step~5 statement of \cite[\S 2]{bailey1998}:
+\emph{``there can exist no relation vector whose Euclidean norm is less
+than $M$''}; the per-iteration certificate is the
+\cite[Theorem~1]{fba1999} bound $M_{x} \ge 1/\max_{i}|h_{i,i}|$ on the
+smallest relation Euclidean norm.
+Equivalently, since
+$\|m\|_{2} \le \sqrt{n}\,\max_{i}|m_{i}|$,
+the coefficient-height bound implied by Tier~2 is
+$\max_{i}|m_{i}| \ge \Hrig/\sqrt{n}$ at the relevant sub-basis dimension.
+The verification class \pc{} reflects that \cite[Theorem~1]{fba1999} is a
+\rt{}-class result and Eq.~\eqref{eq:Hrig} is its conservative
+proven-corollary application.
+
+\subsection{Algorithm-chain citation and {\boldmath$\gamma$} boundary
+   case}\label{sec:algo-chain}
+
+The chain from this manuscript's bound back to the underlying theorem
+runs through four citations:
+\begin{equation}\label{eq:chain}
+\begin{aligned}
+  \text{\texttt{mpmath.pslq}}
+  &\;\longrightarrow\;
+  \text{Bailey--Plouffe 1998 \S 2~\cite{bailey1998}} \\
+  &\;\longrightarrow\;
+  \text{FBA 1992 preprint}
+  \;\longrightarrow\;
+  \text{Ferguson--Bailey--Arno 1999~\cite{fba1999}}.
+\end{aligned}
+\end{equation}
+\texttt{mpmath.pslq}'s docstring cites
+\cite[\S 2]{bailey1998} verbatim
+(URL
+\url{http://www.cecm.sfu.ca/organics/papers/bailey/paper/html/node3.html};
+SHA-256 hashes recorded in Appendix~\ref{app:reproducibility});
+\cite[\S 2]{bailey1998} explicitly presents PSLQ in its
+``simpler formulation'' and cites the Ferguson--Bailey complex PSLQ preprint
+(circulated as a 1992 technical report) as its reference~[13],
+the same algorithm that became~\cite{fba1999}.
+The norm-bound certificate
+$M = 1 / \max_{j} |H_{j}|$
+appearing in \cite[\S 2 pseudocode step 5]{bailey1998}
+is equivalent in conservative form to the per-iteration certificate
+$M_{x} \ge 1 / \max_{i}|h_{i,i}(k)|$ of \cite[Theorem~1]{fba1999}.
+
+The rigorous tier of this manuscript invokes \cite[Theorem~1]{fba1999} and
+\cite[Corollary~2]{fba1999} specifically; it does \emph{not} invoke
+\cite[Theorem~3]{fba1999} (the overshoot bound on PSLQ-found relations).
+This matters because Theorem~3 carries a strict
+$\gamma > \sqrt{4/3}$
+condition (\cite[Definition~5]{fba1999}), while Theorems~1 and~2 hold at
+the boundary $\gamma = \sqrt{4/3}$ by continuity.
+The \texttt{mpmath.pslq} implementation chooses $\gamma = \sqrt{4/3}$
+exactly internally (line
+\texttt{g~=~sqrt\_fixed((4\textless\textless prec)//3, prec)}),
+which lies inside the parameter scope explicitly treated in
+\cite[\S 2]{bailey1998}.
+We do not invoke Theorem~3.
+
+\subsection{The H9 verification-class taxonomy and the
+   Bailey--Plouffe ``general rule''}\label{sec:h9}
+
+We report all numerical claims under a four-class verification taxonomy
+(``H9'' in the mission's internal heuristic numbering): \rt{}, \pc{},
+\fsp{}, \eh{}.
+The class \fsp{} corresponds precisely to what \cite[\S 2]{bailey1998}
+terms a ``general rule'' for PSLQ detection.
+The relevant passage reads:
+\begin{quote}
+\emph{``As a general rule, one can expect to detect a relation of degree
+$n$, with coefficients of size $10^{m}$, provided that the input vector
+is known to somewhat greater than $m\cdot n$ digit precision.''}
+\hfill\cite[\S 2]{bailey1998}
+\end{quote}
+This is the canonical statement of the
+$H \approx 10^{P/n}$
+empirical-scaling folklore; BBC~1997 calibrates the leading constant
+$c \approx 2.06$ to absorb its ``somewhat greater than'' hedge.
+The class \fsp{} formalizes this primary-source distinction: a community-validated
+empirical scaling stated as a rule of practice, not as a theorem of PSLQ.
+
+The class \pc{} is reserved for derivations from \cite[Theorem~1]{fba1999} or
+\cite[Corollary~2]{fba1999} via mpmath's conservative
+\texttt{norm //= 100}
+truncation; these are theorem-grade up to the documented
+$100\times$
+safety factor.
+
+\paragraph{Distinguishing the predicate class from the reported statistic.}
+The H9 verification class assigned to a sub-basis record is a predicate-level
+classification of the cascade-stable-null result for that sub-basis,
+determined by which maxsteps schedule was in force at run time:
+the rigorous-tier schedule
+$(100\,000, 80\,000, 50\,000)$
+is applied only to the primary $n=15$ cascade (one record), yielding
+class \pc{}; the empirical-tier schedule
+$(2000, 2000, 2000)$
+is applied to the $64$ smaller sub-bases, yielding class \fsp{}.
+The
+$\Hrig$
+column reported alongside every record is a statistic of the
+\cite[Theorem~1]{fba1999} certificate evaluated at termination;
+its numerical magnitude varies with the sub-basis but does not by itself
+upgrade the record's predicate class.
+The rigorous certificate
+$\|m\|_{2} \ge \Hrig$
+holds for every record where
+$\Hrig > 0$,
+but is reported as a \pc{}-class predicate result only for records run
+under the rigorous-tier schedule.
+
+\subsection{Harness architecture}\label{sec:harness}
+
+The harness (\texttt{harness/verify.py} and \texttt{harness/sweep.py}) is
+written against
+\texttt{mpmath} 1.3.0 / Python 3.12.10
+and shells out to PARI/GP 2.18.1 for the second leg.
+Each candidate sub-basis $B$ runs in three phases:
+
+\begin{enumerate}[itemsep=2pt,topsep=2pt]
+\item \textbf{mpmath cascade.}
+  $\texttt{mpmath.pslq}(B, \textsf{tol}=2^{-0.75 P}, \textsf{maxcoeff}=10^{70},
+  \textsf{maxsteps}=\text{schedule}(n))$
+  runs at $P = 2160$ dps, then at $2P$, then at $4P$.
+  The cascade verdict is \emph{stable null} if all three legs return
+  \texttt{None}; otherwise \emph{candidate} (further classified by
+  Excluded-Family containment) or \emph{unstable} (transient PSLQ false positive).
+
+\item \textbf{Rigorous-bound extraction.}
+  \texttt{harness/rigorous\_bound.py} parses \texttt{mpmath.pslq}'s
+  verbose-mode norm output to extract the per-iteration certificate of
+  \cite[Theorem~1]{fba1999}, returning
+  $\Hrig$ as in Eq.~\eqref{eq:Hrig}.
+  The module docstring documents four divergences (D1--D4) between mpmath's
+  internal form and the canonical \cite[Theorem~1]{fba1999} statement;
+  divergences D1 and D4 are conservative (mpmath's bound is weaker than the
+  canonical form), and divergences D2 and D3 are cleared by
+  the paper-read of \cite[\S 2]{bailey1998} (Section~\ref{sec:algo-chain}).
+
+\item \textbf{PARI/GP second leg.}
+  \texttt{harness/gp\_lindep.py} writes the basis to a temporary file and
+  invokes \texttt{gp -q --default parisize 4000000000} on a small script
+  that returns the smallest \texttt{lindep} vector at the same precision.
+  A second-leg \emph{noise-above-bound} verdict
+  (\textsf{gp\_noise\_relation\_above\_H\_empirical\_confirms\_null})
+  is recorded when the smallest \texttt{lindep} relation has
+  $\max|m_{i}| > \Hempop$, confirming the null at the empirical tier.
+\end{enumerate}
+
+The cascade-stability check is non-collapsible: all three precision legs
+must independently return \texttt{None} for the verdict.
+mpmath's PSLQ implementation is deterministic at fixed precision and seed
+on the build used here (\texttt{mpmath 1.3.0} on Python 3.12.10); see
+Section~\ref{sec:repro-cascade}.
+
+\subsection{Operational-bound capping clause}\label{sec:capping}
+
+The BBC empirical-scaling formula
+$\Hempfo = c\cdot 10^{P/(c\,n)}$
+extrapolates outside the algorithm's \textsf{maxcoeff} search range at
+small $n$ for our parameters:
+at $P=2160$ dps, $c=2.06$, the formula evaluates to
+$\approx 10^{524}$
+at $n=2$ and
+$\approx 10^{349}$
+at $n=3$, both far above the
+$\textsf{maxcoeff}=10^{70}$
+search bound.
+A PSLQ-with-\textsf{maxcoeff} run cannot detect any integer relation whose
+largest coefficient exceeds \textsf{maxcoeff}, regardless of the formula's
+extrapolation.
+We therefore report the operational empirical bound as the cap
+\begin{equation}\label{eq:cap}
+  \Hempop \;=\; \min\bigl(\Hempfo,\; 10^{\log_{10}\textsf{maxcoeff}}\bigr).
+\end{equation}
+At the primary sub-basis $n=15$, the formula yields
+$\Hempfo \approx 7.997\times 10^{69} < 10^{70}$,
+so the cap is inactive and $\Hempop = \Hempfo$.
+At small $n$, the cap activates and $\Hempop = 10^{70}$.
+Both values are retained in the JSONL output for transparency
+(see Section~\ref{sec:discussion}).
+
+\subsection{Lean 4 statement-shape encoding}\label{sec:lean-scope}
+
+The result statement is encoded in Lean~4 with documented auxiliary
+axioms; the encoding type-checks against Mathlib4 v4.14.0.
+Full formal verification requires further development beyond this
+mission's scope.
+The Lean~4 skeleton (approximately $385$ source lines across three modules
+\texttt{M5/Definitions.lean}, \texttt{M5/Result.lean},
+\texttt{M5/Axioms.lean}) makes the result's dependency structure
+machine-readable: the axiom set behind
+\texttt{m3\_null\_at\_rigorous\_bound}
+is exactly
+\begin{equation*}
+  \begin{aligned}
+    &\{\texttt{pslq\_cascade\_implies\_no\_integer\_relation}\}
+    \;\cup\;
+    \{\text{nine opaque constant axioms}\} \\
+    &\hspace{1em}\cup\;
+    \{\text{Lean core: \texttt{propext}, \texttt{Classical.choice}, \texttt{Quot.sound}}\},
+  \end{aligned}
+\end{equation*}
+as recorded in \texttt{m5/\_print\_axioms\_output.txt} (committed at
+\texttt{gold/M5 = 208f6fc}).
+
+\paragraph{What the encoding IS and is NOT.}
+Statement-shape Lean~4 encoding with explicit trust boundary is a
+methodological contribution distinct from the numerical-and-rigorous-bound
+$\K$ result: it makes the implicit assumptions of the two-tier predicate
+explicit and machine-checkable.
+The encoding is NOT a formal proof of the null result.
+The M5 theorem discharges via
+\texttt{exact pslq\_cascade\_implies\_no\_integer\_relation}
+--- an \texttt{axiom} declaration, not a derivation.
+We avoid the phrasing ``formally verified in Lean~4'' and ``Lean~4 proof of
+the null result'' for this reason; the correct phrasing is
+``statement-shape machine-checkable.''
+
+\paragraph{Auxiliary-axiom enumeration.}
+The trust boundary comprises four classes of axioms in
+\texttt{m5/M5/}.
+First, nine constant axioms (\texttt{realPi}, \texttt{realE},
+\texttt{realLn2}, \texttt{zeta2}, \texttt{zeta3},
+\texttt{eulerMascheroni}, \texttt{catalanConst}, \texttt{K0}, \texttt{logK0})
+encode named real-valued constants as opaque \texttt{axiom} declarations
+rather than imports from Mathlib's full constructions; this is a scope
+simplification (Mathlib v4.14.0 provides
+\texttt{Real.pi}, \texttt{Real.exp}, \texttt{Real.log} but not
+\texttt{Real.catalan} or \texttt{Real.eulerMascheroni}).
+Second, two evidence axioms (\texttt{pslq\_cascade\_implies\_no\_integer\_relation}
+and \texttt{bbc\_empirical\_implies\_no\_integer\_relation}) encode the
+load-bearing claims as axioms, not theorems; they are justified
+informally by \cite[Theorem~1 + Corollary~2]{fba1999} and BBC~1997
+respectively, but are not derived in Lean.
+Third, one acknowledgement axiom (\texttt{M4\_fundamental\_gap}) is a
+documentary placeholder whose role is only to provide a Lean-level handle
+for the M4 fundamental-gap proposition (Section~\ref{sec:m4-gap}).
+Fourth, one numerical-binding stub (\texttt{K0\_value\_first\_digits}) is
+documentary only and not used by the result theorem.
+
+\paragraph{Mathlib cache operational note.}
+The Mathlib4 v4.14.0 package cache available to this work was a build
+snapshot from a sibling project on the same machine.
+Lake's \texttt{Replayed} mechanism re-uses pre-built \texttt{.olean} files
+when their cryptographic trace-hash matches the expected hash; this is
+fast (sub-second per module).
+However, the cache contains only the import closure of the sibling project's
+source files, not the full Mathlib library uniformly built.
+An initial M5 implementation importing
+\texttt{Mathlib.Data.Real.Pi.Bounds}
+plus
+\texttt{Mathlib.Analysis.SpecialFunctions.\{Log.Basic, Exp\}}
+found $587$ modules replayed (matching the sibling project's import set) and
+then began compiling modules outside that closure from scratch.
+The mission resolved this operational scope by simplifying M5 imports to
+\texttt{Mathlib.Data.Real.Basic}
+plus
+\texttt{Mathlib.Data.List.Basic}
+(both inside the cache closure) and encoding the named constants as opaque
+axioms as above.
+The choice of opaque axioms for these constants is therefore not a defect
+of the formalization but an operationally honest adaptation to the
+available cache closure, consistent with the statement-shape scope.
+
+%======================================================================
+\section{Results}\label{sec:results}
+%======================================================================
+
+\subsection{Aggregate verdict on the 65-sub-basis sweep}\label{sec:results-65}
+
+The canonical sweep
+\texttt{harness/sweep\_output/m32b\_empirical\_sweep.jsonl}
+(frozen at \texttt{gold/M3} = \texttt{9c2702d}) records
+$65/65$
+sub-basis verdicts of cascade-stable null, with the per-tier verification
+classes summarized in Table~\ref{tab:agg}.
+
+\begin{table}[h]
+\centering
+\caption{Aggregate verdict across the 65-sub-basis sweep.\label{tab:agg}}
+\small
+\begin{tabular}{p{0.36\textwidth}p{0.30\textwidth}p{0.16\textwidth}l}
+\toprule
+Quantity & Threshold & Measured & Status \\
+\midrule
+Cascade-stable null verdicts & $65/65$ & $65/65$ & PASS \\
+\texttt{primary\_full} reproducibility,
+  M3.2a$\leftrightarrow$M3.2b
+  & $K$, $\Hrig$ identical at $P, 2P, 4P$
+  & identical to $71$ digits & PASS \\
+\texttt{primary\_full} verification class & \pc{} & \pc{} & PASS \\
+$64$ empirical sub-bases verification class & \fsp{} & $64/64$ \fsp{} & PASS \\
+PARI/GP second-leg per candidate
+  & noise relation above $\Hempop$
+  & $65/65$ & PASS \\
+H10 pre-canonical full-regime dry-run
+  & clean across all $65$
+  & clean ($113$ s) & PASS \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+No anomalies surfaced.
+No halt conditions triggered.
+
+\subsection{The primary cascade and its two-tier bounds}\label{sec:results-bounds}
+
+The primary sub-basis is the full $\BDC$ at $n=15$ with
+\texttt{maxcoeff}=$10^{70}$ and the cascade precision schedule
+$\{P, 2P, 4P\} = \{2160, 4320, 8640\}$ dps with maxsteps schedule
+$(100\,000, 80\,000, 50\,000)$.
+The reproducibility check across two independent executions (M3.2a at commit
+\texttt{d55ffbc}; M3.2b at commit \texttt{f621641}) returns bit-for-bit
+identical outputs (Table~\ref{tab:cascade}).
+
+\begin{table}[h]
+\centering
+\caption{Primary cascade outcomes, identical between M3.2a and M3.2b at every cascade leg
+  (mpmath~1.3.0 / Python 3.12.10).\label{tab:cascade}}
+\begin{tabular}{rrll}
+\toprule
+$P$ (dps) & $K$ iterations & $\mathrm{reported\_norm}$ (71-digit int) & $\Hrig$ \\
+\midrule
+$2160$  & $29\,363$ & $\underbrace{10360617603\ldots33854859767\!4}_{71\,\mathrm{digits}}$ & $1.0361\times 10^{72}$ \\
+$4320$  & $29\,363$ & (identical) & $1.0361\times 10^{72}$ \\
+$8640$  & $29\,363$ & (identical) & $1.0361\times 10^{72}$ \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+The two-tier bounds for the primary cascade are
+\begin{align*}
+\Hempfo &= c\cdot 10^{P/(c\,n)}
+       \;\approx\; 2.06 \cdot 10^{2160 / (2.06\cdot 15)}
+       \;\approx\; 7.997\times 10^{69}
+       & \text{(class \fsp{})}, \\
+\Hempop &= \min(\Hempfo, 10^{70})
+       \;=\; 7.997\times 10^{69} = \Hempfo
+       & \text{(cap inactive at $n=15$)}, \\
+\Hrig   &= 1.0361\times 10^{72}
+       & \text{(class \pc{}; Eq.~\eqref{eq:Hrig})}.
+\end{align*}
+
+In words: no integer relation among the basis elements of $\BDC$ has all
+coefficients $\le 7.997\times 10^{69}$ at the BBC-1997 empirical
+confidence calibration of \cite[\S 2]{bailey1998}; and, by
+\cite[Theorem~1 + Corollary~2]{fba1999} applied to the cascade's terminal
+norm-bound certificate, every non-trivial integer relation has Euclidean
+norm $\ge 1.0361\times 10^{72}$ (\pc{}-class), implying the
+coefficient-height bound
+$\max_{i}|m_{i}| \ge 1.0361\times 10^{72}/\sqrt{15} \approx 2.676\times 10^{71}$.
+
+\subsection{Per-family aggregate}\label{sec:results-family}
+
+The $65$ sub-bases group into six families
+(Table~\ref{tab:family}).
+The primary cascade ($n=15$) dominates the total wall-clock at $90.5\%$;
+the remaining $64$ empirical candidates aggregate to $283.9$~s
+($\sim 4.7$~min).
+Small-$n$ families ($n=2, 3$) terminate fast with high cancellation-norm,
+yielding $\Hrig$ statistic values in the $10^{72}$--$10^{73}$ range; mid-$n$
+families ($n=8, 9$) run under the empirical-tier maxsteps schedule and
+yield $\Hrig$ statistic values materially below $\Hempop$.
+For all $64$ empirical sub-bases the predicate verification class is
+\fsp{} (set by the maxsteps schedule, per \S~\ref{sec:h9}), independent of
+the reported $\Hrig$ statistic; only the primary $n=15$ sub-basis carries
+the \pc{} class.
+
+\begin{table}[h]
+\centering
+\caption{Per-family aggregate over the 65-sub-basis sweep.
+  The $\Hrig$ statistic is reported per record (Theorem~1 certificate at
+  termination); the verification class follows the maxsteps schedule
+  (\S~\ref{sec:h9}).\label{tab:family}}
+\small
+\begin{tabular}{lrrrll}
+\toprule
+Family & $n$ & count & $\Sigma$~wall-clock & $\Hrig$ median & verification class \\
+\midrule
+\texttt{primary\_full}             & $15$ & $1$ & $2693.8$ s & $1.04\times 10^{72}$ & \pc{} \\
+\texttt{complement\_plus\_K0\_k}    & $9$  & $7$ & $229.8$ s  & $1.26\times 10^{16}$ & \fsp{} \\
+\texttt{full\_complement}          & $8$  & $1$ & $27.0$ s   & $1.16\times 10^{21}$ & \fsp{} \\
+\texttt{triplet\_log\_*}           & $3$  & $21$ & $21.4$ s & $1.17\times 10^{72}$ & \fsp{} \\
+\texttt{pair\_bilinear\_*}         & $2$  & $21$ & $3.5$ s  & $2.38\times 10^{72}$ & \fsp{} \\
+\texttt{pair\_log\_*}              & $2$  & $14$ & $2.3$ s  & $2.34\times 10^{72}$ & \fsp{} \\
+\midrule
+\textbf{Total}                     & ---  & $65$ & $2977.8$~s ($49.6$~min) & --- & --- \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+The wall-clock total ($49.6$ min) is approximately $30\%$ under our
+$70$--$90$ min pre-execution estimate, dominated by the primary $n=15$
+cascade.
+
+\subsection{PARI/GP independent corroboration}\label{sec:results-gp}
+
+For each of the $65$ sub-bases, the harness runs an independent
+\texttt{gp lindep} second leg on the same basis at the same precision.
+On every sub-basis, \texttt{gp lindep} returns either no relation or a
+relation whose largest coefficient strictly exceeds the empirical operational
+bound $\Hempop$; the cascade-stable null is corroborated independently.
+This addresses the concern that \texttt{mpmath.pslq} and \texttt{gp lindep},
+while implementing closely related algorithms (PSLQ in \texttt{mpmath};
+LLL-based \texttt{lindep} in PARI/GP), might both miss a relation
+through a shared algorithmic pathology; on the present basis this concern
+does not materialize.
+
+\subsection{Reproducibility of the cascade}\label{sec:repro-cascade}
+
+The reproducibility check
+$\text{M3.2a}\leftrightarrow\text{M3.2b}$
+returns bit-for-bit identical outputs at every cascade leg:
+$K = 29\,363$ iterations at all three precisions, identical $71$-digit
+\texttt{reported\_norm} value, identical $\Hrig$.
+This empirically confirms determinism of \texttt{mpmath.pslq} at $n=15$
+across a $4\times$ precision range and two independent executions on the
+build used here.
+The determinism check was operator-mandated post-U-MISSION-N: any
+non-reproducibility would have indicated non-determinism in the algorithm
+that would affect the verification-class assignment.
+
+%======================================================================
+\section{Discussion}\label{sec:discussion}
+%======================================================================
+
+\subsection{Basis-class distinction: apples-to-stronger-apples
+   with BBC~1997}\label{sec:discussion-apples}
+
+We \emph{do not} claim a bound improvement on the BBC~1997 basis.
+BBC~1997 \S 4 Test~1 tested EF1 (the pure-power family
+$\{1, \K, \ldots, \K^{50}\}$ at $D=50$) at $H \le 10^{70}$ and $7350$ dps;
+the present work tests the full basis $\BDC$
+($D=6$, $|C|=7$, $n=15$, which contains both EF1 at $D{\le}6$ and the
+named-open EF1-complement rows $\{\log\K\} \cup \{\K \cdot c\}$) at
+$P=2160$ dps.
+The bases differ in two structural respects --- EF1 truncation and
+EF1-complement inclusion --- so a direct
+``we improve BBC's $10^{70}$ to $10^{72}$'' framing would be
+apples-to-apples on bases that are not the same and is therefore avoided.
+The honest comparison is:
+\begin{enumerate}[label=(\roman*),itemsep=2pt,topsep=2pt]
+\item BBC~1997 produced a single-tier empirical null on EF1 at
+  $H = 10^{70}$, sufficient to rule out a low-degree polynomial relation
+  with bounded height on the pure-power basis.
+\item The present work produces a two-tier null on $\BDC$ (which
+  includes EF1 at $D{\le}6$ and adds the EF1-complement): empirical
+  $\Hempop \approx 7.997\times 10^{69}$ on coefficient height
+  (\fsp{}, BBC-class at the primary $n=15$ sub-basis) and rigorous
+  Euclidean-norm bound
+  $\Hrig = 1.0361\times 10^{72}$
+  (\pc{}, FBA-class; implied height
+  $\max_{i}|m_{i}| \ge 2.676\times 10^{71}$).
+  The rigorous tier is the methodological strengthening; the
+  EF1-complement inclusion is the named-open basis-class extension.
+\end{enumerate}
+A future apples-to-apples comparison would test a union basis that
+preserves BBC's $D=50$ pure-power tower and adds the EF1-complement,
+giving dimension $n = (D{+}1) + 1 + |C| = 51 + 1 + 7 = 59$.
+The wall-clock cost scales roughly as
+$\sim 59^{3}/15^{3} \approx 61\times$
+per cascade step, which is feasible on an extended budget but is outside
+the present scope.
+
+\subsection{Operational-bound capping observation}\label{sec:discussion-capping}
+
+Across the $64$ empirical sub-bases of
+\texttt{m32b\_empirical\_sweep.jsonl},
+the canonical operational empirical bound
+$\Hempop = \min(c\cdot 10^{P/(c\,n)},\; 10^{\log_{10}\textsf{maxcoeff}})$
+differs from the uncapped BBC scaling formula
+$\Hempfo = c\cdot 10^{P/(c\,n)}$
+at every $n \le 14$ sub-basis: at $P=2160$ dps, $c \approx 2.06$,
+$\textsf{maxcoeff}=10^{70}$, the formula yields
+$\approx 10^{70}$
+exactly at $n \approx 14.97 \approx 15$.
+At $n = 15$ the cap is inactive ($\Hempop = \Hempfo \approx 7.997\times 10^{69}$).
+At small $n$ ($n=2, 3$), the formula evaluates well above the
+\textsf{maxcoeff} bound ($\sim 10^{524}$ and $\sim 10^{349}$ respectively);
+reporting these as operational bounds would overclaim the searched range.
+We retain both values in the JSONL output: $\Hempop$ for predicate
+evaluation and table reporting, $\Hempfo$ for transparency about where
+the empirical extrapolation diverges from the searched range.
+
+This is a small refinement to BBC-class empirical-tier reporting at
+parameter regimes where the scaling formula extrapolates outside the
+algorithm's \textsf{maxcoeff} bound.
+The refinement is grounded in the ``somewhat greater than''
+hedge of \cite[\S 2]{bailey1998}: the empirical scaling is stated as a rule
+of practice, not as a tight bound; reporting it as if it were a tight bound
+at parameter regimes outside the search range is the failure mode this
+capping clause addresses.
+
+\subsection{Capability gap: symbolic closure of the null result is
+   fundamental}\label{sec:m4-gap}
+
+Symbolic closure of the M3 null result was attempted via a survey of seven
+candidate structural arguments
+(Lindemann--Weierstrass, Schanuel, Nesterenko, Mahler-measure, Galois,
+non-GKW continued-fraction-theoretic, and height theory)
+and a four-path probe in \texttt{SymPy} 1.14.0
+(\texttt{is\_transcendental}/\texttt{is\_irrational}, \texttt{nsimplify}
+against a named-constants basis, Groebner basis on the symbolic basis $\BDC$,
+and transcendence-theorem applicability check).
+Every candidate failed at the same root: $\K$'s transcendence status is
+itself the major open question in this corner of the literature, and any
+structural certificate strong enough to rule out integer relations in
+$\BDC$ at relation Euclidean norm
+$\le 1.036\times 10^{72}$ would imply progress on that
+question.
+We classify this gap as fundamental: no known structural result is strong
+enough --- not merely a machinery-availability problem --- and the null
+result therefore stands on numerical and rigorous-bound evidence per the
+two-tier predicate
+($\Hempop \approx 7.997\times 10^{69}$ \fsp{};
+$\Hrig = 1.036\times 10^{72}$ \pc{} on the Euclidean norm).
+
+\paragraph{Sub-classification of the failure modes.}
+The seven candidates fail for two qualitatively different reasons.
+Six of seven are structurally unavailable on external grounds alone:
+Lindemann--Weierstrass requires $\K = e^{\alpha}$ for algebraic $\alpha$,
+which is not known to hold; Schanuel is unproven, and a clean
+$\K = \exp(z)$ representation for explicit $\mathbb{Q}$-linear $z$ is not
+known; Nesterenko's 1996 method covers $\pi, e^{\pi}, \Gamma(1/4)$ and has
+no published extension to the Khinchin class; Mahler measure, Galois
+theory, and height theory all require $\K$ algebraic with known minimal
+polynomial, which is unknown.
+The seventh (non-GKW CF-theoretic) is internally scope-ceded under a
+mission-procedural binding, but is also structurally unavailable externally:
+no non-GKW continued-fraction-theoretic result strong enough to constrain
+integer-relation existence in $\BDC$ is published.
+The fundamental classification is therefore based primarily on the
+structural unavailability of the six external candidates, with the
+seventh as a double-blocked corroborating case.
+
+\paragraph{What we are not claiming.}
+We are not claiming structural non-existence of integer relations on
+$\BDC$, nor a structural closure of the M3 null.
+The null result stands on its numerical evidence and rigorous-bound
+proven-corollary application alone; the symbolic-closure attempt is
+reported here for transparency about the limits of what numerical evidence
+plus available structural theory can jointly establish for this constant
+class.
+
+%======================================================================
+\appendix
+
+\section{Reproducibility}\label{app:reproducibility}
+%======================================================================
+
+\paragraph{Repository and gold tags.}
+All canonical artifacts are hosted at
+\url{https://github.com/papanokechi/khinchin-k0-bounded}
+on \texttt{origin/main}, tagged in milestone order:
+\texttt{gold/M1} (\texttt{15b216f}; target selection),
+\texttt{gold/M2} (\texttt{ca9c989}; M2.3 predicate),
+\texttt{gold/M3} (\texttt{9c2702d}; canonical JSONL outputs),
+\texttt{gold/M4} (\texttt{fd13eeb}; capability-gap document),
+\texttt{gold/M5} (\texttt{208f6fc}; Lean~4 skeleton).
+Tags are annotated; the manuscript snapshot is at the commit cited in the
+title-page footnote.
+
+\paragraph{Environment.}
+The canonical environment lock is in
+\texttt{env/M1.lock}
+(generated at the M1.3 gold freeze):
+Microsoft Windows 11 Pro Insider Preview 10.0.29585; Python 3.12.10;
+\texttt{mpmath} 1.3.0; \texttt{sympy} 1.14.0; \texttt{numpy} 2.4.4;
+\texttt{gmpy2} 2.3.0; Lean 4.29.1; Lake 5.0.0-src+f72c35b; Mathlib4
+v4.14.0; PARI/GP 2.18.1.
+
+\paragraph{Commands.}
+\begin{lstlisting}
+# M3.2a primary cascade only (n=15 full basis):
+python harness/sweep.py --m32-primary-measurement --m32-primary-greenlighted
+
+# M3.2b empirical sweep (65 sub-bases, ~50 min on a 2024-class CPU):
+python harness/sweep.py --full --m32-full-greenlighted
+
+# H10 pre-canonical full-regime dry-run (113 s wall-clock):
+python harness/sweep.py --m31-extended-dry-run
+
+# Lean 4 statement-shape check (post `lake update`):
+cd m5 && lake build M5
+cd m5 && lake env lean PrintAxioms.lean   # reproduces _print_axioms_output.txt
+\end{lstlisting}
+
+\paragraph{Paper-read primary sources (SHA-256 hashes).}
+The following primary sources were paper-read and their digital copies
+hashed at retrieval:
+
+\begin{longtable}{p{0.30\textwidth} p{0.10\textwidth} p{0.50\textwidth}}
+\toprule
+Source & lit-NNN & SHA-256 (file) \\
+\midrule
+\endhead
+Signature paper \cite{papanokechi2026signature} & lit-001 & (operator-authored, MIT-licensed repo snapshot) \\
+BBC 1997 \cite{bbc1997} & lit-002 & (paper-read verified; hash in \texttt{literature/claims.jsonl}) \\
+FBA 1999 \cite{fba1999} & lit-009 & \texttt{3E330BC1...12890B5} (\texttt{cpslq.pdf}, $218\,997$ B) \\
+Bailey 1998 \S 2 (PSLQ) \cite{bailey1998} & lit-010 & \texttt{5E435CAF...4895} (\texttt{node3.html}, $11\,344$ B); \texttt{8BEB376B...6A00} (\texttt{paper.html}, $2\,123$ B) \\
+\bottomrule
+\end{longtable}
+
+\paragraph{Canonical artifacts.}
+The two load-bearing JSONL files are
+\texttt{harness/sweep\_output/m32a\_primary\_cascade.jsonl} (M3.2a, $5\,649$ B)
+and
+\texttt{harness/sweep\_output/m32b\_empirical\_sweep.jsonl} (M3.2b, $363\,709$ B);
+both are frozen at \texttt{gold/M3} = \texttt{9c2702d}.
+The aggregate-verdict audit produced by
+\texttt{harness/\_audit\_m32b\_summary.py}
+on the same data is saved at
+\texttt{harness/sweep\_output/m32b\_summary.md}
+(also at \texttt{gold/M3}).
+
+\paragraph{Wall-clock.}
+On a single core of an Intel-class 2024 laptop CPU with $16$~GB RAM:
+M3.2a primary cascade $\approx 66.5$~min; M3.2b full empirical sweep
+$\approx 49.6$~min ($90.5\%$ on the primary $n{=}15$ cascade,
+$\sim 4.7$~min on the $64$ empirical sub-bases);
+H10 pre-canonical dry-run $\approx 113$~s.
+
+%======================================================================
+\section{The AEAL heuristic-accumulation methodology}\label{app:aeal}
+%======================================================================
+
+The present work was conducted under an explicit-evidence-acceptance-and-logging
+(AEAL) discipline: every load-bearing claim is required to carry an
+explicit evidence class, every halt event is logged, every heuristic is
+named and dated, and any change to the bounded hypothesis incurs a
+mutation-log entry.
+The discipline was iteratively shaped by the work as it proceeded; the
+present appendix records the heuristic set that crystallized over the
+mission's six milestones M1--M5 plus the present M6, as a small but real
+methodological contribution distinct from the $\K$ result.
+
+\subsection{Heuristic accumulation H1--H10}\label{sec:aeal-heuristics}
+
+The ten heuristics canonical to this work are:
+\begin{description}[itemsep=2pt,topsep=2pt]
+\item[H1.] PSLQ cascading-precision triage:
+  Any candidate relation is verified by re-running PSLQ at $2\times$ and
+  $4\times$ precision with the same coefficient bound; transient false
+  positives at low precision are rejected.
+\item[H2.] Literature-ledger prioritization for the bounded survey:
+  Literature claims that bound the central hypothesis are loaded into the
+  ledger first; tangential citations are not pursued.
+\item[H3.] Stall-diagnostic timing within wall-clock caps:
+  A scheduled stall-diagnostic at fixed wall-clock checkpoints separates
+  budget-exhaustion from algorithmic stalls.
+\item[H4.] Capability-gap escalation discipline:
+  If a step of the mission requires machinery not in the declared
+  capability stack, the gap is documented (not papered over) and the
+  mission halts for operator review.
+\item[H5.] Mutation-log entry discipline:
+  Any change to the bounded hypothesis (basis shape, predicate form,
+  success criterion) incurs a mutation-log entry; field-map updates
+  (citation strength, status promotions within an established taxonomy)
+  do not consume mutation budget.
+\item[H6.] Namespace audit on independence scoring:
+  Independence claims between two basis classes are audited at the
+  namespace level (content / machinery / attribution).
+\item[H7.] Functional verification on capability claims:
+  A claimed capability (a tool, an algorithm, a package) is verified by
+  function-call rather than name resolution alone.
+\item[H8.] Paper-read verification on dependency literature claims:
+  Load-bearing literature claims are verified by direct reading of the
+  primary source (paper, preprint, supplementary material); web aggregators,
+  citation databases, and LLM-mediated summaries are not sufficient.
+\item[H9.] Theorem-vs-heuristic classification on cited bounds:
+  Cited numerical bounds are reported under a four-class taxonomy
+  (\rt{}, \pc{}, \fsp{}, \eh{}), with the class explicit in the manuscript
+  and in the canonical JSONL output.
+\item[H10.] Full-regime dry-run mandatory before canonical execution:
+  Any sweep introducing a new $(P, n, \text{basis structure})$ regime
+  requires a full-regime dry-run at canonical precision before canonical
+  execution; the dry-run catches code paths that exist but have never been
+  exercised at canonical scale, distinct from H7's ``tool isn't installed
+  but name resolves.''
+\end{description}
+
+Six of these ten (H6--H10) were installed mid-mission in response to
+specific halt events: H6 from a target-shortlist overlap audit; H7 from
+a capability-probe false-positive on a PARI/GP install state; H8 from a
+literature-fidelity catch on an AI-aggregated claim later refuted by
+paper-read; H9 from a heuristic-vs-theorem catch on the
+$H \approx 10^{P/n}$
+scaling formula; H10 from a harness-execution catch when a code path was
+exercised at canonical precision for the first time.
+
+\subsection{Bidirectional verification: heuristics apply to operator
+   framing as well as agent output}\label{sec:aeal-bidirectional}
+
+A property of the heuristic set that emerged during the mission is its
+bidirectional application: H8 fires not only when the agent cites a
+literature claim, but also when the operator's framing of a claim is
+under examination.
+For example, the resolution of one halt event required determining whether
+a claim that ``FBA 1999 states $H \approx 10^{P/n}$ as a theorem'' was
+operator-introduced or agent-introduced; H8 paper-read on
+\cite{fba1999} established that neither party had cited the claim as a
+theorem of FBA, and the H9 classification was upgraded accordingly.
+The bidirectionality is structural: the AEAL discipline is not an
+agent-fidelity audit; it is a joint operator-and-agent fidelity audit
+against canonical artifacts.
+
+\subsection{Health-score retrospective}\label{sec:aeal-health}
+
+We close with four health-score observations across the full mission.
+The claim-to-sweep ratio (load-bearing claims in the manuscript per
+candidate sub-basis tested) is approximately $5/65$: the manuscript
+makes few claims, the sweep tests many candidates.
+The reproduce-command coverage is approximately $100\%$: every numerical
+claim in the manuscript has a corresponding canonical command in
+Appendix~\ref{app:reproducibility}.
+The capability-gap honesty is positive: a fundamental gap is reported as
+such in Section~\ref{sec:m4-gap} rather than papered over with additional
+numerics.
+The literature-fidelity honesty is positive: two paper-read events
+(\cite{fba1999} mid-mission; \cite{bailey1998} at M6 Step~1) upgraded the
+manuscript's empirical and rigorous-tier framings against the
+canonical primary sources, in both cases strengthening the framing without
+weakening any verification class.
+
+% ---------------------------------------------------------------------
+\bibliographystyle{plain}
+\bibliography{references}
+
+\end{document}
