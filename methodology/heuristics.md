@@ -684,6 +684,151 @@ assignments before `--full --m32-full-greenlighted` is re-authorized.
 
 ---
 
+## H11 — Class-of-error exhaustive propagation on bundled fixes
+
+**Intent:** prevent the M6-layer-3-class partial-fix-propagation pattern
+documented in the commit transition `8ac5bcf` → `979c613` — the M6
+manuscript bundle at `8ac5bcf` displayed the BBC empirical-height formula
+as `c · 10^{P/(c·n)}` (residual leading `c`) at seven distinct typeset
+locations in `paper/main.tex` plus one substitution-prefix occurrence plus
+one paired prose phrase, even though every numerical claim downstream
+(`H_emp^op ≈ 7.997 × 10^69`, capping inactive at `n = 15`, threshold check
+`n ≈ 14.97` at `10^70`) had already been computed under the corrected
+`10^{P/(c·n)}` form. The operator-self-review's Check 2 surfaced six of
+the seven leading-`c` sites; an independent-pass (rubber-duck) review
+flagged the seventh (`paper/main.tex` line 519 in the §2.5 capping
+clause) before the layer-3 commit fired. Without an exhaustive-
+propagation discipline, the natural failure mode is "fix the first
+occurrence noticed, commit, ratify, then the same class-of-error
+resurfaces under later scrutiny at sibling sites."
+
+**Heuristic.** Once a class-of-error pattern is identified at any single
+site in an AEAL-bound artifact, the fix-site enumeration MUST be
+exhausted **before** the fix bundle is committed — every sibling-class
+site of the same error must be either fixed in the same commit or
+explicitly catalogued (with rationale) as a deliberate exception.
+Partial propagation that addresses only the operator-noticed instances
+and leaves sibling-class sites untouched violates H11.
+
+**What exhaustive propagation means in this mission's repository:**
+
+- **Enumerate the class.** Define the error pattern precisely (e.g., for
+  the M6 leading-`c` case: "any displayed-math occurrence of
+  `c \cdot 10^{P/(c·n)}` in `paper/main.tex`, including substitution
+  prefixes and paired prose paraphrases such as 'leading constant
+  c ≈ 2.06'").
+- **Repository-wide grep.** Run a grep with the class pattern as a
+  regex across the full artifact set (`paper/main.tex`,
+  `methodology/*.md`, `handoff/*.md`, `claims/*.jsonl`, capability
+  records — whatever artifact set the error class could plausibly
+  appear in). Include near-miss variants in the regex (different
+  spacings of `\cdot`, paraphrased prose, alternative notation).
+- **Sibling-site verification.** For each grep hit, decide: fix in the
+  current commit, OR catalogue as a deliberate exception with rationale
+  recorded in the commit message.
+- **Independent-pass review.** Before commit, request an independent
+  enumeration pass (rubber-duck agent, or a second operator-self-review
+  at a different abstraction level) specifically scoped to "did the
+  first-pass enumeration miss any sibling sites?" In the M6 layer-3
+  case, this caught one missed site out of seven.
+
+**Insufficient propagation modes (each silently false-positives H11):**
+
+- **Operator-spotted-only fix.** The operator notices the error at one
+  location, points it out, the fix is applied there alone, and the same
+  error class persists at unnoticed sibling sites.
+- **Single-grep-pattern-only fix.** A literal-string grep for one
+  phrasing misses paraphrased or near-miss variants (e.g., grepping for
+  `c \cdot 10` would miss `c\cdot 10` without space, or a prose phrase
+  like "leading constant c ≈ 2.06").
+- **Compile-clean-equals-fix-complete.** PDF or build compiling cleanly
+  after the first-pass fix proves only that the artifact is well-formed,
+  not that the class-of-error is fully eliminated. A residual occurrence
+  at a sibling site still compiles cleanly.
+- **Manual-scan-without-programmatic-enumeration.** Eyeballing the
+  artifact for the error class scales poorly past a few sites; the
+  M6 layer-3 case had ≥ 7 sites where manual scanning would predictably
+  miss at least one.
+
+**Required form of an H11-compliant fix bundle:**
+
+1. **Class-pattern statement** in the commit message: a precise
+   description (or regex) of the error class the bundle addresses.
+2. **Enumeration evidence**: line numbers (or equivalent locator
+   identifiers) for every sibling site touched by the bundle.
+3. **Grep transcript** (in the commit message, the SQL todo description,
+   or attached evidence): the pre-commit grep output proving zero
+   residual sibling-class matches in the bundle's scope, OR a catalogue
+   of deliberate exceptions with rationale.
+4. **Independent-pass evidence**: a record that a rubber-duck or
+   second-pass review specifically asked "did this enumeration miss any
+   sibling sites?" before commit, with the answer documented.
+
+**Defers to:** Brief §M6.2 (manuscript bundle structure — H11 specifies
+*how to construct* a layer-N revision bundle but does not override the
+Brief's gate structure for layer transitions). Subordinate; does not
+loosen any Brief gate.
+
+**Supersedes:** the implicit assumption that a fix is complete when the
+operator-noticed sites are addressed. The M6 layer-3 bundle demonstrates
+that operator-noticed sites are a *subset* of sibling sites in a
+class-of-error, not the full set; H11 makes the gap an explicit
+verification surface.
+
+**Retroactively binding on the M6 layer-3 bundle commit `979c613`:**
+the bundle was constructed in H11-compliant form ahead of H11's formal
+installation — the commit message enumerates all nine edits with file
+locations, a post-commit grep transcript was logged (zero residual
+`c \cdot 10` or `c\cdot 10` matches in `paper/main.tex`), and the
+rubber-duck pass that caught line 519 is documented in this session's
+state. H11's formal installation is therefore a *codification* of the
+practice already exercised in the bundle, not a new requirement imposed
+retrospectively.
+
+**Forward-binding on every subsequent layer-N revision bundle and every
+class-of-error fix in any AEAL-bound artifact:** the four-element form
+above (class-pattern statement, enumeration evidence, grep transcript,
+independent-pass evidence) is mandatory in the commit message (or in a
+linked SQL todo description) for any fix bundle that addresses a
+class-of-error pattern at ≥ 2 sites. Single-site fixes are exempt from
+H11's required form but still benefit from its discipline (a
+repository-wide grep takes seconds and catches the case where the
+"single site" was actually two or more sites all along).
+
+**Conflict path:** H11 does not override a Brief amendment that
+explicitly authorizes single-site fixes without exhaustive propagation
+(none currently exists). If a future amendment specifies a different
+propagation modality (e.g., automated refactor tools with proven
+soundness over the artifact set), H11 yields to that modality. Log
+conflict in `mutation_log/`.
+
+**Sibling to H7 and H10, NOT generalization.** H7 covers *functional
+verification of capability claims*; H10 covers *full-regime pre-canonical
+exercise of the harness*; H11 covers *exhaustive propagation of
+class-of-error fixes across sibling sites in an artifact*. Different
+problem domains: H7 catches "tool isn't installed but name resolves";
+H10 catches "code path exists but hasn't been exercised at canonical
+scale"; H11 catches "fix applied at one site but the same class-of-error
+persists at sibling sites due to incomplete propagation." Different
+mechanisms: H7 requires running a tool's minimal example; H10 requires
+running the harness's full sweep enumeration at canonical scale with
+low-wall-clock synthetic load; H11 requires running a repository-wide
+grep on the error class's pattern (with near-miss variants in the
+regex) plus an independent-pass review before commit.
+
+**Installation event:** the operator-self-review on M6 bundle commit
+`8ac5bcf` (six-check sweep, Check 2 surfaced two findings); the layer-3
+bundle at `979c613` repaired the leading-`c` class-of-error at seven
+typeset sites in `paper/main.tex` plus one substitution-prefix
+occurrence at line 695 plus one paired prose phrase at lines 434–435.
+H11 is installed mid-M6 because the rhetorical framing "eleven
+heuristics, the last installed in response to a class-of-error
+propagation pattern the mission itself demonstrated" carries the
+methodological discipline of AEAL more honestly than a deferred-to-
+successor-paper closing.
+
+---
+
 ## Conflict log
 
 | Date | Heuristic | Conflicting authority | Resolution | mutation_log ref |

@@ -1007,9 +1007,9 @@ present appendix records the heuristic set that crystallized over the
 mission's six milestones M1--M5 plus the present M6, as a small but real
 methodological contribution distinct from the $\K$ result.
 
-\subsection{Heuristic accumulation H1--H10}\label{sec:aeal-heuristics}
+\subsection{Heuristic accumulation H1--H11}\label{sec:aeal-heuristics}
 
-The ten heuristics canonical to this work are:
+The eleven heuristics canonical to this work are:
 \begin{description}[itemsep=2pt,topsep=2pt]
 \item[H1.] PSLQ cascading-precision triage:
   Any candidate relation is verified by re-running PSLQ at $2\times$ and
@@ -1050,16 +1050,32 @@ The ten heuristics canonical to this work are:
   execution; the dry-run catches code paths that exist but have never been
   exercised at canonical scale, distinct from H7's ``tool isn't installed
   but name resolves.''
+\item[H11.] Class-of-error exhaustive propagation on bundled fixes:
+  Once a class-of-error pattern is identified at any single site in an
+  AEAL-bound artifact, the fix-site enumeration is exhausted via
+  repository-wide pattern grep (including near-miss variants) before the
+  fix bundle is committed; sibling-class sites are either fixed in the
+  same bundle or catalogued as deliberate exceptions, with an
+  independent-pass review providing a final enumeration check. Distinct
+  from H10's harness-execution audit and from H7's capability-claim
+  audit, H11 catches the partial-fix-propagation failure mode where an
+  initial-site repair leaves the same class-of-error live at unrepaired
+  sibling sites.
 \end{description}
 
-Five of these ten (H6--H10) were installed mid-mission in response to
+Six of these eleven (H6--H11) were installed mid-mission in response to
 specific halt events: H6 from a target-shortlist overlap audit; H7 from
 a capability-probe false-positive on a PARI/GP install state; H8 from a
 literature-fidelity catch on an AI-aggregated claim later refuted by
 paper-read; H9 from a heuristic-vs-theorem catch on the
 $H \approx 10^{P/n}$
 scaling formula; H10 from a harness-execution catch when a code path was
-exercised at canonical precision for the first time.
+exercised at canonical precision for the first time; H11 from a
+partial-fix-propagation catch during this paper's own layer-3
+manuscript revision, where the initial-site repair of a displayed
+empirical-height formula left sibling-site residuals at six further
+locations until exhaustive grep enumeration plus an independent-pass
+review cleared them.
 
 \subsection{Bidirectional verification: heuristics apply to operator
    framing as well as agent output}\label{sec:aeal-bidirectional}
