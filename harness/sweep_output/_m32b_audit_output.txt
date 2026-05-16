@@ -1,0 +1,59 @@
+M3.2a file: m32a_primary_cascade.jsonl
+  meta_header: mode=m32-primary-measurement dry_run=False canonical=True
+  candidates: 1
+
+M3.2b file: m32b_empirical_sweep.jsonl
+  meta_header: mode=full dry_run=False canonical=True
+  candidates: 65
+  total_elapsed: 2977.796194900002s
+
+  [OK] 65 candidate records present
+
+Verdict distribution:
+  cascade_stable_null: 65
+  [OK] All 65 cascade_stable_null
+
+Verification class distribution:
+  field_standard_practice: 64
+  proven_corollary: 1
+
+======================================================================
+PRIMARY_FULL REPRODUCTION CHECK (M3.2b vs M3.2a)
+======================================================================
+   P_dps |     K_a      K_b  K_match |   final_norm match |        H_rig_a         H_rig_b  H_match
+--------------------------------------------------------------------------------------------------------------
+    2160 |   29363    29363      YES |                YES |     1.0361e+72      1.0361e+72  YES
+    4320 |   29363    29363      YES |                YES |     1.0361e+72      1.0361e+72  YES
+    8640 |   29363    29363      YES |                YES |     1.0361e+72      1.0361e+72  YES
+
+[OK] PRIMARY_FULL BIT-FOR-BIT REPRODUCTION: PASS
+     K iterations + final_norm identical at all 3 precisions.
+
+Per-family elapsed wall-clock summary:
+              primary_full  n= 1  total=   2693.8s  avg=2693.78s
+      complement_plus_K0_k  n= 7  total=    229.8s  avg=  32.82s
+           full_complement  n= 1  total=     27.0s  avg=  27.01s
+               triplet_log  n=21  total=     21.4s  avg=   1.02s
+             pair_bilinear  n=21  total=      3.5s  avg=   0.17s
+                  pair_log  n=14  total=      2.3s  avg=   0.17s
+
+H_rigorous range per family group:
+              complement_plus_K0_k  min=  3.50e+15  max=  9.06e+16  median=  1.26e+16  n=7
+                   full_complement  min=  1.16e+21  max=  1.16e+21  median=  1.16e+21  n=1
+                     pair_bilinear  min=  1.12e+72  max=  3.55e+73  median=  2.38e+72  n=21
+                          pair_log  min=  1.00e+72  max=  1.36e+73  median=  2.34e+72  n=14
+      primary_full (rigorous tier)  min=  1.04e+72  max=  1.04e+72  median=  1.04e+72  n=1
+                       triplet_log  min=  1.01e+72  max=  2.38e+72  median=  1.17e+72  n=21
+
+Dual-field reporting verification:
+  records with H_empirical_operational: 65/65
+  records with H_empirical_formula:     65/65
+  cap ACTIVE (formula > operational): 64
+  cap INACTIVE (formula <= operational): 1
+
+gp_lindep verdict distribution:
+  gp_noise_relation_above_H_empirical_confirms_null: 65
+
+======================================================================
+AUDIT COMPLETE
+======================================================================
