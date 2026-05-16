@@ -16,7 +16,7 @@ Each entry in `claims.jsonl` is a single JSON object with EXACTLY these seven fi
 | `precision_or_dependencies` | object | Concrete quantitative parameters (precision, degree D, height H, basis size, year, DOI). For non-computational claims, document key non-numerical parameters. |
 | `reproduce_command` | string | A concrete command or URL that lets a future reader retrieve the same artifact. For paywalled papers, the DOI URL + author-host mirror URL. For OEIS, the OEIS URL. For book references, the citation + library lookup string. |
 | `independent_verifier_result` | object | Structured. Required keys: `verified: bool`, `method: enum`, optional `paywall_blocker: string`, optional `notes: string`. |
-| `status` | string | One of: `verified`, `unverified_abstract_only`, `unverified_paywall_blocked`, `unverified_book_not_digitized`, `fidelity_watch`, `fidelity_caught_refuted`, `theoretical_citation_only`. |
+| `status` | string | One of: `verified`, `unverified_abstract_only`, `unverified_paywall_blocked`, `unverified_book_not_digitized`, `fidelity_watch`, `fidelity_caught_refuted`, `theoretical_citation_only`, `pending_verification`. |
 
 ### `independent_verifier_result.method` enum
 
@@ -44,6 +44,15 @@ Per H7 (functional verification on capability claims; the principle applies anal
   **Used in this ledger only for the `fidelity_watch` entry**, where two
   search_aggregated_unverified results disagreed and the disagreement itself is the
   content.
+- `deposit_receipt_verified` — primary deposit receipt was retrieved from the issuing
+  repository (HAL, Zenodo, OSF, institutional repository, preprint server, or other
+  primary-deposit issuer) and the recorded identifier/timestamp/DOI matches expectations.
+  Reserved for `evidence_class: primary_deposit_receipt` claims. Corroborating modality
+  detail (portal screenshot, email confirmation PDF, API response payload, moderation
+  outcome notification) is recorded in `independent_verifier_result.notes`, not in the
+  method name. Pre-deposit / pre-audit claims pair this method with `status: pending_verification`;
+  post-audit claims transition to `status: verified` (or to a fidelity-class status if a
+  receipt-vs-expected mismatch surfaces).
 
 ## Axes covered (per operator's M2.1 directive)
 
@@ -101,6 +110,24 @@ exceptions auditable.
   issuing a primary deposit receipt will use this same enum value). Documented in the
   HAL test deposit runbook §3 (`control-center/cheat-sheets/HAL_LOG_LADDER_TEST_DEPOSIT_RUNBOOK_v1.md`).
   Operator confirmation in slot-217 audit-input package, 2026-05-16.
+
+- **2026-05-16, slot-217 cycle continuation, SIARC HAL/Episciences pipeline bootstrap (cont.).**
+  Added `pending_verification` to the `status` enum and `deposit_receipt_verified` to
+  the `independent_verifier_result.method` enum (both field-additive only; no structural
+  change to the 7-field schema). Rationale: the `primary_deposit_receipt` evidence class
+  introduced in the prior sibling entry requires a pre-audit status (claim recorded at
+  deposit time, audit closes at SIARC slot-218 post-moderation) and a corresponding
+  verification method (the deposit receipt is the canonical primary artifact; modality
+  detail — portal screenshot, email confirmation PDF, API response payload — is
+  `notes`-level, not enum-level). All three additions (this entry's two + the prior
+  entry's one) are "first instance of a class" per the enum-extension test: the SIARC
+  HAL/Episciences pipeline is the first deposit-class claim infrastructure; future
+  deposits (Zenodo, OSF, preprint servers, institutional repositories) will share these
+  enum values. Method name `deposit_receipt_verified` chosen over
+  `deposit_receipt_and_portal_screenshot` per operator's "reconsider method name
+  generality before commit" directive (2026-05-16 ~21:20 JST) — the canonical method
+  describes the evidence-class (deposit receipt), not the modality mix (which varies by
+  issuing repository). Operator confirmation in 2026-05-16 ~21:20 JST decision turn.
 
 ## File layout
 

@@ -49,6 +49,7 @@ ALLOWED_STATUSES = {
     "fidelity_watch",
     "fidelity_caught_refuted",
     "theoretical_citation_only",
+    "pending_verification",  # slot-217 cycle continuation extension 2026-05-16; see _schema.md "Authorized exceptions ledger"
 }
 
 ALLOWED_METHODS = {
@@ -59,6 +60,7 @@ ALLOWED_METHODS = {
     "oeis_or_tertiary_aggregator_verified",
     "computed_reproduction",
     "search_aggregated_unverified",
+    "deposit_receipt_verified",  # slot-217 cycle continuation extension 2026-05-16; see _schema.md "Authorized exceptions ledger"
 }
 
 
