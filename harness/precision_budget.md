@@ -171,11 +171,11 @@ The pre-U-MISSION-L reading was correct that the H-matrix diagonals are not in t
 | ID | Divergence | Practical impact |
 |---|---|---|
 | D1 | mpmath uses `max_{i,j} \|H[i,j]\|` (all entries); FBA T1 uses `max_j \|h_{j,j}\|` (diagonal only) | mpmath's bound is rigorous but strictly weaker; H_rigorous is several decades smaller than optimal FBA T1 bound |
-| D2 | mpmath uses γ = √(4/3) exactly; FBA Def 5 requires γ > √(4/3) strict | Boundary case covered by Bailey 1998 expository paper (mpmath's stated source); Theorem 1 + Corollary 2 unaffected; Theorem 3 (overshoot) requires Bailey 1998 H8 paper-read if cited |
-| D3 | mpmath cites Bailey 1998, NOT FBA 1999, in docstring | Forward-flagged: Bailey 1998 H8 paper-read recommended if rigorous tier is load-bearing in M2.3 predicate |
+| D2 | mpmath uses γ = √(4/3) exactly; FBA Def 5 requires γ > √(4/3) strict | Boundary case covered by Bailey 1998 expository paper (mpmath's stated source); Theorem 1 + Corollary 2 unaffected; Theorem 3 (overshoot) requires Bailey 1998 H8 paper-read if cited — **STATUS: CLEARED per H8 fire 2026-05-16 ~15:55 JST (lit-010 upgraded to verified); Bailey 1998 §2 states the norm-bound certificate without γ-range condition; T1+Cor2 hold at the boundary; see `literature/_fidelity_findings.md` §8.1** |
+| D3 | mpmath cites Bailey 1998, NOT FBA 1999, in docstring | Forward-flagged: Bailey 1998 H8 paper-read recommended if rigorous tier is load-bearing in M2.3 predicate — **STATUS: CLEARED per H8 fire 2026-05-16 ~15:55 JST (lit-010 upgraded to verified); algorithm chain mpmath → Bailey 1998 §2 → FBA 1999 verified structurally consistent; see `literature/_fidelity_findings.md` §8.2** |
 | D4 | mpmath applies `norm //= 100` safety factor | Conservative (rigor preserved); reported_norm = 0 is uninformative; H_rigorous = 100·reported_norm |
 
-**None of D1-D4 invalidates Corollary 2 applicability.** The two-tier predicate is structurally sound; D2 / D3 are forward-flagged for downstream H8 strengthening at operator discretion.
+**None of D1-D4 invalidates Corollary 2 applicability.** The two-tier predicate is structurally sound; **D2 + D3 CLEARED at M6 Step 1 H8 fire (2026-05-16); D1 + D4 remain as design-of-mpmath observations (conservative, not gap)**. A NEW finding D5 emerged at the H8 fire: Bailey 1998 §2 contains the verbatim "general rule" wording underlying the H ~ 10^(P/n) folklore, strengthening (not correcting) the H9 `field_standard_practice` classification of the empirical tier — see `literature/_fidelity_findings.md` §8.3.
 
 ### §5.2 Achievable rigorous bound regime — empirical (n=15)
 

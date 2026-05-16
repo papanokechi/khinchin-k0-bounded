@@ -258,3 +258,60 @@ If R2.β is adopted, the predicate text in `_m2.3_calibration_anchor.md` §7.3 m
 - `mutation_log/m3.2_phase_split_20260516.md` (precedent mutation_log entry for §7 procedural extension).
 - Operator U-MISSION-M3.2 (2026-05-16 ~08:22 JST) — anticipated this class of finding verbatim.
 - Operator U-MISSION-M3.2b-RATIFICATION (2026-05-16 ~10:00 JST) — greenlit M3.2b that surfaced this.
+
+---
+
+## 8. H8 fire on Bailey 1998 (M6 Step 1, 2026-05-16 ~15:55 JST) — D2/D3 CLEARED + D5 new finding
+
+**Authority:** operator M6 GREENLIGHTED 2026-05-16 ~15:48 JST per Step 1 of the M6 work sequence: *"Pre-drafting H8 fire on Bailey 1998 per m6_preflight §1. If M6 §Methods cites FBA T1+Cor2 as proof-of-bound justification for the rigorous tier (it will), H8 paper-read on Bailey 1998 is required to resolve D2 (γ = √(4/3) boundary case) and D3 (mpmath-cited-source question) divergences identified at M2.3."*
+
+**Class:** H8 paper-read verification on a previously fidelity-watched primary source (lit-010); resolution of two M2.3-flagged divergences (D2, D3); discovery of one verbatim corroboration (D5).
+
+**Summary:** Bailey-Plouffe "Recognizing Numerical Constants" (CMS Conf. Proc. 20, AMS 1998; preprint 1997) §2 "The PSLQ Integer Relation Algorithm" was retrieved from the CECM/SFU mirror (the URL mpmath cites verbatim in its PSLQ docstring) and paper-read in full. The two flagged divergences D2 and D3 are both **CLEARED**: the M6 rigorous tier claim (verification class `proven_corollary`, H_rigorous = 1.036 × 10⁷²) is preserved without modification. A third finding D5 (NEW) confirms verbatim Bailey 1998's characterization of the H ~ 10^(P/n) folklore as a "general rule" — strengthening, not correcting, the H9 `field_standard_practice` classification of the empirical tier.
+
+### 8.1 D2 disposition — γ = √(4/3) boundary case CLEARED
+
+Bailey 1998 §2 visible text states the per-iteration norm-bound certificate `M = 1/max_j |H_j|` **without** any γ-range condition. The strict γ > √(4/3) inequality (FBA 1999 Definition 5) is required only for the Theorem 3 *overshoot* bound, which the M6 rigorous tier does NOT cite. mpmath's choice of γ = √(4/3) exactly is inside Bailey 1998's stated parameter scope; the operative T1+Cor2 hold at the boundary. **The boundary case has been canonical PSLQ pedagogy since Bailey 1998.**
+
+### 8.2 D3 disposition — mpmath cites Bailey 1998 not FBA 1999 CLEARED
+
+mpmath's algorithm chain `mpmath → Bailey 1998 §2 → FBA 1992 preprint → FBA 1999` is **structurally consistent at every link**. Bailey 1998 §2 explicitly says it presents the "simpler formulation" of the Ferguson-Bailey algorithm (per its reference [13] = FBA preprint 1992 = FBA 1999). The §2 pseudocode Step 5 norm-bound certificate is equivalent to FBA 1999 Theorem 1 in conservative form. The strictly-stronger FBA T1 statement (max diagonal) is bracketed below by Bailey 1998's row-norm form and above by mpmath's max-over-all-entries form; all three are valid rigorous lower-bound certificates on any relation norm. **mpmath's bound is inheritable from Bailey 1998 directly, with FBA 1999 providing the underlying theorem.**
+
+### 8.3 D5 disposition — folklore characterization confirmed verbatim (NEW FINDING)
+
+Bailey 1998 §2 pedagogical paragraph following the pseudocode contains the **verbatim canonical statement** of the empirical-scaling folklore:
+
+> *"As a general rule, one can expect to detect a relation of degree n, with coefficients of size 10^m, provided that the input vector is known to somewhat greater than m·n digit precision."*
+
+This is **explicit primary-source warrant** for the H9 verification class `field_standard_practice` applied to the empirical tier of the M2.3 two-tier predicate. The class assignment was already made at U-MISSION-L based on FBA 1999's absence of the relation as a theorem; D5 confirms it positively by quoting Bailey 1998's own "general rule" wording. **D5 strengthens the empirical-tier framing but does not change any verification class.**
+
+### 8.4 Material impact on M6 manuscript
+
+- **§Methods PSLQ description:** can now cite lit-010 as paper-read primary source for the simplified-PSLQ algorithm (in addition to lit-009 FBA 1999 for the rigorous bound theorem). The two citations are jointly load-bearing for the rigorous tier.
+- **§Methods two-tier predicate description:** the trust chain `mpmath → Bailey 1998 → FBA 1999` is now explicitly verifiable; M6 §Methods may include a one-sentence footnote citing this verification.
+- **§Discussion empirical-tier framing:** can now cite Bailey 1998's "general rule" wording verbatim as primary-source warrant for the `field_standard_practice` class of the empirical tier.
+- **§Reproducibility appendix:** lit-010's SHA-256 hashes (8BEB…6A00 and 5E43…4895) can be cited as paper-read provenance.
+- **No §Methods text downgrade required.** The rigorous tier remains `proven_corollary`; the empirical tier remains `field_standard_practice`. Both classes are now anchored to paper-read primary sources (lit-009 + lit-010).
+
+### 8.5 Lit-010 status upgrade
+
+Previous status: `fidelity_watch` (carry-over from lit-018 M2.1 watch list; "K₀ not in null-result tables" claim was AI-aggregated, not paper-read-verified).
+
+New status: `verified` (paper-read verified for the H8 scope: D2/D3/D5 dispositions; §2 algorithm description). The carry-over watch on the K₀-null-table absence claim remains `non-load-bearing` — it does not affect any current mission claim and would only need resolution if a future M6 revision uses lit-010's null-result tables as load-bearing (it does not; BBC 1997 = lit-002 is the load-bearing K₀ null-result citation).
+
+### 8.6 Counts
+
+- This is the **8th literature-fidelity event** for the unsolved-relay mission overall, the **2nd successful paper-read H8 fire** (after lit-009 FBA 1999 at U-MISSION-K resolution), and the **1st H8 fire that resolves prior fidelity-watch flags positively** (the prior pattern was halt → resolution; this pattern is forward-scheduled → resolution).
+- This is **NOT a halt-class event**. The H8 fire was scheduled at M6 Step 1 per `m6_preflight_checklist.md` §1 and executed on schedule with both flagged divergences CLEARED.
+- AEAL maturation curve update: M5=0 halts → **M6 Step 1 = 0 halts** (this H8 fire produced no new halt-class findings). Total mission-life halts: **6** (unchanged).
+
+### 8.7 Cross-references
+
+- `literature/lit-010-bailey-plouffe-1997-recognizing.md` (full paper-read findings + D2/D3/D5 disposition detail).
+- `literature/claims.jsonl` (lit-010 entry updated `fidelity_watch → verified`; paper-read provenance recorded).
+- `literature/_m2.3_calibration_anchor.md` §7.11 (NEW) — Bailey 1998 H8 fire disposition recorded at the predicate text, per `m6_preflight_checklist.md` §1 owner specification.
+- `harness/precision_budget.md` D2/D3 rows updated with disposition.
+- `harness/rigorous_bound.py` module docstring D2/D3 sections updated with disposition.
+- `mutation_log/m6_step1_bailey_1998_h8_fire_20260516.md` (12th mutation_log entry).
+- Operator M6 GREENLIGHTED (2026-05-16 ~15:48 JST) — scheduled this paper-read at Step 1.
+- `m6_preflight_checklist.md` §1 — fired; status updated `pending → done` with this commit's SHA.

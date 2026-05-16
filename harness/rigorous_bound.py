@@ -65,6 +65,10 @@ D2. gamma = sqrt(4/3) exact vs gamma > sqrt(4/3) strict.
     overshoot would need Bailey-1998 H8 paper-read.** Theorem 1 and Corollary 2
     are unaffected by this boundary distinction (they use gamma >= sqrt(4/3) only
     via Lemma 8, which holds at the boundary by continuity of the bound).
+    **STATUS (2026-05-16 ~15:55 JST): CLEARED per H8 paper-read on Bailey 1998
+    (lit-010 upgraded fidelity_watch -> verified). Bailey 1998 §2 states the
+    norm-bound certificate without γ-range condition; T1+Cor2 hold at γ=√(4/3).
+    See literature/_fidelity_findings.md §8.1.**
 
 D3. mpmath cites Bailey 1998, NOT FBA 1999.
     mpmath docstring: "This is a fairly direct translation to Python of the
@@ -79,6 +83,12 @@ D3. mpmath cites Bailey 1998, NOT FBA 1999.
     H8 dependency chain via paper-read. **Forward-flagged: Bailey 1998 H8
     paper-read recommended before M3.1 harness implementation if rigorous tier
     is load-bearing in the M2.3 predicate.**
+    **STATUS (2026-05-16 ~15:55 JST): CLEARED per H8 paper-read on Bailey 1998
+    (lit-010 upgraded fidelity_watch -> verified). Algorithm chain
+    mpmath -> Bailey 1998 §2 -> FBA 1999 verified structurally consistent;
+    Bailey 1998 §2 pseudocode Step 5 norm-bound certificate is equivalent to
+    FBA 1999 Theorem 1 in conservative form. See
+    literature/_fidelity_findings.md §8.2.**
 
 D4. 100x integer-division safety factor.
     mpmath applies `norm //= 100` after computing 1/max|H|. This integer-division
