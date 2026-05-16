@@ -158,6 +158,30 @@ If M6 venue requires data deposit (Zenodo, Dryad, or similar), upload the canoni
 
 ---
 
+## §4 — M4 capability-gap framing (M6 §Discussion or §Limitations)
+
+**Status:** `pending` — DO NOT DRAFT M6 §DISCUSSION WITHOUT THIS PARAGRAPH.
+
+**Authority:** operator M3 CLOSURE + M4 GREENLIGHT 2026-05-16 ~14:32 JST verbatim:
+> A documented capability gap at M4 is not a failure. Per Brief §M4(b), it's an acceptable outcome and a publishable observation in M6 §Discussion: "Structural closure of the null result was attempted via [survey]; no available structural argument is strong enough to constrain integer-relation existence at the tested bound; the null stands on numerical and rigorous-bound evidence per the two-tier predicate."
+
+**Background:** M4 (per Brief §M4) attempted symbolic closure of the M3 null result via survey of seven candidate structural arguments (Lindemann–Weierstrass, Schanuel, Nesterenko, Mahler-measure, Galois, non-GKW CF-theoretic, height theory) + a four-path SymPy 1.14.0 probe (`is_transcendental`/`is_irrational`, `nsimplify`, Groebner-on-symbolic-basis, transcendence-theorem applicability check). All seven candidates failed; all four probe paths returned `closure_achieved=False`. M4 closes as a Brief §M4(b)-compliant **FUNDAMENTAL** capability gap. Full record: `capability/symbolic_closure.gap.md` (M4 deliverable); 10th mutation_log entry: `mutation_log/m4_symbolic_closure_gap_20260516.md`.
+
+**Required M6 §Discussion paragraph (operator-anchored, ~150 words, draft):**
+
+> Symbolic closure of the M3 null result was attempted in M4 via survey of seven candidate structural arguments (Lindemann–Weierstrass, Schanuel, Nesterenko, Mahler-measure, Galois, non-GKW continued-fraction-theoretic, and height theory) and a four-path SymPy probe (`is_transcendental`/`is_irrational`, `nsimplify` against a named-constants basis, Groebner basis on the symbolic basis B_D(C), and transcendence-theorem applicability check). Every candidate failed at the same root: K_0's transcendence status is itself the major open question in this corner of the literature, and any structural certificate strong enough to rule out integer relations in B_D(C) at H ≤ 1.036 × 10⁷² would imply progress on that question. We classify this gap as fundamental (no known structural result is strong enough; not merely a machinery-availability problem) per the M4 brief, and the null result stands on numerical and rigorous-bound evidence per the two-tier predicate (H_empirical_operational = 10⁷⁰ `field_standard_practice`; H_rigorous = 1.036 × 10⁷² `proven_corollary`).
+
+**Anchor (cross-references in M6):**
+- `capability/symbolic_closure.gap.md` §2 (candidate survey) + §3 (SymPy probe) + §4 (fundamental classification) for full audit trail.
+- `capability/_m4_symbolic_probe.py` + `capability/_m4_symbolic_probe.jsonl` for reproducibility of probe.
+- `mutation_log/m4_symbolic_closure_gap_20260516.md` for the M4 closure event entry.
+
+**Halt-and-flag class:** if M6 drafting attempts to claim "we proved structural non-existence" or "we close the M3 null structurally" without acknowledging the §4 fundamental gap, halt drafting and re-read this §4 + `capability/symbolic_closure.gap.md` before continuing.
+
+**Trigger to fire:** at M6 drafting (during §Discussion or §Limitations writing).
+
+---
+
 ## Maintenance protocol
 
 When an item activates:
