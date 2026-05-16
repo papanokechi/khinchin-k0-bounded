@@ -286,6 +286,6 @@ If any number in this document is questioned, the source-of-truth chain is:
 | 2 | `literature/claims.jsonl` (one record per line; grep `"reproduce_command":\s*"[^"]+"`); `paper/main.tex` Appendix A. |
 | 3 | `capability/` directory listing (`*.gap.md` for gaps; `*.available.md` for positives). |
 | 4 | `literature/_fidelity_findings.md` (numbered Catch entries); `literature/claims.jsonl` (group by `status`); `mutation_log/` directory listing. |
-| Halt count | `paper/preflight_compliance.md` ("6-halt-event count"); `methodology/heuristics.md` H6–H10 install-context paragraphs. |
+| Halt count | `paper/preflight_compliance.md` ("6-halt-event count"); `methodology/heuristics.md` H6–H10 install-context paragraphs (H11 install-context in commit `8fdd2fa` message, proactive per Option I, not halt-triggered). |
 
 This document is intended to be re-derivable from the repository at `gold/M5` + the in-flight `e0defff` paper-byline amendment. No proprietary state.

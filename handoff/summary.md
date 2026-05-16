@@ -74,10 +74,6 @@ When the operator reviews `paper/main.tex` HEAD `e0defff`, the six specific stru
 | 5 | §Discussion operational-bound capping (Bailey hedge) | §4.2 | 808–836 |
 | 6 | §Appendix B AEAL methodology | App B | 967–1097 |
 
-Additionally, the CLI surfaces one minor counting note for operator attention:
-
-> **Note for operator review.** `paper/main.tex` §B.1 line 1025 currently reads: *"Six of these ten (H6–H10) were installed mid-mission..."*. The interval H6–H10 is **five** heuristics, not six. This appears to be a typo for *"Five of these ten"*. No CLI fix has been applied; per the operator's pattern instruction ("revisions, if any, will arrive as specific delta language"), the CLI surfaces this for operator-directed revision rather than self-applying. If the operator concurs, the delta is `s/Six of these ten/Five of these ten/` at line 1025.
-
 ---
 
 ## §5 Pre-Zenodo deposit decisions for the operator
@@ -113,7 +109,7 @@ If the operator decides to cross-link this deposit to the SIARC umbrella concept
 **Operator decision queue, post-this-packet:**
 
 1. Review `paper/main.tex` HEAD `e0defff` against the six structural reads in §4.
-2. Either ratify the M6 manuscript (operator surfaces "M6 Step 2 RATIFIED. Proceed to Step 3.") or issue specific delta-language revisions (e.g. `s/Six of these ten/Five of these ten/` at line 1025 of `main.tex`).
+2. Either ratify the M6 manuscript (operator surfaces "M6 Step 2 RATIFIED. Proceed to Step 3.") or issue specific delta-language revisions.
 3. Decide D-zenodo-orcid-pseudonymity-stance per §5.
 4. Decide D-zenodo-related-identifiers per §5.
 5. Decide on the next-venue placeholder (§3).

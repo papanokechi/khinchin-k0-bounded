@@ -95,7 +95,7 @@ follow-up before submission).
 | §Results (M3.2 65/65 null, two-tier bounds, bit-for-bit reproducibility, gp_lindep corroboration) | §3. | addressed |
 | §Discussion (M4 gap + 7-candidate survey + sub-classification, operational-bound capping, apples-to-stronger-apples) | §4. | addressed |
 | §Reproducibility appendix (env lock, expected runtime, repo URL, gold tag commit hashes, paper-read SHA-256) | Appendix A. | addressed |
-| §Appendix B (AEAL methodology note — 6 halts, 10 heuristics, bidirectional property, health-score retrospective) | Appendix B. | addressed |
+| §Appendix B (AEAL methodology note — 6 halts, 11 heuristics, bidirectional property, health-score retrospective) | Appendix B. | addressed |
 
 ---
 
@@ -113,6 +113,7 @@ follow-up before submission).
 | H8 Paper-read verification on literature claims | §2.3 (algorithm chain) + §2.4 (Bailey 1998 quote) + Appendix B H8 entry. | addressed |
 | H9 Theorem-vs-heuristic classification | §2.4 (full taxonomy) + Tables 1–3 (verification-class column) + Appendix B H9 entry. | addressed |
 | H10 Full-regime dry-run mandate | Table 1 (H10 pre-canonical row) + Appendix A (`--m31-extended-dry-run` command) + Appendix B H10 entry. | addressed |
+| H11 Class-of-error exhaustive propagation on bundled fixes | Appendix B H11 entry (installed post-M6-layer-3 in commit `8fdd2fa`; proactive install per operator Option I directive, not halt-triggered). | addressed |
 | Bidirectional-verification property | Appendix B §B.2. | addressed |
 | 6-halt-event count + health-score retrospective | Appendix B §B.3. | addressed |
 

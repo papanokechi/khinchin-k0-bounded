@@ -34,7 +34,7 @@ AI-breakthrough logic" framing):
 
 ## What this file IS
 
-- A small (≤ 10 entries) catalog of execution-efficiency aids that **defer**
+- A small (≤ 11 entries) catalog of execution-efficiency aids that **defer**
   to the Brief on every load-bearing decision.
 
 ---

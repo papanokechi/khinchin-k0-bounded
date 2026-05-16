@@ -456,8 +456,8 @@ When applying this methodology to a new mission, the authoring agent should:
 | `literature/validate_claims_jsonl.py` | Schema validator; enforces Axis 2 100% at literature side | Axis 2 |
 | `capability/*.gap.md` (or `*_gap.md`) | Documented capability gaps | Axis 3 numerator |
 | `capability/*.available.md` | Documented capability availabilities | Axis 3 question 1 |
-| `mutation_log/*.md` | Audit trail; H6-H10 install records | Axis 3 questions, Axis 4 |
-| `methodology/heuristics.md` | H1-H10 definitions | Auxiliary halt-and-flag axis |
+| `mutation_log/*.md` | Audit trail; H6-H10 install records (H11 install record in commit `8fdd2fa` message, no mutation_log entry per operator Option I directive) | Axis 3 questions, Axis 4 |
+| `methodology/heuristics.md` | H1-H11 definitions | Auxiliary halt-and-flag axis |
 | `targets/selected.md` | Scope statement; original sweep-size declaration | Axis 3 question 3 |
 | `seeds/README.md` | DO-NOT-REENTER scope-cession list | Axis 3 question 5 |
 
