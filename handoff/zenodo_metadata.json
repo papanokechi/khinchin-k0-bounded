@@ -1,0 +1,108 @@
+{
+  "_comment": "Pre-populated Zenodo deposit metadata draft for the unsolved-relay K_0 manuscript. NO deposit has been executed; this file is the operator-reviewable substrate. Conforms to Zenodo deposit JSON schema (https://developers.zenodo.org/#deposit-metadata). Field decisions flagged with _decision_<name>_ comments are operator-gated.",
+  "_repo_head_at_creation": "e0defff",
+  "_paper_path_at_creation": "paper/main.tex",
+  "_paper_pdf_path_at_creation": "paper/main.pdf",
+  "_created_at": "2026-05-16",
+  "_status": "DRAFT_STRUCTURE_ONLY_NO_DEPOSIT",
+
+  "metadata": {
+    "upload_type": "publication",
+    "publication_type": "preprint",
+    "title": "A bounded two-tier null result for integer relations on a hybrid Khinchin-K_0 basis, with a documented capability gap and a Lean 4 statement-shape encoding",
+    "description": "<p>A bounded null result on integer relations in a hybrid basis built from Khinchin's constant K_0, its low-order powers, log K_0, and bilinear products of K_0 with seven named constants {pi, e, ln 2, gamma, zeta(2), zeta(3), G}. Sixty-five sub-bases are tested under a two-tier predicate: a rigorous Euclidean-norm bound H_rig = 1.0361 * 10^72 derived from Ferguson-Bailey-Arno 1999 Theorem 1 + Corollary 2 at verification class <em>proven_corollary</em>, and an empirical operational bound H_empop ~ 8 * 10^69 at the primary basis under verification class <em>field_standard_practice</em> per Bailey 1998 section 2's general rule. The M3.1 harness uses mpmath PSLQ with cascading-precision triage (P, 2P, 4P at P = 2160 digits) and an independent PARI/GP <code>lindep</code> second leg. Every sub-basis returns cascade-stable null. The mission also documents a fundamental capability gap at the symbolic-closure stage M4 (K_0's transcendence status is the major open question; seven candidate structural arguments and a four-path SymPy probe each fail), and a Lean 4 statement-shape encoding (~385 lines, Mathlib v4.14.0) which type-checks against an explicit auxiliary-axiom set. The work is conducted under an explicit-evidence-acceptance-and-logging (AEAL) discipline with ten named heuristics, six audited halt events, and twelve mutation-log entries.</p>",
+    "creators": [
+      {
+        "name": "Papanokechi",
+        "_decision_orcid_pseudonymity_stance": "D-zenodo-orcid-pseudonymity-stance per handoff/summary.md section 5. The paper byline at commit e0defff carries ORCID 0009-0000-6192-8273; the SIARC submission ledger (Items 5/13/28) shows prior Zenodo deposits intentionally omitted the ORCID. The line below is included to match paper byline 1:1; if the operator wants to preserve prior-deposit pseudonymity, comment or delete the orcid field.",
+        "orcid": "0009-0000-6192-8273",
+        "affiliation": "Independent researcher, Yokohama, Japan"
+      }
+    ],
+    "keywords": [
+      "Khinchin's constant",
+      "integer relation detection",
+      "PSLQ",
+      "bounded null result",
+      "two-tier predicate",
+      "rigorous bound",
+      "empirical bound",
+      "Ferguson-Bailey-Arno",
+      "Bailey-Plouffe",
+      "experimental mathematics",
+      "Lean 4",
+      "Mathlib4",
+      "statement-shape verification",
+      "capability gap",
+      "AEAL discipline",
+      "reproducibility"
+    ],
+    "subjects": [
+      {
+        "term": "Number theory",
+        "identifier": "https://msc2020.org/MSC2020-11",
+        "scheme": "msc2020"
+      },
+      {
+        "term": "Computer algebra",
+        "identifier": "https://msc2020.org/MSC2020-68W30",
+        "scheme": "msc2020"
+      },
+      {
+        "term": "Numerical computation; arithmetic methods (11Y, 11Y60)",
+        "identifier": "https://msc2020.org/MSC2020-11Y60",
+        "scheme": "msc2020"
+      }
+    ],
+    "communities": [],
+    "license": "CC-BY-4.0",
+    "_license_rationale": "The manuscript is the document deposit (CC-BY-4.0 by convention). Note: the repository papanokechi/khinchin-k0-bounded carries MIT for code and CC-BY-4.0 for docs per env/M1.lock; Zenodo deposit is the document, so CC-BY-4.0 applies.",
+    "access_right": "open",
+    "version": "1.0.0-draft",
+    "language": "eng",
+    "related_identifiers": [
+      {
+        "_decision_related_identifiers_siarc_umbrella": "D-zenodo-related-identifiers per handoff/summary.md section 5. SIARC umbrella concept DOI placeholder below; operator decides whether to cross-link to this and/or to specific prior deposits (Items 5/13/28).",
+        "relation": "isPartOf",
+        "identifier": "10.5281/zenodo.19885549",
+        "resource_type": "publication",
+        "_status": "placeholder; operator may keep, remove, or amend"
+      },
+      {
+        "relation": "isSupplementTo",
+        "identifier": "https://github.com/papanokechi/khinchin-k0-bounded",
+        "resource_type": "software",
+        "_status": "the canonical artifacts repository; load-bearing"
+      }
+    ],
+    "_canonical_artifact_hashes_for_reproducibility_appendix": {
+      "_comment": "These hashes are not Zenodo metadata fields but the operator-facing audit trail. They reproduce paper/main.tex Appendix A's SHA-256 table.",
+      "gold/M1_commit": "15b216f3ba7a1b75dd7665d31ad39ac66d8bf17a",
+      "gold/M2_commit": "ca9c989796b9841dcc01a426877e075acc2be334",
+      "gold/M3_commit": "9c2702d",
+      "gold/M4_commit": "fd13eeb",
+      "gold/M5_commit": "208f6fc",
+      "manuscript_HEAD_at_deposit_draft": "e0defff",
+      "paper_main_pdf_size_at_deposit_draft": "643778 bytes",
+      "paper_main_pdf_pages": 13
+    },
+    "notes": "This deposit reflects the manuscript draft at HEAD e0defff. The canonical artifacts repository at https://github.com/papanokechi/khinchin-k0-bounded carries the full reproducibility chain (env/M1.lock pinning Lean 4.14.0, Mathlib v4.14.0, mpmath 1.3.0, PARI/GP 2.18.1; harness/sweep_output/ canonical JSONLs; literature/claims.jsonl 20 paper-read or canonically-confirmed claims; mutation_log/ 12 entries audit trail). The mission is conducted under the AEAL discipline; for the methodological context, see paper/main.tex Appendix B and handoff/agent_health_score.md."
+  },
+
+  "_zenodo_deposit_actions_NOT_executed": {
+    "_comment": "Per operator directive 2026-05-16 ~17:11 JST: 'Do not execute deposit. The deposit is gated on operator review and an explicit deposit directive.' The fields below document what the deposit step would do; none have been called.",
+    "step_1_create_deposit": "POST /api/deposit/depositions -- NOT CALLED",
+    "step_2_upload_pdf": "PUT /api/deposit/depositions/{id}/files paper/main.pdf -- NOT CALLED",
+    "step_3_apply_metadata": "PUT /api/deposit/depositions/{id} {this JSON} -- NOT CALLED",
+    "step_4_publish": "POST /api/deposit/depositions/{id}/actions/publish -- NOT CALLED",
+    "step_5_dois_mint": "Concept-DOI + version-DOI minted at publish step -- NOT CALLED"
+  },
+
+  "_post_deposit_operator_actions": {
+    "_comment": "After (if) the operator approves the deposit and the publish step succeeds, the operator's follow-up steps per Brief section M6.2 are:",
+    "step_a_record_doi_in_repo": "Add the minted version-DOI to env/M1.lock and to paper/main.tex Appendix A.",
+    "step_b_apply_gold_M6_tag": "git tag -a gold/M6 -m 'M6 closed: manuscript deposited at DOI <new-doi>' <commit> ; git push origin gold/M6",
+    "step_c_update_handoff_summary": "Fill the [STRUCTURE-PLACEHOLDER] in handoff/summary.md section 1 (plain-language summary) and the [OPERATOR-DECIDES] block in section 3 (next venue).",
+    "step_d_close_mission": "Per Brief section M7 if applicable; mission moves to post-mission state."
+  }
+}
