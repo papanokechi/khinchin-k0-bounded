@@ -12,10 +12,14 @@ Legs:
       verification that the returned coefficient vector actually satisfies
       |Σ m_i · b_i| < tol modulo the precision tolerance.
 
-Per-candidate JSONL output structure (per operator M3.1 directive):
+Per-candidate JSONL output structure (per operator M3.1 directive,
+updated by U-MISSION-N R2.beta strengthening 2026-05-16 ~11:18 JST):
   { relation, P, n, maxcoeff, iteration_count, mpmath_verbose_diagonals,
-    H_empirical, H_rigorous, cascade_verdict, gp_lindep_verdict,
-    verification_class }
+    H_empirical_operational, H_empirical_formula, H_rigorous,
+    cascade_verdict, gp_lindep_verdict, verification_class }
+
+H_empirical_operational = canonical bound = min(formula, 10^maxcoeff_exp).
+H_empirical_formula     = uncapped BBC formula c*10^(P/(c*n)) (methods obs).
 
 verification_class assignments (per H9):
   - positive (relation found, cascade-stable, gp-confirmed) -> rigorous_theorem
@@ -83,6 +87,35 @@ def empirical_height(P: int, n: int, c: float = 2.06):
         return int(mp.power(mp.mpf(10), mp.mpf(exponent)))
     finally:
         mp.dps = saved_dps
+
+
+def empirical_height_dual(P: int, n: int, maxcoeff_exp: int, c: float = 2.06) -> dict:
+    """Per U-MISSION-N R2.beta strengthening: return BOTH operational and formula values.
+
+    Per operator U-MISSION-N RESOLUTION (2026-05-16 ~11:18 JST):
+      - ``H_empirical_formula``     = c * 10^(P/(c*n))   (uncapped BBC formula)
+      - ``H_empirical_operational`` = min(formula, 10^maxcoeff_exp)
+
+    Rationale: PSLQ configured with ``maxcoeff = 10^maxcoeff_exp`` cannot
+    detect any relation with max coefficient exceeding maxcoeff regardless
+    of where the BBC formula extrapolates. The OPERATIONAL value is the
+    canonical bound for predicate claims (what the algorithm actually
+    tests); the FORMULA value is retained for the M6 methods observation
+    about BBC scaling's operational range at small n (R2.beta strengthening).
+
+    Both fields are emitted to the per-candidate JSONL. See
+    ``literature/_m2.3_calibration_anchor.md`` Section 7.10 for the
+    canonical predicate text and ``methodology/heuristics.md`` H10 for
+    the heuristic that would have caught the pre-fix overflow.
+    """
+    formula = empirical_height(P, n, c=c)
+    maxcoeff = 10 ** maxcoeff_exp  # Python int (any size)
+    # min() works across mixed float/int because Python promotes for comparison.
+    operational = min(formula, maxcoeff)
+    return {
+        "H_empirical_formula": formula,
+        "H_empirical_operational": operational,
+    }
 
 
 def run_pslq_with_capture(basis_values: tuple, maxcoeff_exp: int, maxsteps: int,
@@ -316,13 +349,15 @@ def verify_candidate(family: str, indices: tuple[int, ...], precisions: tuple[in
     primary_P = precisions[0]
     primary_rel = cascade["per_precision"][0]["relation"]
 
-    H_empirical = empirical_height(primary_P, n, c=2.06)
+    H_heights = empirical_height_dual(primary_P, n, maxcoeff_exp=maxcoeff_exp, c=2.06)
+    H_empirical_operational = H_heights["H_empirical_operational"]
+    H_empirical_formula = H_heights["H_empirical_formula"]
 
     if run_gp_leg:
         gp_result = gp_lindep_verify(basis_subset(primary_P, indices),
                                      dps=primary_P,
                                      maxcoeff_exp=maxcoeff_exp,
-                                     H_empirical=H_empirical)
+                                     H_empirical=H_empirical_operational)
     else:
         gp_result = {"relation": None, "error": "skipped",
                      "max_abs_coefficient": None, "within_empirical_bound": None}
@@ -346,7 +381,8 @@ def verify_candidate(family: str, indices: tuple[int, ...], precisions: tuple[in
         "precisions": list(precisions),
         "maxsteps_per_prec": list(maxsteps_per_prec),
         "rigorous_tier": rigorous_tier,
-        "H_empirical": H_empirical,
+        "H_empirical_operational": H_empirical_operational,
+        "H_empirical_formula": H_empirical_formula,
         "H_rigorous_min": cascade["H_rigorous_min_across_cascade"],
         "cascade": cascade,
         "gp_lindep": gp_result,

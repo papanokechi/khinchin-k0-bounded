@@ -25,7 +25,8 @@ Canonical M3.2a/M3.2b output filenames are fixed (no timestamp) and the harness 
 | `precisions` | list[int] | Cascade precision triple |
 | `maxsteps_per_prec` | list[int] | PSLQ iteration cap per precision |
 | `rigorous_tier` | bool | True for primary_full (rigorous Tier 2 reporting) |
-| `H_empirical` | float | BBC c≈2.06 calibrated empirical height at primary P |
+| `H_empirical_operational` | float \| int | Canonical bound = `min(c*10^(P/(c*n)), 10^maxcoeff_exp)`. Per U-MISSION-N R2.β (2026-05-16): PSLQ-with-maxcoeff cannot detect relations with max coefficient > maxcoeff regardless of formula extrapolation. Use this for predicate claims. |
+| `H_empirical_formula` | float \| int | Uncapped BBC formula `c*10^(P/(c*n))` with c≈2.06. Retained for M6 methods observation about BBC scaling's operational range at small n. NOT the canonical bound. |
 | `H_rigorous_min` | float | min over cascade levels of FBA T1+Cor2 H_rigorous |
 | `cascade` | dict | Per-precision PSLQ results (see below) |
 | `gp_lindep` | dict | gp lindep second-leg result (see below) |
@@ -59,7 +60,7 @@ gp_lindep: {
   relation: [a, b, c, ...] | null,
   error: null | str,
   max_abs_coefficient: int | null,
-  within_empirical_bound: bool | null,   // max|m_i| <= H_empirical
+  within_empirical_bound: bool | null,   // max|m_i| <= H_empirical_operational
   gp_verdict: str,                       // one of:
                                          //   "gp_returned_no_relation_confirms_null"
                                          //   "gp_noise_relation_above_H_empirical_confirms_null"
@@ -72,7 +73,9 @@ gp_lindep: {
 }
 ```
 
-PARI/GP `lindep` performs LLL and always returns a "best approximate" integer combination, even when no genuine relation exists within bound. The `within_empirical_bound` flag is the practical interpretation: `max|m_i| <= H_empirical` ⇒ gp claims a relation within the publishable bound; otherwise gp returned noise (confirms no relation within bound).
+PARI/GP `lindep` performs LLL and always returns a "best approximate" integer combination, even when no genuine relation exists within bound. The `within_empirical_bound` flag is the practical interpretation: `max|m_i| <= H_empirical_operational` ⇒ gp claims a relation within the canonical operational bound; otherwise gp returned noise (confirms no relation within bound).
+
+**Schema migration note (U-MISSION-N R2.β, 2026-05-16 ~11:18 JST):** the canonical `m32a_primary_cascade.jsonl` (committed 2026-05-16 ~09:38 JST) uses the legacy single-field schema (`H_empirical`). All M3.2b output and subsequent runs use the dual-field schema (`H_empirical_operational` + `H_empirical_formula`). The `_inspect_dryrun.py` helper handles both schemas. For the M3.2a file, the legacy `H_empirical` value equals what `H_empirical_operational` would have produced (formula = 8e+69 < maxcoeff = 10^70 at n=15, so the cap is not active).
 
 Per the 2026-05-16 operator correction (U-MISSION-M3.2), gp_lindep runs at `dps = primary_P` (not `primary_P // 2`). Second leg must be at equal-or-higher precision than primary to function as a real independence check.
 

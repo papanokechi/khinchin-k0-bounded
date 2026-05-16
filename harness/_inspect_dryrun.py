@@ -36,7 +36,16 @@ for line in open(p, encoding='utf-8'):
               f"H_rigorous={pp.get('H_rigorous'):.2e}  elapsed={pp.get('elapsed_s'):.2f}s")
         if pp.get('relation') is not None:
             print(f"      RELATION: {pp['relation']}")
-    print(f"  H_empirical:     {rec['H_empirical']:.4e}")
+    # Handle both old schema (H_empirical) and new schema (H_empirical_operational / _formula)
+    if "H_empirical_operational" in rec:
+        op = rec["H_empirical_operational"]
+        fm = rec["H_empirical_formula"]
+        op_disp = f"{float(op):.4e}" if isinstance(op, float) or (isinstance(op, int) and op < 10**300) else f"int(10^{len(str(op))-1})"
+        fm_disp = f"{float(fm):.4e}" if isinstance(fm, float) or (isinstance(fm, int) and fm < 10**300) else f"int(10^{len(str(fm))-1})"
+        print(f"  H_empirical_operational (canonical): {op_disp}")
+        print(f"  H_empirical_formula     (uncapped):  {fm_disp}")
+    elif "H_empirical" in rec:
+        print(f"  H_empirical (legacy schema): {rec['H_empirical']:.4e}")
     print(f"  H_rigorous_min:  {rec['H_rigorous_min']:.4e}")
     gp = rec['gp_lindep']
     print(f"  gp_lindep.error:                {gp.get('error')!r}")

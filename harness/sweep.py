@@ -249,7 +249,7 @@ def run_sweep(mode: str, output_dir: Path) -> Path:
             f.flush()
             print(f"[sweep]     verdict={result['cascade']['verdict']}  "
                   f"class={result['verification_class']}  "
-                  f"H_emp={result['H_empirical']:.2e}  H_rig={result['H_rigorous_min']:.2e}  "
+                  f"H_emp_op={result['H_empirical_operational']:.2e}  H_rig={result['H_rigorous_min']:.2e}  "
                   f"elapsed={result['_candidate_elapsed_s']:.2f}s", flush=True)
 
         total = time.perf_counter() - t_start
