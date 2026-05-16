@@ -387,16 +387,31 @@ $M_{x} \ge 1 / \max_{i}|h_{i,i}(k)|$ of \cite[Theorem~1]{fba1999}.
 
 The rigorous tier of this manuscript invokes \cite[Theorem~1]{fba1999} and
 \cite[Corollary~2]{fba1999} specifically; it does \emph{not} invoke
-\cite[Theorem~3]{fba1999} (the overshoot bound on PSLQ-found relations).
-This matters because Theorem~3 carries a strict
-$\gamma > \sqrt{4/3}$
-condition (\cite[Definition~5]{fba1999}), while Theorems~1 and~2 hold at
-the boundary $\gamma = \sqrt{4/3}$ by continuity.
+\cite[Theorem~2]{fba1999} or \cite[Theorem~3]{fba1999}.
+Both omitted theorems carry a strict $\gamma > \sqrt{4/3}$ condition
+(\cite[Definition~5]{fba1999}), and \cite[\S 7]{fba1999} explicitly
+states that their conclusions ``make no sense or have no apparent
+content'' at $\gamma \le \sqrt{4/3}$ in the real case; the paper does
+not extend either result to the boundary $\gamma = \sqrt{4/3}$ by
+continuity or any other argument.
+Theorem~1's per-iteration certificate
+$M_{x} \ge 1/\max_{i}|h_{i,i}(k)|$, by contrast, is established
+without invoking the $\gamma > \sqrt{4/3}$ condition --- its proof is
+structurally $\gamma$-independent --- so the certificate holds at
+$\gamma = \sqrt{4/3}$ directly.
 The \texttt{mpmath.pslq} implementation chooses $\gamma = \sqrt{4/3}$
 exactly internally (line
 \texttt{g~=~sqrt\_fixed((4\textless\textless prec)//3, prec)}),
 which lies inside the parameter scope explicitly treated in
 \cite[\S 2]{bailey1998}.
+The complementary iteration-count contrapositive used in
+\texttt{harness/rigorous\_bound.py} --- the inference that if
+\texttt{mpmath.pslq} reaches the \texttt{maxsteps} schedule's iteration
+budget without declaring relation discovery, then no relation of
+Euclidean norm $\le$ the terminal certificate exists --- is anchored on
+the $\gamma$-range-independent PSLQ re-presentation of
+\cite[\S 2]{bailey1998}, not on \cite{fba1999}'s
+$\gamma > \sqrt{4/3}$-conditional Theorem~2.
 We do not invoke Theorem~3.
 
 \subsection{The H9 verification-class taxonomy and the
@@ -461,8 +476,11 @@ Each candidate sub-basis $B$ runs in three phases:
 
 \begin{enumerate}[itemsep=2pt,topsep=2pt]
 \item \textbf{mpmath cascade.}
-  $\texttt{mpmath.pslq}(B, \textsf{tol}=2^{-0.75 P}, \textsf{maxcoeff}=10^{70},
+  $\texttt{mpmath.pslq}(B, \textsf{tol}=10^{-\lfloor P \cdot \texttt{tol\_decimal\_factor}\rfloor}, \textsf{maxcoeff}=10^{70},
   \textsf{maxsteps}=\text{schedule}(n))$
+  (with $\texttt{tol\_decimal\_factor} = 0.6$ the code default in
+  \texttt{harness/verify.py:run\_pslq\_with\_capture};
+  see Appendix~\ref{app:reproducibility})
   runs at $P = 2160$ dps, then at $2P$, then at $4P$.
   The cascade verdict is \emph{stable null} if all three legs return
   \texttt{None}; otherwise \emph{candidate} (further classified by
@@ -928,6 +946,17 @@ cd m5 && lake build M5
 cd m5 && lake env lean PrintAxioms.lean   # reproduces _print_axioms_output.txt
 \end{lstlisting}
 
+\paragraph{Tolerance parameter (code-default).}
+The canonical run uses $\texttt{tol\_decimal\_factor} = 0.6$ as a code
+default in \texttt{harness/verify.py:run\_pslq\_with\_capture}; this
+factor sets \texttt{mpmath.pslq}'s \textsf{tol} argument to
+$10^{-\lfloor P \cdot 0.6 \rfloor}$ at working precision $P$.
+The value is fixed in source code rather than passed at invocation,
+so reproducers using the canonical commands above inherit
+$\texttt{tol\_decimal\_factor} = 0.6$ automatically; any divergence
+requires a source-level patch with a fresh canonical-artifact
+regeneration.
+
 \paragraph{Paper-read primary sources (SHA-256 hashes).}
 The following primary sources were paper-read and their digital copies
 hashed at retrieval:
@@ -1022,7 +1051,7 @@ The ten heuristics canonical to this work are:
   but name resolves.''
 \end{description}
 
-Six of these ten (H6--H10) were installed mid-mission in response to
+Five of these ten (H6--H10) were installed mid-mission in response to
 specific halt events: H6 from a target-shortlist overlap audit; H7 from
 a capability-probe false-positive on a PARI/GP install state; H8 from a
 literature-fidelity catch on an AI-aggregated claim later refuted by
@@ -1052,13 +1081,23 @@ against canonical artifacts.
 We close with four health-score observations across the full mission.
 The claim-to-sweep ratio (load-bearing claims in the manuscript per
 candidate sub-basis tested) is approximately $5/65$: the manuscript
-makes few claims, the sweep tests many candidates.
+makes few claims, the sweep tests many candidates
+(sub-basis-level convention; the audit-facing evidence-unit-level
+convention yields $5/130 \approx 0.038$, per
+\texttt{handoff/agent\_health\_score\_methodology.md} \S Axis~1).
 The reproduce-command coverage is approximately $100\%$: every numerical
 claim in the manuscript has a corresponding canonical command in
 Appendix~\ref{app:reproducibility}.
 The capability-gap honesty is positive: a fundamental gap is reported as
 such in Section~\ref{sec:m4-gap} rather than papered over with additional
 numerics.
+This figure has additionally been audited against the
+suspected-but-undocumented-gap honest self-assessment procedure ---
+silent capability verification, silent precision workaround, silent
+sweep extension, silent subgoal folding, silent scope-cession re-entry
+--- all five questions returning negative across the M1--M6
+retrospective (record: \texttt{handoff/agent\_health\_score.md} \S
+Axis~3).
 The literature-fidelity honesty is positive: two paper-read events
 (\cite{fba1999} mid-mission; \cite{bailey1998} at M6 Step~1) upgraded the
 manuscript's empirical and rigorous-tier framings against the

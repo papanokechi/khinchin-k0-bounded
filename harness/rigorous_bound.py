@@ -65,10 +65,13 @@ D2. gamma = sqrt(4/3) exact vs gamma > sqrt(4/3) strict.
     overshoot would need Bailey-1998 H8 paper-read.** Theorem 1 and Corollary 2
     are unaffected by this boundary distinction (they use gamma >= sqrt(4/3) only
     via Lemma 8, which holds at the boundary by continuity of the bound).
-    **STATUS (2026-05-16 ~15:55 JST): CLEARED per H8 paper-read on Bailey 1998
-    (lit-010 upgraded fidelity_watch -> verified). Bailey 1998 §2 states the
-    norm-bound certificate without γ-range condition; T1+Cor2 hold at γ=√(4/3).
-    See literature/_fidelity_findings.md §8.1.**
+    **STATUS (2026-05-16 ~19:50 JST, stage-2 paper-read refinement): D2
+    cleared by paper-read on Bailey 1998 §2 (lit-010). FBA 1999 §3-§4 does
+    not contain a continuity argument; T2's proof requires τ > 1 strictly
+    per Lemma 9. Boundary clearance for the iteration-count contrapositive
+    is provided by Bailey 1998's γ-range-independent re-presentation, not
+    by FBA continuity. See literature/_fidelity_findings.md §8.1 and
+    lit-009 §9 boundary-case scope note.**
 
 D3. mpmath cites Bailey 1998, NOT FBA 1999.
     mpmath docstring: "This is a fairly direct translation to Python of the

@@ -24,7 +24,7 @@ follow-up before submission).
 
 | Preflight requirement | Manuscript anchor | Status |
 |---|---|---|
-| §1.D2 — γ = √(4/3) boundary case | §2.3 ``Algorithm-chain citation and γ boundary case'' explicitly states T1+Cor2 invoked, T3 not invoked (carries γ > √(4/3) strict). | addressed |
+| §1.D2 — γ = √(4/3) boundary case | §2.3 ``Algorithm-chain citation and γ boundary case'' explicitly states T1+Cor2 invoked, T2 and T3 not invoked (both carry γ > √(4/3) strict; FBA §7 disclaims both at γ ≤ √(4/3)). T1's certificate is structurally γ-independent — its proof in FBA §3-§4 does not invoke the γ > √(4/3) condition — so the boundary case clears directly for T1+Cor2 without continuity. The iteration-count contrapositive used in `harness/rigorous_bound.py` is anchored on Bailey 1998 §2's γ-range-independent re-presentation (lit-010), not on FBA continuity. See lit-009 §9 boundary-case scope note (added in this commit batch, stage-2 paper-read on FBA 1999 §3, 2026-05-16). | addressed |
 | §1.D3 — mpmath-cited-source claim | §2.3 displays the chain `mpmath → Bailey 1998 §2 → FBA 1999` with citation. | addressed |
 | §1.D5 — Bailey 1998 ``general rule'' verbatim citation | §2.4 ``The H9 verification-class taxonomy and the Bailey–Plouffe `general rule''' quotes the §2 passage verbatim and uses it as primary-source warrant for the `field_standard_practice` class. | addressed |
 | Algorithm-chain note (operator-supplied refinement at M6 Step 2 GREENLIGHT) | §2.3 (single paragraph) | addressed |
@@ -82,7 +82,7 @@ follow-up before submission).
 |---|---|---|
 | D5 incorporation — Bailey 1998 §2 ``general rule'' verbatim as primary-source warrant for `field_standard_practice` | §2.4 (full quoted passage). | addressed |
 | Algorithm chain note — `mpmath → Bailey 1998 → FBA 1992 preprint → FBA 1999` (forestall referee confusion about 1998 vs 1999) | §2.3. | addressed |
-| T1+Cor2 specificity note — rigorous tier cites T1+Cor2 only; T3 not invoked; γ = √(4/3) boundary by continuity | §2.3 explicitly. | addressed |
+| T1+Cor2 specificity note — rigorous tier cites T1+Cor2 only; T2 and T3 not invoked; γ = √(4/3) boundary by structural γ-independence of T1 (per stage-2 paper-read on FBA 1999 §3, 2026-05-16; iteration-count contrapositive boundary clearance via Bailey 1998 §2, not FBA continuity) | §2.3 explicitly (rewritten in this commit batch to replace prior ``by continuity'' attribution). | addressed |
 
 ---
 

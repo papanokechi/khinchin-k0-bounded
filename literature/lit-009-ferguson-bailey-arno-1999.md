@@ -103,3 +103,16 @@ This promotion executed in this commit batch.
 - The §5 mission-role revision is itself a **claim-class refinement**, NOT a mutation per operator's U-MISSION-J ratification (lit-018 precedent). It is a field-map update under H8.
 - The rigorous certificate option (FBA Theorem 1 with H-matrix diagonal exposure) would require custom mpmath wrapping or a different PSLQ implementation; this is captured as candidate Capability Gap CG-2 in `harness/precision_budget.md` §7 (operator Option B).
 
+## §9 Boundary-case scope (FBA 1999 §7 disclaim; stage-2 paper-read finding, 2026-05-16)
+
+FBA 1999 §7 explicitly states T2 and T3 conclusions "make no sense or have no apparent content" for γ ≤ √(4/3) in the real case. The paper does not extend T2 to γ = √(4/3) by continuity or any other argument.
+
+T1's per-iteration certificate, by contrast, is structurally γ-independent (proof in FBA §3-§4 establishes the bound without invoking γ > √(4/3)) and holds at the boundary directly.
+
+Mission usage at γ = √(4/3) therefore separates as:
+
+- **T1 + Corollary 2** invoked under structural γ-independence (rigorous tier; `paper/main.tex` §2.3 ¶2 as corrected in this commit batch).
+- **Iteration-count contrapositive** (M_x → maxsteps inference, used in `harness/rigorous_bound.py`) anchored on Bailey 1998 §2's γ-range-independent re-presentation (lit-010), not on FBA continuity.
+
+This disposition arose from stage-2 paper-read on FBA 1999 §3 (operator commission, 2026-05-16) and resolved a citation-chain misattribution in the M6 manuscript. **Avoided U-MISSION-P halt-class.**
+
