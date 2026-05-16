@@ -1,10 +1,12 @@
 {
-  "_comment": "Pre-populated Zenodo deposit metadata draft for the unsolved-relay K_0 manuscript. NO deposit has been executed; this file is the operator-reviewable substrate. Conforms to Zenodo deposit JSON schema (https://developers.zenodo.org/#deposit-metadata). Field decisions flagged with _decision_<name>_ comments are operator-gated.",
+  "_comment": "Pre-populated Zenodo deposit metadata draft for the unsolved-relay K_0 manuscript. NO deposit has been executed; this file is the operator-reviewable substrate. Conforms to Zenodo deposit JSON schema (https://developers.zenodo.org/#deposit-metadata). Field decisions flagged with _decision_<name>_ comments are operator-gated (both resolved 2026-05-17; see updated _decision_*_resolution fields below).",
   "_repo_head_at_creation": "e0defff",
+  "_repo_head_at_deposit_prep": "b7e67ad",
   "_paper_path_at_creation": "paper/main.tex",
   "_paper_pdf_path_at_creation": "paper/main.pdf",
   "_created_at": "2026-05-16",
-  "_status": "DRAFT_STRUCTURE_ONLY_NO_DEPOSIT",
+  "_deposit_prep_at": "2026-05-17",
+  "_status": "DEPOSIT_PREP_AWAITING_OPERATOR_FINAL_CONFIRM",
 
   "metadata": {
     "upload_type": "publication",
@@ -14,7 +16,7 @@
     "creators": [
       {
         "name": "Papanokechi",
-        "_decision_orcid_pseudonymity_stance": "D-zenodo-orcid-pseudonymity-stance per handoff/summary.md section 5. The paper byline at commit e0defff carries ORCID 0009-0000-6192-8273; the SIARC submission ledger (Items 5/13/28) shows prior Zenodo deposits intentionally omitted the ORCID. The line below is included to match paper byline 1:1; if the operator wants to preserve prior-deposit pseudonymity, comment or delete the orcid field.",
+        "_decision_orcid_pseudonymity_stance_resolution": "D-zenodo-orcid-pseudonymity-stance RESOLVED 2026-05-17 by operator: KEEP ORCID linked on byline. Rationale: linking ORCID across publications builds citation-graph density and reduces friction toward future institutional-affiliation acquisition. Retroactive update on prior Zenodo deposits (Items 5/13/28) for ORCID consistency flagged as optional follow-up workstream; does not gate M6 deposit fire.",
         "orcid": "0009-0000-6192-8273",
         "affiliation": "Independent researcher, Yokohama, Japan"
       }
@@ -62,11 +64,11 @@
     "language": "eng",
     "related_identifiers": [
       {
-        "_decision_related_identifiers_siarc_umbrella": "D-zenodo-related-identifiers per handoff/summary.md section 5. SIARC umbrella concept DOI placeholder below; operator decides whether to cross-link to this and/or to specific prior deposits (Items 5/13/28).",
+        "_decision_related_identifiers_siarc_umbrella_resolution": "D-zenodo-related-identifiers RESOLVED 2026-05-17 by operator: KEEP SIARC umbrella concept DOI placeholder. Rationale: related-identifier linkage to the SIARC umbrella concept DOI lets readers find the methodological context for the paper; alternative loses scholarly hygiene without offsetting benefit.",
         "relation": "isPartOf",
         "identifier": "10.5281/zenodo.19885549",
         "resource_type": "publication",
-        "_status": "placeholder; operator may keep, remove, or amend"
+        "_status": "operator-confirmed at deposit-prep 2026-05-17"
       },
       {
         "relation": "isSupplementTo",
@@ -82,11 +84,12 @@
       "gold/M3_commit": "9c2702d",
       "gold/M4_commit": "fd13eeb",
       "gold/M5_commit": "208f6fc",
-      "manuscript_HEAD_at_deposit_draft": "e0defff",
-      "paper_main_pdf_size_at_deposit_draft": "643778 bytes",
-      "paper_main_pdf_pages": 13
+      "manuscript_HEAD_at_deposit_draft": "b7e67ad",
+      "manuscript_HEAD_at_deposit_draft_lineage": "e0defff (creation) -> 8ac5bcf (M6 layer-1 bundle) -> 979c613 (layer-3 leading-c + precision) -> 8fdd2fa (layer-3 supplemental: H11 install per Option I) -> b7e67ad (layer-4: H11 propagation bundle + manuscript halt-vs-proactive disambiguation)",
+      "paper_main_pdf_size_at_deposit_draft": "672432 bytes",
+      "paper_main_pdf_pages": 14
     },
-    "notes": "This deposit reflects the manuscript draft at HEAD e0defff. The canonical artifacts repository at https://github.com/papanokechi/khinchin-k0-bounded carries the full reproducibility chain (env/M1.lock pinning Lean 4.14.0, Mathlib v4.14.0, mpmath 1.3.0, PARI/GP 2.18.1; harness/sweep_output/ canonical JSONLs; literature/claims.jsonl 20 paper-read or canonically-confirmed claims; mutation_log/ 12 entries audit trail). The mission is conducted under the AEAL discipline; for the methodological context, see paper/main.tex Appendix B and handoff/agent_health_score.md."
+    "notes": "This deposit reflects the manuscript draft at HEAD b7e67ad (M6 post-bundle: layer-1 + layer-3 + layer-3 supplemental H11 install + layer-4 H11 propagation). The canonical artifacts repository at https://github.com/papanokechi/khinchin-k0-bounded carries the full reproducibility chain (env/M1.lock pinning Lean 4.14.0, Mathlib v4.14.0, mpmath 1.3.0, PARI/GP 2.18.1; harness/sweep_output/ canonical JSONLs; literature/claims.jsonl 20 paper-read or canonically-confirmed claims; mutation_log/ 12 entries audit trail). The mission is conducted under the AEAL discipline; for the methodological context, see paper/main.tex Appendix B and handoff/agent_health_score.md."
   },
 
   "_zenodo_deposit_actions_NOT_executed": {
