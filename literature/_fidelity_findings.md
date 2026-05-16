@@ -148,3 +148,113 @@ H9 INSTALLED with four classes (operator-strengthened from CLI-proposed three): 
 
 **AEAL discipline note:** Per operator's U-MISSION-J ratification AND U-MISSION-L re-ratification, **this finding and its resolution do NOT consume the mutation budget**: lit-009's `statement`-field rewrite is a documentation event; the H8 promotion + H9 classification additions are verification-status changes / field-map updates; the two-tier predicate is a confidence-reporting-structure extension, not a hypothesis change. Per U-MISSION-L verbatim: "Classify as field-map update, not hypothesis mutation: the hypothesis (test for integer relations in B_D(C)) is unchanged; the confidence reporting structure is being extended." The mutation budget at M2 milestone-block remains at **0/1 consumed**.
 
+
+
+---
+
+## 7. Catch #3 (M3.2b, 2026-05-16 ~10:50 JST) — mpirical_height float overflow at n ≤ 3 + H_empirical-vs-maxcoeff semantic question
+
+**Catch class:** harness-execution defect with predicate-text semantic question attached. Operator anticipated this class explicitly in U-MISSION-M3.2 GREENLIGHT: `The M3.1 implementation phase will likely surface harness-execution findings (mpmath behavior under stress, gp lindep edge cases, basis dimension mismatches at filter boundaries) — those are expected and should be halted as before.''
+
+**Status:** **HALTED** awaiting operator ratification. No fix applied yet. M3.2b NOT re-executed pending operator decision on both findings together.
+
+### 7.1 What surfaced
+
+M3.2b launched at 2026-05-16 10:02:07 JST via `python harness/sweep.py --full --m32-full-greenlighted` (commit `66ca169` HEAD). At candidate **10/65** (`pair_log_1`, n=2), the harness raised:
+
+```
+File "harness/verify.py", line 67, in empirical_height
+    return 10 ** (P / (c * n))
+OverflowError: (34, 'Result too large')
+```
+
+Cause: `empirical_height(P=2160, n=2, c=2.06)` computes `10**524.27` in native Python float, which overflows the IEEE 754 double range (max ≈ 1.79e+308). The function is called as `H_empirical = empirical_height(primary_P, n, c=2.06)` in `verify.py` line 301 BEFORE the cascade runs — so the failure aborts the candidate before any PSLQ work happens.
+
+**Affected candidates:** any sub-basis where `P / (c · n) > 307`, i.e. `c·n < P/307 = 7.04`, i.e. `n < 3.42`. At P=2160, c=2.06 this means **n ≤ 3** sub-bases. From the 65-candidate enumeration:
+
+| Family | n | count | Status |
+|---|---|---|---|
+| primary_full | 15 | 1 | ✅ Completed (3172.5s) — clean null |
+| full_complement | 8 | 1 | ✅ Completed (25.2s) — clean null |
+| complement_plus_K0_k | 9 | 7 | ✅ Completed (~30s each) — clean null |
+| pair_log_x | 2 | 14 | ❌ Would overflow |
+| pair_bilinear_ij | 2 | 21 | ❌ Would overflow |
+| triplet_log_xy | 3 | 21 | ❌ Would overflow |
+
+**56 of 65 candidates** (every n ≤ 3 sub-basis) would hit this defect. Candidate 10/65 was the first.
+
+### 7.2 Partial-run cascade integrity (the 9 completed candidates)
+
+All 9 completed candidates produced `cascade_stable_null` at P=2160/4320/8640. Their JSONL records are intact and preserved at `harness/sweep_output/m32b_empirical_sweep.FAILED_PARTIAL_n9_overflow.jsonl`:
+
+| Idx | Family | n | Cascade verdict | H_empirical | H_rigorous | verification_class | Elapsed |
+|---|---|---|---|---|---|---|---|
+| 1 | primary_full | 15 | cascade_stable_null | 8.00e+69 | 1.04e+72 | proven_corollary | 3172.50s |
+| 2 | full_complement | 8 | cascade_stable_null | 1.17e+131 | 1.16e+21 | field_standard_practice | 25.15s |
+| 3 | complement_plus_K0_0 | 9 | cascade_stable_null | 3.20e+116 | 5.47e+15 | field_standard_practice | 30.58s |
+| 4 | complement_plus_K0_1 | 9 | cascade_stable_null | 3.20e+116 | 3.12e+16 | field_standard_practice | 29.84s |
+| 5 | complement_plus_K0_2 | 9 | cascade_stable_null | 3.20e+116 | 1.43e+16 | field_standard_practice | 30.31s |
+| 6 | complement_plus_K0_3 | 9 | cascade_stable_null | 3.20e+116 | 3.50e+15 | field_standard_practice | 30.41s |
+| 7 | complement_plus_K0_4 | 9 | cascade_stable_null | 3.20e+116 | 1.26e+16 | field_standard_practice | 30.82s |
+| 8 | complement_plus_K0_5 | 9 | cascade_stable_null | 3.20e+116 | 6.18e+15 | field_standard_practice | 30.52s |
+| 9 | complement_plus_K0_6 | 9 | cascade_stable_null | 3.20e+116 | 9.06e+16 | field_standard_practice | 30.32s |
+
+Measurement integrity for the 9 completed candidates is **intact**. The crash is upstream of PSLQ measurement, in the H_empirical computation only.
+
+### 7.3 The secondary semantic question
+
+The float-overflow defect is mechanically trivial to fix (use `mpmath` for the computation, return Python int when value exceeds float range). But the crash surfaces a **legitimate predicate-text question** that should be ratified by operator before re-running:
+
+**Question:** at small n, the BBC formula gives `H_empirical_formula = c · 10^(P/(c·n))` that vastly exceeds `maxcoeff = 10^70`. For the n=2 sub-bases `H_empirical_formula ≈ 10^524`, for n=3 sub-bases `≈ 10^350`. But PSLQ is **configured** with maxcoeff = 10^70 and can not detect any relation with max coefficient > 10^70 regardless of H_empirical_formula. Is the empirical scope claim then:
+
+  **(α) Uncapped** (verbatim BBC formula): `"Null PSLQ at (P, n) implies no integer relation with height ≤ H_empirical_formula"` even when this exceeds maxcoeff. Defensible because the BBC formula describes what PSLQ COULD find given (P, n), and the maxcoeff cap is a separate practical convenience that doesn't change the precision-per-dimension theoretical reach. M6 reporting: `H_empirical = 10^524 at n=2 (P=2160)`. Reviewer-defensible only if explicitly footnoted.
+
+  **(β) maxcoeff-capped**: `H_empirical = min(c · 10^(P/(c·n)), maxcoeff)`. For all n ≤ 3 sub-bases, this gives `H_empirical = 10^70` exactly. Defensible because PSLQ literally cannot find relations with max coefficient > maxcoeff, so claiming a higher empirical bound is unwarranted. M6 reporting: uniform `H_empirical = 10^70` across all sub-bases. Cleaner. Field-standard-practice-aligned.
+
+The operator U-MISSION-K + U-MISSION-L specified `H_empirical = 10^70` for the n=15 primary case at BBC parity. The predicate text (`_m2.3_calibration_anchor.md` §7.3 lines 296-298) anchors the value at n=15 but does NOT define behavior at other n. The M3.2 phase split §7.9 added the M3.2b sweep but did not address the small-n H_empirical question. The question is therefore **unresolved** in the gold/M2 predicate text.
+
+### 7.4 Heuristic-class self-assessment
+
+Per H7 (functional verification of harness techniques): the dry-run path at P=120 → `P/(c·n) ≤ 29` exercised float-only arithmetic safely. The `--m31-extended-dry-run` mode at P=540/1080/2160 with `maxcoeff_exp=40` would have exercised `P/(c·n)` up to `2160/4.12 = 524` at n=2, also overflowing — but extended dry-run was never executed because the harness went directly from minimal dry-run (P=120) to M3.2a (n=15 primary only, n=15 doesn't overflow). The extended dry-run mode was implemented but the operator's M3.2 sequence proceeded directly to M3.2a primary measurement. **H7 functional-verification gap:** the multi-precision `--m31-extended-dry-run` path was implemented but never invoked, so the small-n float overflow was not caught pre-canonical-execution.
+
+Per H9 (verification classes): the H_empirical value is ield_standard_practice regardless of resolution path; this is not a verification-class question.
+
+Per H8 (paper-read): the BBC formula's exact behavior at very small n is not specified in BBC 1997 §4 (which tested n ≈ 50, not n=2). The empirical formula's small-n extrapolation is not paper-read-verified. Resolution α invokes the formula in a domain it was not calibrated for; resolution β sidesteps the question.
+
+### 7.5 Proposed resolutions (CLI surface, operator decides)
+
+**(R1) Mechanical fix to `empirical_height`.** Use mpmath for the power computation; return Python int when exponent > 300, else float. Backward-compat preserved for n=15 (M3.2a-style); int-vs-float type difference in JSONL noted in schema docs. This fix is needed regardless of resolution α-vs-β; the function must not overflow.
+
+**(R2.α) Adopt uncapped BBC formula (verbatim).** Apply R1 only. Re-run M3.2b. JSONL reports `H_empirical ≈ 10^524` at n=2. M6 §Results carries explicit "small-n extrapolation note" alongside per-sub-basis table.
+
+**(R2.β) Adopt maxcoeff-capped variant.** Apply R1 + change `empirical_height` to return `min(c · 10^(P/(c·n)), 10^maxcoeff_exp)`. Re-run M3.2b. JSONL reports `H_empirical = 10^70` uniformly for n ≤ 3 sub-bases. M6 §Results carries one uniform empirical bound across all sub-bases. Cleaner.
+
+**(R2.γ) Other (operator-defined).** E.g. report both values in JSONL (`H_empirical_formula` and `H_empirical_capped`); have M6 §Results discuss both.
+
+**CLI recommendation (operator may override):** R1 + R2.β. Field-standard practice is to report the operational bound; PSLQ-with-maxcoeff cannot exceed maxcoeff. Reporting H_empirical = 10^524 at n=2 will draw a reviewer flag for the M6 submission. Capping at maxcoeff is the conservative, defensible reporting. The BBC formula's small-n extrapolation can be discussed in M6 §Discussion as a methodological note rather than a numerical claim.
+
+### 7.6 Authority + mutation budget
+
+Resolution R1 (mechanical fix) is unambiguously **NOT** a hypothesis mutation — it is a defect fix to the harness. Resolution R2 (α/β/γ) is a **field-map update** that refines the operational meaning of H_empirical at small n; the hypothesis (test for integer relations in B_D(C)) is unchanged. Per U-MISSION-L's precedent ("Classify as field-map update, not hypothesis mutation"), the mutation budget at M2 milestone-block stays **0/1 consumed** regardless of which R2 resolution is adopted.
+
+If R2.β is adopted, the predicate text in `_m2.3_calibration_anchor.md` §7.3 must be augmented with a small-n footnote (this is a §7-text edit post-gold/M2 → requires a new mutation_log entry per the gold/M2 freeze convention, in line with the M3.2 phase split precedent at `mutation_log/m3.2_phase_split_20260516.md`).
+
+### 7.7 Halt-and-flag verdict
+
+**HALTED.** No code changes made. No JSONL committed. Failed partial preserved at `harness/sweep_output/m32b_empirical_sweep.FAILED_PARTIAL_n9_overflow.jsonl` (9 candidates of clean cascade-stable-null evidence). Awaiting operator ratification on (R1) + (R2.α/β/γ) before re-executing M3.2b. **This is U-MISSION-N**: M3.2b harness defect + small-n empirical-height semantics.
+
+### 7.8 Counts
+
+- This is the **6th halt-class finding** for the unsolved-relay mission overall.
+- This is the **1st halt-class finding within M3** — matching the operator's U-MISSION-M3.2 prediction: `The M3.1 implementation phase will likely surface harness-execution findings ... those are expected and should be halted as before.`
+- AEAL maturation curve update: M1=4 halts → M2.1=1 → M2.2=0 → M2.3=1 (Catch #2 resolved) → M3.1 impl=0 → M3.2a exec=0 → **M3.2b exec=1** (this catch).
+
+### 7.9 Cross-references
+
+- `harness/verify.py` line 65-67 (defective `empirical_height` — to be fixed).
+- `harness/sweep_output/m32b_empirical_sweep.FAILED_PARTIAL_n9_overflow.jsonl` (9-candidate audit-trail data, cascade integrity intact).
+- `literature/_m2.3_calibration_anchor.md` §7.3 (predicate text anchoring H_empirical at n=15 only; small-n behavior unresolved).
+- `literature/_m2.3_calibration_anchor.md` §7.9 (M3.2 phase split methodology refinement; precedent for §7-text edit + mutation_log).
+- `mutation_log/m3.2_phase_split_20260516.md` (precedent mutation_log entry for §7 procedural extension).
+- Operator U-MISSION-M3.2 (2026-05-16 ~08:22 JST) — anticipated this class of finding verbatim.
+- Operator U-MISSION-M3.2b-RATIFICATION (2026-05-16 ~10:00 JST) — greenlit M3.2b that surfaced this.
