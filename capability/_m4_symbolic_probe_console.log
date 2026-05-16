@@ -1,0 +1,48 @@
+﻿=== PATH 1: is_transcendental / is_irrational on K_0 ===
+  path: 1
+  name: is_transcendental / is_irrational
+  pi_is_transcendental: True
+  e_is_transcendental: True
+  K0_symbol_is_transcendental: None
+  K0_symbol_is_irrational: None
+  K0_float_is_transcendental: None
+  K0_float_is_irrational: None
+  closure_achieved: False
+  reason: SymPy lacks built-in arithmetic-nature data for K_0. K_0 as Symbol has None for transcendence predicate; K_0 as Float is treated as a numerical approximation, carrying no transcendence-theoretic information. To deduce non-existence of an integer relation in B_D(C), SymPy would need to KNOW K_0's transcendence status; this is the major open question itself.
+
+=== PATH 2: nsimplify(K_0_value, basis_constants) ===
+  path: 2
+  name: nsimplify against named-constants basis
+  results_by_tolerance: {'tol=10^-50': 'ERROR: AssertionError()', 'tol=10^-30': '2.685452001065306445309714835481795693820382293994462953051152345557218859537152002801141174931847698', 'tol=10^-20': '2.685452001065306445309714835481795693820382293994462953051152345557218859537152002801141174931847698', 'tol=10^-10': 'E*(-3*E/2 - 1/2 - pi**2/24 + EulerGamma + 3*Catalan/4 + 3*pi/2)', 'tol=10^-5': '1/49 + sqrt(17053)/49'}
+  closure_achieved: False
+  reason: nsimplify with named-constants basis is a numerical heuristic, weaker than PSLQ (it does not perform full LLL/PSLQ reduction). Any 'closed form' it finds at loose tolerance is a numerical coincidence at finite precision, not a structural identity. This reduces to the same numerical question M3 already answered (no closed form found by full PSLQ at H_target=10^70).
+
+=== PATH 3: groebner basis on B_D(C) with K_0 symbolic ===
+  path: 3
+  name: Groebner basis (B_D(C) with K_0 symbolic)
+  basis_size: 15
+  combo_expr: G_s*K_0*a_14 + K_0**6*a_6 + K_0**5*a_5 + K_0**4*a_4 + K_0**3*a_3 + K_0**2*a_2 + K_0*a_1 + K_0*a_10*ln2_s + K_0*a_11*gam_s + K_0*a_12*z2_s + K_0*a_13*z3_s + K_0*a_8*pi_s + K_0*a_9*e_s + a_0 + a_7*logK_0
+  distinct_monomials: 15
+  coefficient_count: 15
+  all_monomials_distinct: True
+  trivial_solution_only: True
+  closure_achieved: False
+  reason: Groebner / polynomial-collection on a symbolic basis with K_0 as a free indeterminate confirms only the trivial (all-zero) integer combination vanishes IDENTICALLY. But the operator's null question asks about combinations that vanish AT THE SPECIFIC NUMERICAL VALUES ΓÇö not identically as polynomials. Without an algebraic-independence theorem connecting K_0 to {pi, e, ln 2, gam, zeta(2), zeta(3), G}, the polynomial-identity verdict does NOT lift to a numerical-vanishing verdict. This is the structural reason symbolic closure requires transcendence-theoretic machinery beyond SymPy's reach.
+
+=== PATH 4: Lindemann-Weierstrass / Gelfond-Schneider applicability ===
+  path: 4
+  name: transcendence-theorem applicability check
+  lindemann_weierstrass_check: LW: e^alpha is transcendental for alpha algebraic non-zero. K_0 is NOT known to be of the form e^alpha for any algebraic alpha; K_0 is defined via an infinite product involving zeta values. LW does NOT apply to K_0.
+  gelfond_schneider_check: GS: alpha^beta is transcendental for alpha algebraic != 0, 1 and beta algebraic irrational. K_0 is NOT known to be of the form alpha^beta for any such alpha, beta. GS does NOT apply.
+  nesterenko_check: Nesterenko 1996: pi, e^pi, Gamma(1/4) algebraically independent. K_0 is NOT among Nesterenko's covered constants. Nesterenko's method (modular-form periods) does NOT extend to K_0.
+  schanuel_conditional: Schanuel's conjecture: if z_1, ..., z_n are Q-linearly independent, then trdeg_Q Q(z_1, ..., z_n, e^{z_1}, ..., e^{z_n}) >= n. Schanuel WOULD imply rich algebraic-independence facts. But: (a) Schanuel is UNPROVEN; (b) even conditional on Schanuel, K_0's representation does not place it among the e^{z_i} on the right side without an additional claim that K_0 = exp(z) for some specific Q-linear-combination z. No such claim is known.
+  closure_achieved: False
+  reason: Every published transcendence theorem we are aware of (Lindemann-Weierstrass, Gelfond-Schneider, Nesterenko, Baker-Wustholz logarithmic forms) has hypothesis patterns that K_0 is not known to satisfy. The only candidate conditional argument (Schanuel) is itself unproven and would additionally require knowing K_0's exact exponential form.
+
+======================================================================
+M4 H10 RETROACTIVE DRY-RUN OUTCOME
+======================================================================
+  paths probed: 4
+  closures achieved: 0 / 4
+  closure_status: NONE (as predicted by operator M4 forecast)
+  output JSONL: C:\Users\shkub\OneDrive\Documents\archive\admin\VSCode\siarc\unsolved-relay-staging\capability\_m4_symbolic_probe.jsonl
