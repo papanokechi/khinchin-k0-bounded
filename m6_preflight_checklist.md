@@ -176,6 +176,43 @@ If M6 venue requires data deposit (Zenodo, Dryad, or similar), upload the canoni
 - `capability/_m4_symbolic_probe.py` + `capability/_m4_symbolic_probe.jsonl` for reproducibility of probe.
 - `mutation_log/m4_symbolic_closure_gap_20260516.md` for the M4 closure event entry.
 
+### §4.1 — Sub-classification of failure modes (structurally-unavailable vs scope-ceded)
+
+**Authority:** operator M5 GREENLIGHT 2026-05-16 ~14:52 JST: *"add §4.1 sub-item to m6_preflight_checklist distinguishing structurally-unavailable (2.A-2.E, 2.G) from scope-ceded (2.F)."*
+
+**Purpose:** the seven candidate structural arguments surveyed in M4 (`capability/symbolic_closure.gap.md` §2) fail for two qualitatively different reasons. §4 reports the aggregate "FUNDAMENTAL gap" verdict; §4.1 makes the substructure explicit so M6 §Discussion can frame the gap honestly without conflating the two failure modes.
+
+**Sub-class A — Structurally-unavailable (6 of 7 candidates):**
+
+| Candidate | Why structurally-unavailable |
+|---|---|
+| 2.A Lindemann–Weierstrass | Hypothesis `K_0 = e^α` for algebraic α is **not known to hold** (no such representation published; K_0's defining infinite product over Khinchin weights does not collapse to an algebraic exponent). |
+| 2.B Schanuel | Conjecture itself is **unproven**; even conditional on Schanuel, the required `K_0 = exp(z)` for an explicit ℚ-linear z is **not known**. |
+| 2.C Nesterenko 1996 | K_0 is **not among** the constants Nesterenko's modular-form-period method covers (π, e^π, Γ(1/4)); no published extension to Khinchin-class. |
+| 2.D Mahler measure | Method applies to **algebraic numbers**; K_0's algebraic status is the major open question. |
+| 2.E Galois | Requires K_0 algebraic with known minimal polynomial; K_0's algebraicity is **unknown**. |
+| 2.G Height theory | Requires K_0 algebraic; same blocker as 2.E. |
+
+**Common root:** all six are blocked by the **same external unknown** — K_0's arithmetic nature (transcendence + algebraic-independence-class membership). No published theorem resolves this unknown. Closure via any of 2.A, 2.B, 2.C, 2.D, 2.E, 2.G would require **new mathematics** in transcendence theory, not new machinery deployment. **This is the FUNDAMENTAL part of the gap.**
+
+**Sub-class B — Scope-ceded (1 of 7 candidates):**
+
+| Candidate | Why scope-ceded |
+|---|---|
+| 2.F Non-GKW CF-theoretic | Method-import from the GKW spectral family is **off-limits per `seeds/26 DO-NOT-REENTER` binding** (overlap with operator's active "Finite-Depth Transient Rigidity" manuscript would muddy attribution; theoretical-citation permitted, method-import prohibited). Independently, **no non-GKW CF-theoretic result strong enough is published**; lifting the binding alone would not yield closure. |
+
+**Disposition:** the scope-ceded sub-class would be **partially-contingent** if the DO-NOT-REENTER binding were the only blocker, but the second clause (no non-GKW alternative published) renders 2.F equivalent to a structurally-unavailable candidate. **The scope-ceded labeling reflects mission-internal discipline, not external mathematical contingency.**
+
+**M6 §Discussion framing implications:**
+
+- The §Discussion paragraph in §4 should be read with §4.1 in mind: "FUNDAMENTAL" is the correct aggregate verdict because **6 of 7 candidates are structurally unavailable** AND **the 7th (CF-theoretic) is double-blocked** (scope-ceded internally + structurally-unavailable externally). The FUNDAMENTAL label is not weakened by 2.F's scope-ceded status because the same candidate also fails the external test.
+- If a reviewer challenges the FUNDAMENTAL classification specifically on the CF-theoretic axis ("why didn't you try CF-theoretic methods?"), the §Discussion response is the §4.1 second clause: even setting aside the seeds/26 binding, no non-GKW CF-theoretic result is published that constrains integer-relation existence in B_D(C). The internal scope-cede and the external unavailability are independent facts that both hold.
+- If a reviewer challenges the FUNDAMENTAL classification on the broader "machinery vs theorem" axis ("transcendence theorems exist; you just didn't deploy them"), the §Discussion response is the §4.1 Sub-class A common root: the machinery is in principle available (LW is elementary, Nesterenko is published, Mahler-measure tooling exists in pari/sage), but the THEOREMS do not apply because K_0 is not known to satisfy their preconditions.
+
+**Anchor:** `capability/symbolic_closure.gap.md` §2 (candidate survey detail) + §4 (fundamental-vs-contingent classification with sensitivity analysis).
+
+**Halt-and-flag class:** if M6 drafting treats 2.F's scope-ceded status as the primary basis for FUNDAMENTAL (it isn't; the structural unavailability of the other six candidates is the primary basis), halt drafting and re-read §4.1.
+
 **Halt-and-flag class:** if M6 drafting attempts to claim "we proved structural non-existence" or "we close the M3 null structurally" without acknowledging the §4 fundamental gap, halt drafting and re-read this §4 + `capability/symbolic_closure.gap.md` before continuing.
 
 **Trigger to fire:** at M6 drafting (during §Discussion or §Limitations writing).

@@ -1,0 +1,10 @@
+# Lake build artefacts (per-machine; never commit)
+.lake/build/
+.lake/packages/
+
+# Build/run logs (noisy Mathlib linter output; not canonical evidence)
+build_log.txt
+
+# Lake cache lock + temporaries
+*.lock
+*.hash
