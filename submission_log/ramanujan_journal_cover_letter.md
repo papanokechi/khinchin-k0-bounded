@@ -34,12 +34,29 @@ Useful elements to consider including (operator decides which to use):
 
 ---
 
-## DRAFT TEXT (operator fills in below)
+## DRAFT TEXT (operator-finalized 2026-05-17 ~10:58 JST)
 
-(Operator: paste your drafted cover letter text here. Once you copy this to the portal, leave the text here as the canonical record of what was submitted; commit + push so the submission_log corpus stays complete.)
+> ✅ **OPERATOR-FINALIZED.** Per operator directive 2026-05-17 ~10:58 JST ("just prepare cover letter that can be uploaded without edits"), this MD substrate is closed against further edits and the canonical upload artefact is the typeset PDF at `submission_log/ramanujan_journal_cover_letter.pdf` (LaTeX source: `submission_log/ramanujan_journal_cover_letter.tex`). The plain-text version below is preserved as the human-readable record of what was submitted.
 
 ```
-[OPERATOR-DRAFTED COVER LETTER TEXT GOES HERE]
+Dear Professor Berndt,
+
+I am pleased to submit "A bounded two-tier null result for integer relations on a hybrid Khinchin-K_0 basis, with a documented capability gap and a Lean 4 statement-shape encoding" for consideration in The Ramanujan Journal.
+
+The manuscript reports a cascade-stable PSLQ null on a 15-dimensional hybrid basis built around Khinchin's constant K_0, presented under a verification-class taxonomy that distinguishes a field-standard-practice empirical-tier bound (H_emp^op approximately 7.997 x 10^69) from a rigorous Ferguson-Bailey-Arno (1999) proven-corollary bound (H_rig = 1.0361 x 10^72). Three Excluded Families precisely delineate the bounded scope from neighbouring results in the literature. A symbolic-closure attempt across seven candidate structural arguments returned a documented fundamental capability gap tied to K_0's unresolved transcendence status, and the result statement is additionally encoded in Lean 4 against Mathlib4 v4.14.0 with an explicit auxiliary-axiom trust boundary.
+
+The contribution sits squarely in the Bailey-Borwein-Plouffe experimental-number-theory tradition that The Ramanujan Journal regularly publishes, and addresses a question -- integer relations on a Khinchin-mixed basis -- that is directly relevant to the journal's scope on constants whose arithmetic nature remains open. The two-tier verification-class taxonomy and the documented capability-gap framing are intended to be reusable by other experimental investigations of similarly transcendence-open constants.
+
+All research artefacts -- the manuscript source, the cascading-precision PSLQ sweep outputs for the primary basis and the 65 scanned sub-bases, the environment lock file, the literature claims ledger, and the Lean 4 encoding -- are deposited at Zenodo under concept DOI 10.5281/zenodo.20246707 (version DOI 10.5281/zenodo.20246708, CC-BY-4.0), with the reproducibility-pinned source repository at https://github.com/papanokechi/khinchin-k0-bounded (tag gold/M6).
+
+The manuscript has not been published previously and is not under consideration at any other journal. I am an independent researcher with no institutional affiliation; The Ramanujan Journal's explicit support for independent authors was a material factor in venue selection. I have used AI-assisted execution as a research tool under an explicit accountability discipline disclosed in the manuscript's Statements and Declarations section, and I retain full accountability for all claims, methodology choices, and the final result.
+
+Thank you for your consideration.
+
+Sincerely,
+Papanokechi
+ORCID 0009-0000-6192-8273
+Independent researcher, Yokohama, Japan
 ```
 
 ---

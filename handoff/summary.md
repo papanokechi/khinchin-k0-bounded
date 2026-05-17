@@ -9,17 +9,17 @@ The completed companion document is `handoff/agent_health_score.md`, which carri
 
 ## §1 Plain-language summary
 
-> **[STRUCTURE-PLACEHOLDER]**
-> This subsection is intentionally not pre-drafted. It will be authored by the operator (or by the CLI under explicit operator direction) after the M6 manuscript receives operator-visible ratification or revision.
->
-> Target length: ~300–400 words, accessible to a mathematically literate reader without specialist PSLQ or transcendence-theory background. The substrate available for drafting:
->
-> - Bounded sub-question: see `targets/selected.md` §1 (frozen at `gold/M1`) — "is there a PSLQ-detectable integer relation in the hybrid basis `B_D(C) = {1, K_0, K_0^2, …, K_0^6, log K_0} ∪ {K_0·c : c ∈ C}` at D ≤ 6, dps ≥ 500, with C = {π, e, ln 2, γ, ζ(2), ζ(3), G}?"
-> - Result (one sentence): every one of the 65 sub-bases tested under the M3.1 two-tier predicate returns a cascade-stable null at H_rig = 1.0361 × 10⁷² (FBA Theorem 1 + Corollary 2 derived; verification class `pc`).
-> - Bounded scope distinction (the apples-to-stronger-apples framing): see `m6_preflight_checklist.md` §2 and `paper/main.tex` §1 lines 114–267. This sub-question is a *complement-scope* extension of BBC 1997's primary-tier and is *not* a competitor to the signature paper or to BBP-class results.
-> - Capability gap (the M4 outcome): `K_0`'s transcendence status is the major open question; the mission documents this and does not paper over it.
->
-> Drafting guidance: avoid "we prove" / "we show that K_0 is …" phrasing; use "the mission documents …" / "the bounded sub-question's answer at this scope is …" framing.
+This work investigates whether Khinchin's constant K₀ ≈ 2.685… admits algebraic relations with other well-known constants. K₀ arises from the continued-fraction expansion of almost every real number and is widely conjectured to be irrational and transcendental, but no proof exists.
+
+The mission tested a specific class of potential algebraic relations: linear combinations with integer coefficients involving K₀, its small powers (up to degree 6), log K₀, and bilinear products K₀·c for c ranging over seven named constants (π, e, ln 2, ζ(2), ζ(3), γ, Catalan's constant G). This basis is the natural extension of two prior published works: Bailey, Borwein, and Crandall (1997) explicitly named log K₀ and bilinear forms as open at their paper's close; an earlier paper by the same author ceded an adjacent coordinate family (signature statistics on π's continued fraction).
+
+Across all 65 sub-bases tested, no integer relation was detected. The mission reports this null result at two confidence tiers: a theorem-grade rigorous tier (no relation with Euclidean norm ≤ 1.0361 × 10⁷², derived from Ferguson–Bailey–Arno 1999 Theorem 1 applied to mpmath's internal certificate) and a community-standard empirical tier (no relation with coefficient height ≤ 10⁷⁰, matching BBC 1997's confidence calibration).
+
+The mission also attempted symbolic closure — could the null result be explained structurally rather than by computation? Seven candidate methods (Lindemann–Weierstrass, Schanuel's conjecture, Nesterenko 1996, Mahler measure, Galois theory, height theory, plus a scope-ceded continued-fraction approach) were surveyed; none is strong enough to constrain integer-relation existence at the tested bound without resolving K₀'s transcendence first, which is the open question itself.
+
+The bounded sub-question's answer at this scope is therefore: no algebraic relation exists at the tested bound, and no published structural argument can extend this to a transcendence claim. The result is a small documented step on the K₀ transcendence question rather than a resolution.
+
+*Source: substrate at `session/files/m6_section1_plain_language_summary_claude_draft.md` (Claude-drafted 2026-05-17 ~08:55 JST per operator direction, ~340 words; H_rig precision aligned to manuscript's 1.0361 × 10⁷² convention). Applied 2026-05-17 ~12:10 JST per operator best-choice directive.*
 
 ---
 

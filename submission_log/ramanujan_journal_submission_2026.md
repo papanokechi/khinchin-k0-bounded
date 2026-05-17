@@ -46,8 +46,8 @@ Files to upload at portal:
 
 | Order | File | Path | Purpose |
 |---|---|---|---|
-| 1 | `ramanujan_submission_packet.zip` | `submission_log/ramanujan_submission_packet.zip` | ZIP containing `main.tex` + `references.bib` + `main.bbl` (24,020 B; flat structure, no subfolders inside). **Portal compiles this into the peer-review PDF.** |
-| 2 | Cover letter | (operator-drafted) | Submitted via portal "Cover Letter" field — NOT inside the ZIP |
+| 1 | `ramanujan_submission_packet.zip` | `submission_log/ramanujan_submission_packet.zip` | ZIP containing `main.tex` + `references.bib` + `main.bbl` (24,048 B; flat structure, no subfolders inside). **Portal compiles this into the peer-review PDF.** |
+| 2 | Cover letter | `submission_log/ramanujan_journal_cover_letter.pdf` (117,599 B; typeset from `ramanujan_journal_cover_letter.tex`) | Uploaded to the portal's "Cover Letter" file slot. Operator-finalized 2026-05-17 ~10:58 JST. Plain-text record preserved in `ramanujan_journal_cover_letter.md`. |
 
 **Files NOT uploaded:**
 - `paper/main.pdf` — portal generates the review PDF from the ZIP; do not upload separately
@@ -57,9 +57,12 @@ Files to upload at portal:
 
 | Filename | Uncompressed | Compressed | Purpose |
 |---|---|---|---|
-| `main.tex` | 58,092 B | 19,982 B | LaTeX source (article class; longtable + standard packages) |
+| `main.tex` | 58,120 B | 20,010 B | LaTeX source (article class; longtable + standard packages) |
 | `references.bib` | 5,665 B | 2,373 B | BibTeX bibliography (9 entries; DOIs as full URLs per RJ §3) |
 | `main.bbl` | 2,538 B | 1,355 B | Pre-compiled bibliography (insurance against portal BibTeX issues; portal may regenerate, harmless if so) |
+
+**Patch log:**
+- 2026-05-17 ~10:48 JST — `\texorpdfstring` patch applied to `paper/main.tex` line 376 (`\subsection{Algorithm-chain citation and {\boldmath$\gamma$} boundary case}` → wrapped math with `\texorpdfstring{{\boldmath$\gamma$}}{gamma}`) to silence the hyperref "Token not allowed in PDF string" warning identified during EM portal upload-check. Cosmetic only; no semantic change. PDF rebuilt 683,629 B; ZIP rebuilt 24,048 B. Previous ZIP backed up as `submission_log/ramanujan_submission_packet.zip.bak_before_texorpdfstring` (24,020 B).
 
 **Source dependency audit:**
 - No `\input` / `\include` directives — manuscript is monolithic
@@ -152,14 +155,50 @@ Note: regenerate `main.bbl` first via `pdflatex main; bibtex main; pdflatex main
 
 | Field | Value |
 |---|---|
-| Submission ID | — |
-| EM tracking number | — |
-| Submission date (JST) | — |
-| Submission date (UTC) | — |
-| Acknowledgement email received | — |
-| Editor assigned | — |
+| Submission ID | `d824d5ae-683f-4c50-98ec-3622c05fcfa0` (Springer Snapp UUID; not classic `RAMA-D-YY-NNNN`) |
+| Submission version | v.1.0 |
+| EM tracking number | (Snapp portal — not classic Editorial Manager; UUID above serves as primary tracking key) |
+| Submission date (JST) | 2026-05-17 ~11:10 JST |
+| Submission date (UTC) | 2026-05-17 ~02:10 UTC |
+| Acknowledgement email received | (pending — operator to confirm receipt) |
+| Editor assigned | (pending — Technical check in progress as of capture) |
 | Initial decision (typical: 4–8 weeks for RJ) | — |
-| Manuscript HEAD at submission | — |
+| Manuscript HEAD at submission | `fb47df5c20c73b6645664bd9eeb3265985165282` (`fb47df5`, msg "Stream S.2 Data Availability Statement substrate (portal field)") **with uncommitted working-tree changes** for the `\texorpdfstring` patch (`paper/main.tex`, rebuilt `paper/main.pdf`, rebuilt `submission_log/ramanujan_submission_packet.zip` 24,048 B, operator-finalized cover letter MD/TeX/PDF, this §H update). Operator to commit working-tree post-capture for a single canonical submission commit. |
+| Manuscript File uploaded | `ramanujan_submission_packet.zip` (24,048 B; contains `main.tex` 58,120 B + `references.bib` 5,665 B + `main.bbl` 2,538 B; flat structure) |
+| Cover letter uploaded | `ramanujan_journal_cover_letter.pdf` (117,599 B; typeset from `ramanujan_journal_cover_letter.tex`) |
+| Portal status snapshot at capture | Submission received: **complete**. Technical check: **in progress**. |
+| Submission title (portal-confirmed) | "A bounded two-tier null result for integer relations on a hybrid Khinchin-K₀ basis, with a documented capability gap and a Lean 4 statement-shape encoding" |
+| Submission type (portal-confirmed) | research |
+| Journal (portal-confirmed) | The Ramanujan Journal |
+
+### §H.1 — Capture-time notes
+
+- Portal is **Springer Snapp** (UUID-based submission IDs), not classic Editorial Manager. The pre-submission walkthrough in §E was written assuming classic EM; field-by-field flow was substantially similar but the submission ID format differs.
+- Technical check is in progress at capture time. If technical check identifies any issue (e.g. file format, missing field), expect an automated email and a Snapp-side "needs correction" status. Operator will resubmit corrections via the portal Author Tasks queue.
+- Cover letter PDF was prepared 2026-05-17 ~10:58 JST per operator override directive ("just prepare cover letter that can be uploaded without edits") which authorized CLI to finalize against the §G operator-approved substrate. Plain-text mirror preserved in `ramanujan_journal_cover_letter.md`.
+- Manuscript ZIP was rebuilt 2026-05-17 ~10:49 JST with the `\texorpdfstring{{\boldmath$\gamma$}}{gamma}` patch at `paper/main.tex` line 376 to silence the hyperref "Token not allowed in PDF string" warning. Pre-patch ZIP preserved as `ramanujan_submission_packet.zip.bak_before_texorpdfstring` (24,020 B).
+- Abstract field in the Snapp Details screen was overwritten 2026-05-17 ~11:08 JST (operator paste) from `ramanujan_journal_abstract_portal_field.md` to repair the auto-extractor's mangled extraction (3 stripped math segments, raw `\fsp{}`/`\pc{}`/`\K`/`\Hempop`/`\Hrig` macros, raw `\cite{...}` keys, and the entirely-missing H_rig rigorous-tier clause). 249-word Unicode plain-text version posted.
+- Research Square preprint toggle: **No** (operator selected per CLI recommendation 2026-05-17 ~10:54 JST; rationale: Zenodo concept DOI already provides priority + permanence + citability).
+
+### §H.1a — Zenodo title divergence: documented (operator-best-choice option b, 2026-05-17 ~12:10 JST)
+
+The Zenodo deposit at concept-DOI `10.5281/zenodo.20246707` (version-DOI `10.5281/zenodo.20246708`, rev 4) carries an older 17-word title:
+
+> "A bounded two-tier null result for integer relations on a hybrid Khinchin-K_0 basis, with a structural gap"
+
+The submitted PDF and the Snapp portal Details screen both carry the current 24-word title:
+
+> "A bounded two-tier null result for integer relations on a hybrid Khinchin-K₀ basis, with a documented capability gap and a Lean 4 statement-shape encoding"
+
+The 24-word title adds the trailing "*and a Lean 4 statement-shape encoding*" clause (post-deposit M5 surfacing) and refines "structural gap" → "documented capability gap" for nomenclatural precision. Substantive content of the work is identical between the two snapshots. Per operator best-choice directive 2026-05-17 ~12:10 JST, **option (b) accept-and-document** is the resolution disposition for v.1.0: the Zenodo deposit is the authoritative substrate snapshot at deposit time; the version-DOI `10.5281/zenodo.20246708` is the cross-platform record of that snapshot; the manuscript's Data Availability statement correctly cites both concept DOI and version DOI. Re-deposit under a new version DOI is deferred unless the eventual RJ revision cycle independently requires a title change at Zenodo. Mint-new-version (option a) and revision-cycle-pairing (option c) remain available; either becomes a Stream S follow-up if surfaced.
+
+### §H.2 — Immediate follow-up checklist
+
+1. ~~Operator commits working-tree to capture the submission state under a single canonical commit.~~ **FIRED 2026-05-17 ~12:11 JST** per operator best-choice directive; canonical commit + `submitted/ramanujan-v1` tag at HEAD.
+2. Watch operator email inbox for Snapp acknowledgement (typically within minutes-hours of capture).
+3. Watch for Technical-Check completion notice; if "needs correction" status appears, surface in inbox_entries.
+4. Update §H "Editor assigned" once initial editor is named (typically 1–3 days for RJ).
+5. Snapp-side typical timeline: Technical check → Editor assignment → Reviewer invitations → First decision (RJ historical: 4–8 weeks median).
 
 ## §I — Submission hygiene rules (R2 + R3 standing)
 
