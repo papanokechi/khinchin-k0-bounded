@@ -6,7 +6,14 @@
   "_paper_pdf_path_at_creation": "paper/main.pdf",
   "_created_at": "2026-05-16",
   "_deposit_prep_at": "2026-05-17",
-  "_status": "DEPOSIT_PREP_AWAITING_OPERATOR_FINAL_CONFIRM",
+  "_status": "DEPOSITED",
+  "_deposit_fired_at": "2026-05-17",
+  "_deposit_method": "Option β manual web UI per operator directive 2026-05-17 ~07:23 JST (no Zenodo API token in environment)",
+  "_minted_concept_doi": "10.5281/zenodo.20246707",
+  "_minted_version_doi": "10.5281/zenodo.20246708",
+  "_deposit_landing_url": "https://zenodo.org/records/20246708",
+  "_deposit_revision_lineage": "rev 3 = publish; rev 4 = post-publish metadata edit (operator added ORCID to creator record + removed typo'd code:codeRepository URL from custom block)",
+  "_post_deposit_audit_summary": "13 fields PASS; 5 defects flagged; 1 operator-edit round resolved Defect 2 (ORCID linkage, highest priority per D-zenodo-orcid-pseudonymity-stance) and Defect 4 partial (typo URL); 3 defects accepted as operator preferences (creator-name rendering, affiliation form, residual custom fields); 2 LOW defects (MSC2020 absent, related-ID resource_type auto-expansion) acceptable.",
 
   "metadata": {
     "upload_type": "publication",
@@ -92,13 +99,14 @@
     "notes": "This deposit reflects the manuscript draft at HEAD b7e67ad (M6 post-bundle: layer-1 + layer-3 + layer-3 supplemental H11 install + layer-4 H11 propagation). The canonical artifacts repository at https://github.com/papanokechi/khinchin-k0-bounded carries the full reproducibility chain (env/M1.lock pinning Lean 4.14.0, Mathlib v4.14.0, mpmath 1.3.0, PARI/GP 2.18.1; harness/sweep_output/ canonical JSONLs; literature/claims.jsonl 20 paper-read or canonically-confirmed claims; mutation_log/ 12 entries audit trail). The mission is conducted under the AEAL discipline; for the methodological context, see paper/main.tex Appendix B and handoff/agent_health_score.md."
   },
 
-  "_zenodo_deposit_actions_NOT_executed": {
-    "_comment": "Per operator directive 2026-05-16 ~17:11 JST: 'Do not execute deposit. The deposit is gated on operator review and an explicit deposit directive.' The fields below document what the deposit step would do; none have been called.",
-    "step_1_create_deposit": "POST /api/deposit/depositions -- NOT CALLED",
-    "step_2_upload_pdf": "PUT /api/deposit/depositions/{id}/files paper/main.pdf -- NOT CALLED",
-    "step_3_apply_metadata": "PUT /api/deposit/depositions/{id} {this JSON} -- NOT CALLED",
-    "step_4_publish": "POST /api/deposit/depositions/{id}/actions/publish -- NOT CALLED",
-    "step_5_dois_mint": "Concept-DOI + version-DOI minted at publish step -- NOT CALLED"
+  "_zenodo_deposit_actions_EXECUTED_manually": {
+    "_comment": "Deposit fired 2026-05-17 via Zenodo web UI (Option β) per operator directive. The Zenodo API was NOT used (no PAT in environment); operator executed the equivalent of these steps manually at https://zenodo.org/deposit/new.",
+    "step_1_create_deposit": "EXECUTED manually 2026-05-17 (new deposit form opened)",
+    "step_2_upload_files": "EXECUTED manually 2026-05-17 (8 files uploaded: main.pdf + main.tex + references.bib + preflight_compliance.md + M1.lock + m32a_primary_cascade.jsonl + m32b_empirical_sweep.jsonl + claims.jsonl; ~1.16 MB total)",
+    "step_3_apply_metadata": "EXECUTED manually 2026-05-17 (metadata entered from this JSON's metadata block)",
+    "step_4_publish": "EXECUTED manually 2026-05-17 (Publish button clicked; minted DOIs returned)",
+    "step_5_dois_minted": "Concept-DOI 10.5281/zenodo.20246707; version-DOI 10.5281/zenodo.20246708; both resolve at https://doi.org/10.5281/zenodo.20246707 and https://doi.org/10.5281/zenodo.20246708",
+    "step_6_post_publish_metadata_edit": "EXECUTED manually 2026-05-17 (revision 3 -> 4; operator added ORCID to creator + removed typo'd code:codeRepository URL)"
   },
 
   "_post_deposit_operator_actions": {

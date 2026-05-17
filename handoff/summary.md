@@ -1,7 +1,7 @@
 # Handoff packet — unsolved-relay mission on Khinchin's constant K₀
 
-**Status:** **STRUCTURE-ONLY PRE-POPULATION.**
-This file is the Brief §M6.3 handoff substrate, pre-populated against the manuscript draft at `paper/main.tex` HEAD `e0defff`. The plain-language summary and the recommended-next-venue block are placeholders; they will be filled in only after operator review of the M6 manuscript and operator decision on the venue axis.
+**Status:** **POST-DEPOSIT, MISSION CLOSED at `gold/M6`.**
+This file is the Brief §M6.3 handoff substrate. The M6 manuscript was deposited at Zenodo on 2026-05-17 (concept-DOI `10.5281/zenodo.20246707`; version-DOI `10.5281/zenodo.20246708`; landing https://zenodo.org/records/20246708) and the `papanokechi/khinchin-k0-bounded` repository flipped public synchronously per U-MISSION-B. See §7 for post-deposit state. The §1 plain-language summary and §3 recommended-next-venue blocks remain operator-fillable placeholders; they can be filled post-mission-close at operator discretion.
 
 The completed companion document is `handoff/agent_health_score.md`, which carries the concrete four-axis health-score data.
 
@@ -78,6 +78,15 @@ When the operator reviews `paper/main.tex` HEAD `e0defff`, the six specific stru
 
 ## §5 Pre-Zenodo deposit decisions for the operator
 
+> **RESOLUTION (2026-05-17):** Both decision points below were resolved by the operator prior to the Step 4 deposit fire. The resolutions are:
+>
+> - **D-zenodo-orcid-pseudonymity-stance:** Option **(A) KEEP ORCID linked on Zenodo metadata.** Rationale: linking ORCID across publications builds citation-graph density and reduces friction toward future institutional-affiliation acquisition. Retroactive ORCID update on prior Zenodo deposits (Items 5/13/28) flagged as optional follow-up workstream; does not gate M6 deposit.
+> - **D-zenodo-related-identifiers:** **KEEP SIARC umbrella DOI 10.5281/zenodo.19885549 as `isPartOf`** plus the canonical artifacts repository `github.com/papanokechi/khinchin-k0-bounded` as `isSupplementTo`. Both populated at deposit fire.
+>
+> The original decision substrate is preserved below as historical record.
+
+---
+
 The pre-populated Zenodo metadata draft is at `handoff/zenodo_metadata.json`. Two decision points are flagged for the operator before any deposit:
 
 ### D-zenodo-orcid-pseudonymity-stance
@@ -98,21 +107,63 @@ If the operator decides to cross-link this deposit to the SIARC umbrella concept
 
 ## §6 What this packet is, and is not
 
-**Is:** the Brief §M6.3 handoff substrate, pre-populated to the structural extent the operator's 2026-05-16 ~17:11 JST directive authorizes (three files; no deposit execution; no venue selection).
+**Was:** the Brief §M6.3 handoff substrate, pre-populated to the structural extent the operator's 2026-05-16 ~17:11 JST directive authorized (three files; no deposit execution; no venue selection).
 
-**Is not:**
-- a Zenodo deposit. No external API or upload call has been made.
-- a `gold/M6` tag application. Per Brief §M6.2 the tag is applied *after* the deposit, *and* at operator discretion.
-- a final handoff. The plain-language summary and the next-venue block remain operator-fillable placeholders.
-- a ratification of the M6 manuscript at `paper/main.tex`. Steps 3 (preflight compliance review) through 6 (handoff packet completion + Zenodo deposit + `gold/M6`) remain operator-gated.
+**Is now (post-deposit, mission-closed):**
+- a Zenodo deposit: **DEPOSITED.** Concept-DOI `10.5281/zenodo.20246707`; version-DOI `10.5281/zenodo.20246708`; landing https://zenodo.org/records/20246708; CC-BY-4.0; 8 files (~1.16 MB).
+- a `gold/M6` tag: **APPLIED** at the post-deposit reconciliation commit. Per Brief §M6.2 same-day after the deposit.
+- a M6 manuscript ratification: **RATIFIED** at commit `b7e67ad` (M6 layer-4); title substitution at `c7c287d` (17-word hybrid); deposit reconciliation at this commit.
+- a final handoff: **STRUCTURAL.** The §1 plain-language summary and §3 next-venue placeholders remain operator-fillable; fill is post-mission-close at operator discretion (not gating).
 
-**Operator decision queue, post-this-packet:**
+**Operator decision queue, post-this-packet (ALL CLOSED through item 6 at gold/M6 fire):**
 
-1. Review `paper/main.tex` HEAD `e0defff` against the six structural reads in §4.
-2. Either ratify the M6 manuscript (operator surfaces "M6 Step 2 RATIFIED. Proceed to Step 3.") or issue specific delta-language revisions.
-3. Decide D-zenodo-orcid-pseudonymity-stance per §5.
-4. Decide D-zenodo-related-identifiers per §5.
-5. Decide on the next-venue placeholder (§3).
-6. Then (post-deposit): apply `gold/M6` tag at operator discretion.
+1. ~~Review `paper/main.tex` HEAD `e0defff` against the six structural reads in §4.~~ → DONE.
+2. ~~Either ratify the M6 manuscript or issue specific delta-language revisions.~~ → DONE: ratified at `b7e67ad` after layer-1 + layer-3 + layer-3 supplemental + layer-4 bundles.
+3. ~~Decide D-zenodo-orcid-pseudonymity-stance per §5.~~ → DONE: Option (A) KEEP ORCID. (Defect-fix edit round on Zenodo 2026-05-17 linked ORCID to creator record.)
+4. ~~Decide D-zenodo-related-identifiers per §5.~~ → DONE: KEEP SIARC umbrella + canonical artifacts repo.
+5. Decide on the next-venue placeholder (§3). → **OPEN, post-mission operator-reserved.** Per slot-216 Opus consultation + Claude 2026-05-17 follow-up: Ramanujan Journal / Journal of Number Theory band; Acta Arithmetica EXCLUDED while paper 260423 (Ratio Universality) is under review there; Mathematics of Computation also a strong candidate.
+6. ~~(Post-deposit): apply `gold/M6` tag at operator discretion.~~ → DONE at this commit.
 
-The CLI HALTS here pending operator review of the manuscript and of this packet. No portal interactions, no deposit, no tag. Rule 6 preserved.
+The CLI HALT discipline is preserved. Post-mission-close work (§1 + §3 fills + journal submission cycle) follows the same halt-and-flag pattern; the M6 mission state at `gold/M6` is the canonical archival point.
+
+---
+
+## §7 Post-deposit state
+
+**Zenodo deposit fired:** 2026-05-17 (Option β manual web UI; no Zenodo API token in environment, so no automated 5-step API sequence; operator executed deposit manually via https://zenodo.org/deposit/new).
+
+| Field | Value |
+|---|---|
+| Concept-DOI | [10.5281/zenodo.20246707](https://doi.org/10.5281/zenodo.20246707) |
+| Version-DOI | [10.5281/zenodo.20246708](https://doi.org/10.5281/zenodo.20246708) |
+| Landing URL | https://zenodo.org/records/20246708 |
+| Publication date | 2026-05-17 |
+| Version | 1.0 |
+| Resource type | Preprint |
+| License | CC-BY-4.0 (open access) |
+| Language | English |
+| Upload tier | core 4 + optional 4 = 8 files, ~1.16 MB |
+| Manuscript HEAD at deposit fire | `c7c287d` (post-title-substitution; 17-word hybrid title) |
+| Repo public-flip | 2026-05-17, synchronized with publish per U-MISSION-B |
+
+**Files deposited (8):**
+
+| File | Size | Source path at fire |
+|---|---|---|
+| main.pdf | 672,432 B | paper/main.pdf |
+| main.tex | 55,202 B | paper/main.tex |
+| references.bib | 5,383 B | paper/references.bib |
+| preflight_compliance.md | 13,632 B | paper/preflight_compliance.md |
+| M1.lock | 2,263 B | env/M1.lock |
+| m32a_primary_cascade.jsonl | 5,649 B | harness/sweep_output/m32a_primary_cascade.jsonl |
+| m32b_empirical_sweep.jsonl | 363,709 B | harness/sweep_output/m32b_empirical_sweep.jsonl |
+| claims.jsonl | 45,935 B | literature/claims.jsonl |
+
+**Related identifiers (deposit-side):**
+- `isPartOf` 10.5281/zenodo.19885549 (SIARC umbrella concept DOI)
+- `isSupplementTo` https://github.com/papanokechi/khinchin-k0-bounded (canonical artifacts repository, public at deposit fire)
+
+**Post-publish metadata audit (2026-05-17):**
+13 fields PASS at first audit. Five defects flagged; one operator-edit round resolved Defect 2 (ORCID `0009-0000-6192-8273` linked to creator record) and Defect 4 partial (typo'd `code:codeRepository` URL removed). Three defects accepted as operator preferences: Defect 1 creator-name rendering "papanokechi, papanokechi" (Zenodo mononym workaround), Defect 3 affiliation "Independent Researcher" (privacy preference, differs from HAL's fuller form), Defect 4 residual (Python + active custom fields, cosmetic-only). Defects 5+6 LOW priority: MSC2020 subjects absent (may be UI-unfixable); related-ID #1 resource_type auto-expanded to "publication-preprint" (acceptable).
+
+**Mission close:** `gold/M6` tag at this commit. Brief §M6.2 satisfied. Post-mission §1 + §3 fills and journal submission cycle are operator-reserved follow-on work; no longer part of M6 scope.

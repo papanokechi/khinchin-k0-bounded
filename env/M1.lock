@@ -59,3 +59,14 @@ m1_mutation_log_entries: 4
   - m1.1_to_m1.2_shortlist_construction_20260515.md    (boundary directive, 0 mutations)
   - m1.2_to_m1.3_brief_fidelity_correction.md          (frame correction, 0 mutations)
   - m1.3_pari_gp_install_20260515.md                   (capability install event, 0 mutations)
+
+## M6 manuscript Zenodo deposit (Step 4 fired 2026-05-17, Option β manual web UI)
+m6_zenodo_concept_doi: 10.5281/zenodo.20246707
+m6_zenodo_version_doi: 10.5281/zenodo.20246708
+m6_zenodo_deposit_landing_url: https://zenodo.org/records/20246708
+m6_zenodo_deposit_published_at: 2026-05-17
+m6_zenodo_deposit_license: CC-BY-4.0
+m6_zenodo_deposit_files_count: 8
+m6_zenodo_deposit_total_size_bytes: 1164205
+m6_repo_public_flip_at: 2026-05-17 (synchronized with publish per U-MISSION-B)
+m6_repo_visibility: public
