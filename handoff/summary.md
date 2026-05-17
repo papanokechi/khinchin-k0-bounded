@@ -41,23 +41,45 @@ The concrete-data view is `handoff/agent_health_score.md`. The four axes per Bri
 
 ## §3 Recommended next-venue assessment
 
-> **[OPERATOR-DECIDES — DO NOT FILL]**
-> This block is intentionally not pre-drafted by the CLI. Per Brief §M6.3 and per the operator's M6 Step 2 pre-population directive (2026-05-16 ~17:11 JST): *"Do not fill the venue recommendation; operator decides. Structure only."*
+**Operator decision (2026-05-17 09:41 JST, post-gold/M6 = `67655c0`):**
+
+> **Target venue: Ramanujan Journal** (Springer; ISSN 1382-4090 print / 1572-9303 online).
 >
-> The operator will fill this block after reviewing the manuscript at `paper/main.tex` HEAD `e0defff`. Substrate available to the operator:
->
-> - Slot 216 Opus consultation verdict on venue ceiling (in `siarc/control-center/prompts/216_...EXECUTED.txt` §9, Acta Arith / JNT / Ramanujan J band; NOT Bull AMS / Compositio).
-> - SIARC submission ledger (`siarc/submitted/submission_log.txt`) — Item 28 JNT (rejected 2026-05-15) and Item 31 RMSB (rejected 2026-05-16) both cover the *spectral-classes* manuscript and are NOT in unsolved-relay scope; their rejection signals (`comparative_priority`, `external_validation_deficit`, `scope_fit`) inform but do not dictate the K₀-bounded venue.
-> - The Khinchin K₀ manuscript is structurally different from the spectral-classes manuscript: it is a *bounded-null* result with two-tier (rigorous + empirical) predicate calibration and Lean 4 statement-shape encoding; this profile fits *experimental-mathematics* and *computational-number-theory* venues better than pure-number-theory venues.
-> - Candidate venues (operator can endorse, modify, or replace):
->   - *Mathematics of Computation* — BBP's natural home, paper-read-verified bibliographically (`lit-002`, `lit-009`).
->   - *Experimental Mathematics* — bounded-null + reproducibility-appendix natural fit.
->   - *Journal of Number Theory* — already explored at Item 28; operator may want to defer to allow a citation gap.
->   - *Integers: Electronic Journal of Combinatorial Number Theory* — open-access, lower citation barrier, fast turnaround.
->   - Zenodo deposit + arXiv preprint (operator pseudonymity stance: see §5 below) — venue-independent, often the right first step before formal journal submission.
->
-> - Future deposit spinoffs (M7+; out of M6 scope):
->   - **AEAL Agent Health Score methodology + validator script + cross-mission deployment notes.** The four-axis Agent Health Score methodology (`handoff/agent_health_score_methodology.md`, commit `8261d6e`) defines numerator / denominator semantics, the five-question Axis 3 honest-self-assessment, the bidirectional-verification property, and the auxiliary halt-and-flag axis. A natural second deposit from the present mission's methodology output would package: (i) the methodology document; (ii) a `_agent_health_score_validator.py` implementation (Layer-2 substrate; specification stub already in the methodology document's §Validator alignment); (iii) cross-mission deployment notes drawn from re-applying the four axes to a future SIARC mission for empirical validation that the methodology generalizes. Positioning: methodological contribution distinct from the K₀-bounded result; M7+ scope; not in the M6 Zenodo deposit. Surfaced here as a placeholder-pool item so the operator can decide at venue-selection time whether to flag it as a tracked next-paper candidate or to defer.
+> - Editor-in-Chief: Bruce C. Berndt.
+> - Submission guidelines: <https://www.springer.com/journal/11139/submission-guidelines>
+> - Author-guidelines H8 paper-read by CLI at 2026-05-17 09:32 JST; verbatim-requirement report at `session/files/post_m6_s1_ramanujan_requirements_report.md`.
+
+**Rationale (per Claude Q3 verdict 2026-05-17 ~09:01 JST + operator selection):**
+
+- Ramanujan Journal sits in the Ramanujan J / JNT / *Mathematics of Computation* compositional band identified as appropriate for the K₀-bounded two-tier null result with AEAL methodological context.
+- *Acta Arithmetica* **EXCLUDED** while submission 260423 (spectral-classes manuscript) holds at that venue; cross-venue conflict avoidance.
+- *Journal of Number Theory* held as secondary fallback. Item 28 prior JNT rejection (2026-05-15) was on a different manuscript (spectral-classes) and does not bind here; post-rejection citation-gap discipline may still favor temporal separation.
+- *Mathematics of Computation* also strong per Claude Q3; held in reserve for redirect path.
+- *Experimental Mathematics* and *Integers* held as further redirect options.
+
+**Stream S (Ramanujan Journal submission cycle) status as of this fill:**
+
+| Sub-stream | Status |
+|---|---|
+| S.1 RJ author-guidelines H8 paper-read | ✅ DONE — 11 verbatim requirement sections + 9-item S.2 work-item table |
+| S.2 packet preparation | pending — 5 CLI-actionable + 4 operator-blocking sub-todos |
+| S.3 pseudonymity disclosure decision | pending operator (3 options: pseudonym + ORCID only / editor-disclosed legal name / decline+redirect) |
+| S.4 submission fire via Editorial Manager | held until S.2 + S.3 complete; CLI does not have portal access |
+
+**Redirect protocol (if Ramanujan Journal rejects):**
+
+Operator may revise at rejection time; default sequence:
+
+1. *Mathematics of Computation* — per Claude Q3 also-strong band.
+2. *Journal of Number Theory* — after observing post-Item-28 citation-gap discipline.
+3. *Experimental Mathematics* — bounded-null + reproducibility-appendix natural fit.
+4. *Integers: Electronic Journal of Combinatorial Number Theory* — open-access, fast turnaround, lower citation barrier.
+
+Each redirect re-uses the post-M6 submission packet with minor venue-specific formatting per that journal's author guidelines (fresh H8 paper-read per venue).
+
+**Future deposit spinoff (now Stream M's active workstream, M7+ scope; logged here for cross-reference):**
+
+> **AEAL Agent Health Score methodology + validator script + cross-mission deployment notes.** The four-axis Agent Health Score methodology (`handoff/agent_health_score_methodology.md`, commit `8261d6e`) defines numerator / denominator semantics, the five-question Axis 3 honest-self-assessment, the bidirectional-verification property, and the auxiliary halt-and-flag axis. The deposit spinoff packages: (i) the methodology document; (ii) a `_agent_health_score_validator.py` implementation (Stream M.4 work item; 200-400 LOC target per post-M6 directive); (iii) cross-mission deployment notes from re-applying the four axes to future missions for empirical validation that the methodology generalizes. Positioning: methodological contribution distinct from the K₀-bounded result; NOT in the M6 Zenodo deposit. **Stream M (post-M6 methodology paper workstream) is now active**: outline drafted at `session/files/post_m6_m1_methodology_outline_draft.md`; section-by-section M.2 prose drafting awaits operator ratification of outline + location + title + venue (Patterns vs methodology-note). Methodology paper submission held until K₀ Ramanujan Journal submission status clarifies per Stream M.5 hold-gate.
 
 ---
 
