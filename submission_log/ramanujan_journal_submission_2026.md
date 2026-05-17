@@ -36,15 +36,22 @@
 
 ## §C — Submission packet manifest
 
-**IMPORTANT:** Editorial Manager requires the LaTeX source files to be uploaded inside a single ZIP archive (portal error 2026-05-17: "Your LaTeX file must be part of a Zip file"). A pre-built archive is staged at `submission_log/ramanujan_submission_packet.zip`.
+**IMPORTANT:** Editorial Manager compiles the LaTeX source ZIP into a PDF itself for peer review. **Do NOT upload `main.pdf` separately** — the portal will reject it as redundant or use it ambiguously against the source build. Verbatim portal instruction (captured 2026-05-17 10:16 JST):
+
+> "It's best if your manuscript — including all text, figures and tables — is in one editable file. Upload your manuscript in an editable format for peer review (maximum 2GB). This will be either: a Word document … or LaTeX documents with figures and tables compressed into a .zip format. We will compile these into a PDF for peer review."
+
+A pre-built archive is staged at `submission_log/ramanujan_submission_packet.zip`.
 
 Files to upload at portal:
 
 | Order | File | Path | Purpose |
 |---|---|---|---|
-| 1 | `ramanujan_submission_packet.zip` | `submission_log/ramanujan_submission_packet.zip` | ZIP containing `main.tex` + `references.bib` + `main.bbl` (24,020 B; flat structure, no subfolders inside) |
-| 2 | `main.pdf` | `paper/main.pdf` | Compiled PDF for editorial review (uploaded as separate file, not inside ZIP) |
-| 3 | Cover letter | (operator-drafted) | Submitted via portal "Cover Letter" field |
+| 1 | `ramanujan_submission_packet.zip` | `submission_log/ramanujan_submission_packet.zip` | ZIP containing `main.tex` + `references.bib` + `main.bbl` (24,020 B; flat structure, no subfolders inside). **Portal compiles this into the peer-review PDF.** |
+| 2 | Cover letter | (operator-drafted) | Submitted via portal "Cover Letter" field — NOT inside the ZIP |
+
+**Files NOT uploaded:**
+- `paper/main.pdf` — portal generates the review PDF from the ZIP; do not upload separately
+- Supplementary materials — none; the Zenodo deposit (concept DOI `10.5281/zenodo.20246707`) is cited from the manuscript's Data Availability statement per RJ's encouraged archiving pattern
 
 **ZIP contents (flat, no subfolders per RJ guidelines):**
 
@@ -52,21 +59,19 @@ Files to upload at portal:
 |---|---|---|---|
 | `main.tex` | 58,092 B | 19,982 B | LaTeX source (article class; longtable + standard packages) |
 | `references.bib` | 5,665 B | 2,373 B | BibTeX bibliography (9 entries; DOIs as full URLs per RJ §3) |
-| `main.bbl` | 2,538 B | 1,355 B | Pre-compiled bibliography (insurance against portal BibTeX issues) |
+| `main.bbl` | 2,538 B | 1,355 B | Pre-compiled bibliography (insurance against portal BibTeX issues; portal may regenerate, harmless if so) |
 
 **Source dependency audit:**
 - No `\input` / `\include` directives — manuscript is monolithic
-- No `\includegraphics` — no figures (all tables are typeset directly)
+- No `\includegraphics` — no figures (all tables are typeset directly via `longtable`)
 - Non-standard packages: only `longtable` (present in every TeX distribution)
 - All bibliography rendering controlled by `\bibliographystyle{plain}` + `references.bib`
 
-**Supplementary materials:** None uploaded directly to portal. Manuscript Data Availability statement cites Zenodo concept DOI `10.5281/zenodo.20246707` per RJ's encouraged archiving pattern. The Zenodo deposit holds the eight canonical artifacts (`main.pdf`, `main.tex`, `references.bib`, `preflight_compliance.md`, `M1.lock`, `m32a_primary_cascade.jsonl`, `m32b_empirical_sweep.jsonl`, `claims.jsonl`; ~1.16 MB total).
-
-**Submission directory structure (per RJ guidelines):** No subfolders inside ZIP; no subfolders in supplementary uploads (there are no supplementary uploads in this submission).
+**Submission directory structure (per RJ guidelines):** No subfolders inside ZIP.
 
 **Rebuilding the ZIP** (if `paper/main.tex` or `paper/references.bib` is edited):
 ```powershell
-# From repo root:
+# From repo root, after PDF rebuild has refreshed main.bbl:
 $staging = "submission_log\_staging_rj_packet"
 New-Item -Path $staging -ItemType Directory -Force | Out-Null
 Copy-Item paper\main.tex, paper\references.bib, paper\main.bbl $staging\
@@ -96,7 +101,7 @@ Note: regenerate `main.bbl` first via `pdflatex main; bibtex main; pdflatex main
 7. Keywords: paste from §F (selected 4-6)
 8. MSC2020 codes: Primary 11Y60; Secondary 11J81, 11J72, 68W30
 9. Author info: Papanokechi, Independent researcher, Yokohama, Japan, ORCID 0009-0000-6192-8273
-10. Upload files in order from §C: **upload the ZIP archive `submission_log/ramanujan_submission_packet.zip` as the source files, and upload `paper/main.pdf` separately as the manuscript PDF.** (Portal rejects individual `.tex` uploads outside a ZIP — error verified 2026-05-17: "Your LaTeX file must be part of a Zip file.")
+10. Upload files in order from §C: **upload ONLY `submission_log/ramanujan_submission_packet.zip` in the manuscript-upload field. The portal compiles the ZIP into a peer-review PDF itself — do NOT upload `paper/main.pdf` separately.** Portal instruction verbatim 2026-05-17: "LaTeX documents with figures and tables compressed into a .zip format. We will compile these into a PDF for peer review."
 11. Statements & Declarations: portal may auto-extract from manuscript, or prompt for re-entry. Re-entry text is verbatim from `paper/main.tex` `\section*{Statements and Declarations}`.
 12. Cover letter: paste operator-finalized text
 13. Suggested referees: if prompted, enter 2-3 names
